@@ -1,0 +1,7 @@
+*.csproj.user
+*.snk
+*.suo
+[Bb]in/
+[Bb]uild/
+[Oo]bj/
+test-results/
