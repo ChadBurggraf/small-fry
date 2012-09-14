@@ -1,0 +1,29 @@
+Small Fry API
+-------------------------------------------------------------------------------
+Fluent API design for C# and .NET.
+
+ServiceCollection services = new ServiceCollection()
+	.WithService("Virtual Keychain")
+		.BeforeService(Credentials)
+		.BeforeService(Throttle)
+		.BeforeService(Authorize)
+		.WithEndpoint("accounts")
+			.Get(() => { ... })
+			.Post(() => { ... })
+				.RemoveBeforeMethod(Authorize)
+			.Delete(() => { ... })
+		.WithEndpoint("preferences")
+			.Put(() => { ... })
+		.WithEndpoint("entries/{entryId}/labels/{?labelId}")
+			.Post(() => { ... })
+			.Delete(() => { ... })
+		.WithEndpoint("entries/{?id}")
+			.Post(() => { ... })
+			.Put(() => { ... })
+			.Delete(() => { ... })
+		.WithEndpoint("labels/{?id}")
+			.Post(() => { ... })
+			.Put(() => { ... })
+			.Delete(() => { ... })
+		.AfterService(Log)
+		.ErrorService(() => { ... });

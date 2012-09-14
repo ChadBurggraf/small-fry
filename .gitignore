@@ -1,6 +1,7 @@
 *.csproj.user
 *.snk
 *.suo
+TestResult.xml
 [Bb]in/
 [Bb]uild/
 [Oo]bj/
