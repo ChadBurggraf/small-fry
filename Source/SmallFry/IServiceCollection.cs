@@ -5,12 +5,26 @@
 
     public interface IServiceCollection
     {
-        IServiceCollection AfterService();
+        IEndpointCollection AfterService();
 
-        IServiceCollection BeforeService();
+        IEndpointCollection BeforeService();
 
-        IServiceCollection ErrorService();
+        IEndpointCollection ErrorService();
 
-        IServiceCollection WithService(string name);
+        IMethodCollection WithEndpoint(string route);
+
+        IEndpointCollection WithoutServiceEncoding(string names, IEncoding encoding);
+
+        IEndpointCollection WithoutServiceFormat(string mimeTypes, IFormat format);
+
+        IEndpointCollection WithService(string name);
+
+        IEndpointCollection WithServiceEncoding(string names, IEncoding encoding);
+
+        IEndpointCollection WithServiceFormat(string mimeTypes, IFormat format);
+
+        IServiceCollection WithServicesEncoding(string names, IEncoding encoding);
+
+        IServiceCollection WithServicesFormat(string mimeTypes, IFormat format);
     }
 }

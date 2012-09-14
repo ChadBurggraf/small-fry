@@ -38,9 +38,13 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+    <Compile Include="GzipDeflateEncoding.cs" />
+    <Compile Include="IEncoding.cs" />
     <Compile Include="IEndpointCollection.cs" />
+    <Compile Include="IFormat.cs" />
     <Compile Include="IMethodCollection.cs" />
     <Compile Include="IServiceCollection.cs" />
+    <Compile Include="JsonFormat.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

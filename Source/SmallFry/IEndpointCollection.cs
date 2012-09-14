@@ -5,18 +5,16 @@
 
     public interface IEndpointCollection : IServiceCollection
     {
-        IEndpointCollection AfterEndpoint();
+        IMethodCollection AfterEndpoint();
 
-        IEndpointCollection BeforeEndpoint();
+        IMethodCollection BeforeEndpoint();
 
-        IEndpointCollection ErrorEndpoint();
+        IMethodCollection ErrorEndpoint();
 
-        IEndpointCollection WithEndpoint(string route);
+        IMethodCollection WithoutAfterEndpoint();
 
-        IEndpointCollection WithoutAfterEndpoint();
+        IMethodCollection WithoutBeforeEndpoint();
 
-        IEndpointCollection WithoutBeforeEndpoint();
-
-        IEndpointCollection WithoutErrorEndpoint();
+        IMethodCollection WithoutErrorEndpoint();
     }
 }

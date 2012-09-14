@@ -27,6 +27,8 @@ In other words, you can fluently define an entire collection of services
 in one fluent line:
 
     ServiceCollection services = new ServiceCollection()
+        .WithServicesFormat("application/json", new JsonFormat())
+	    .WithServicesEncoding("gzip, deflate", new GzipDeflateEncoding())
 	    .WithService("Virtual Keychain")
 		    .BeforeService(Credentials)
 		    .BeforeService(Throttle)
@@ -56,6 +58,9 @@ Breaking up the above "line" into more manageable pieces, it would looke like
 this:
 
     IServiceCollection services = new ServiceCollection();
+    services
+        .WithServicesFormat("application/json", new JsonFormat())
+        .WithServicesEncoding("gzip, deflate", new GzipDeflateEncoding());
     
     IEndpointCollection endpoints = services.WithService("Virtual Keychain");
     endpoints
