@@ -1,6 +1,7 @@
 *.csproj.user
 *.snk
 *.suo
+*.VisualState.xml
 TestResult.xml
 [Bb]in/
 [Bb]uild/

@@ -1,8 +1,9 @@
 ﻿namespace SmallFry
 {
     using System;
+    using System.Collections.Generic;
 
-    internal class FilterAction
+    internal class FilterAction : IEquatable<FilterAction>
     {
         private Func<bool> simpleAction;
         private Func<Exception, bool> simpleExceptionAction;
@@ -51,6 +52,102 @@
             }
 
             this.requestResponseExceptionAction = action;
+        }
+
+        public static bool operator ==(FilterAction left, FilterAction right)
+        {
+            if (Object.ReferenceEquals(left, right))
+            {
+                return true;
+            }
+
+            object l = (object)left;
+            object r = (object)right;
+
+            if (l != null && r == null)
+            {
+                return false;
+            }
+            else if (l == null && r != null)
+            {
+                return false;
+            }
+            else if (l == null && r == null)
+            {
+                return true;
+            }
+            else
+            {
+                return left.Equals(right);
+            }
+        }
+
+        public static bool operator !=(FilterAction left, FilterAction right)
+        {
+            return !(left == right);
+        }
+
+        public virtual bool Equals(FilterAction other)
+        {
+            if ((object)other != null)
+            {
+                if (this.requestResponseAction != null)
+                {
+                    return this.requestResponseAction == other.requestResponseAction;
+                }
+                else if (this.simpleAction != null)
+                {
+                    return this.simpleAction == other.simpleAction;
+                }
+                else if (this.requestResponseExceptionAction != null)
+                {
+                    return this.requestResponseExceptionAction == other.requestResponseExceptionAction;
+                }
+                else if (this.simpleExceptionAction != null)
+                {
+                    return this.simpleExceptionAction == other.simpleExceptionAction;
+                }
+                else
+                {
+                    throw new InvalidOperationException("No action was found to compare.");
+                }
+            }
+
+            return false;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj != null)
+            {
+                return this.Equals(obj as FilterAction);
+            }
+
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            if (this.requestResponseAction != null)
+            {
+                return this.requestResponseAction.GetHashCode();
+            }
+            else if (this.simpleAction != null)
+            {
+                return this.simpleAction.GetHashCode();
+            }
+            else if (this.requestResponseExceptionAction != null)
+            {
+                return this.requestResponseExceptionAction.GetHashCode();
+            }
+            else if (this.simpleExceptionAction != null)
+            {
+                return this.simpleExceptionAction.GetHashCode();
+            }
+            else
+            {
+                throw new InvalidOperationException("No action is defined.");
+            }
         }
 
         public FilterActionResult Invoke(IRequestMessage request, IResponseMessage response, Exception exception)

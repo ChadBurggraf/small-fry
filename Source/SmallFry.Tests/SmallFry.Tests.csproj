@@ -30,6 +30,10 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <StartProgram>$(OutputPath)..\..\..\..\Lib\NUnit.Runners.2.6.1\tools\nunit-console.exe</StartProgram>
+    <StartArguments>$(OutputPath)$(AssemblyName).dll</StartArguments>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Moq">
       <HintPath>..\..\Lib\Moq.4.0.10827\lib\NET40\Moq.dll</HintPath>
@@ -46,6 +50,7 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="DefinitionTests.cs" />
+    <Compile Include="FilterActionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VirtualKeychainServices.cs" />
   </ItemGroup>
