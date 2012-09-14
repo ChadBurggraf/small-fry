@@ -16,9 +16,9 @@
                 .WithServicesEncoding("gzip, deflate", new GzipDeflateEncoding())
                 .WithServicesFormat("application/json, */*", new JsonFormat())
                 .WithService("Virtual Keychain")
-                    .BeforeService()
-                    .BeforeService()
-                    .BeforeService()
+                //.BeforeService()
+                //.BeforeService()
+                //.BeforeService()
                     .WithEndpoint("accounts")
                         .Get(vkc.GetAccounts)
                         .Post(vkc.PostAccounts)
@@ -37,8 +37,8 @@
                     .WithEndpoint("entries/{entryId}/labels/{?labelId}")
                         .Post<VirtualKeychainServices.EntryLabel>(vkc.PostEntryLabels)
                         .Delete(vkc.DeleteEntryLabels)
-                    .AfterService()
-                    .ErrorService();
+                    .AfterService((req, res) => true);
+                    //.ErrorService();
         }
     }
 }

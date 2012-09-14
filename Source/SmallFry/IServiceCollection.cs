@@ -5,11 +5,23 @@
 
     public interface IServiceCollection
     {
-        IEndpointCollection AfterService();
+        IEndpointCollection AfterService(Func<bool> action);
 
-        IEndpointCollection BeforeService();
+        IEndpointCollection AfterService(Func<IRequestMessage, IResponseMessage, bool> action);
 
-        IEndpointCollection ErrorService();
+        IEndpointCollection AfterService<T>(Func<IRequestMessage<T>, IResponseMessage, bool> action);
+
+        IEndpointCollection BeforeService(Func<bool> action);
+
+        IEndpointCollection BeforeService(Func<IRequestMessage, IResponseMessage, bool> action);
+
+        IEndpointCollection BeforeService<T>(Func<IRequestMessage<T>, IResponseMessage, bool> action);
+
+        IEndpointCollection ErrorService(Func<Exception, bool> action);
+
+        IEndpointCollection ErrorService(Func<Exception, IRequestMessage, IResponseMessage, bool> action);
+
+        IEndpointCollection ErrorService<T>(Func<Exception, IRequestMessage<T>, IResponseMessage, bool> action);
 
         IMethodCollection WithEndpoint(string route);
 
