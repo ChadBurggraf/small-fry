@@ -54,5 +54,30 @@
 
             return result;
         }
+
+        public static bool EqualsOperator<T>(T left, T right) where T : IEquatable<T>
+        {
+            if (Object.ReferenceEquals(left, right))
+            {
+                return true;
+            }
+
+            object l = (object)left;
+            object r = (object)right;
+
+            if ((l != null && r == null)
+                || (l == null && r != null))
+            {
+                return false;
+            }
+            else if (l == null && r == null)
+            {
+                return true;
+            }
+            else
+            {
+                return left.Equals(right);
+            }
+        }
     }
 }

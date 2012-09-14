@@ -8,31 +8,170 @@
 
     internal sealed class MediaType : IEquatable<MediaType>
     {
+        private static readonly Regex acceptParamsStartExpression = new Regex(@"^\s*q\s*=.*", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private static readonly MediaType empty = new MediaType() { AcceptParams = AcceptParameters.Empty, RangeParams = new string[0], RootType = string.Empty, SubType = string.Empty };
+        private static readonly Regex parseExpression = new Regex(@"^(\*/\*|[a-z0-9]+/\*|[a-z0-9]+/[a-z0-9]+)(.*)$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
         private MediaType()
         {
         }
 
-        public IEnumerable<Params> AcceptParameters { get; private set; }
+        public static MediaType Empty
+        {
+            get { return MediaType.empty; }
+        }
 
-        public IEnumerable<string> RangeParameters { get; private set; }
+        public AcceptParameters AcceptParams { get; private set; }
+
+        public IEnumerable<string> RangeParams { get; private set; }
 
         public string RootType { get; private set; }
 
         public string SubType { get; private set; }
 
+        public static bool operator ==(MediaType left, MediaType right)
+        {
+            return Extensions.EqualsOperator(left, right);
+        }
+
+        public static bool operator !=(MediaType left, MediaType right)
+        {
+            return !(left == right);
+        }
+
+        public static MediaType Parse(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                value = "*/*";
+            }
+
+            Match match = MediaType.parseExpression.Match(value);
+
+            if (match.Success)
+            {
+                string[] typeParts = match.Groups[1].Value.Split('/');
+
+                MediaType result = new MediaType()
+                {
+                    RootType = typeParts[0].ToLowerInvariant(),
+                    SubType = typeParts[1].ToLowerInvariant()
+                };
+
+                List<string> parameters = new List<string>();
+                AcceptParameters acceptParams = null;
+
+                if (match.Groups[2].Success && !string.IsNullOrWhiteSpace(match.Groups[2].Value))
+                {
+                    string[] paramParts = match.Groups[2].Value.Split(new char[] { ';' });
+                    int acceptIndex = -1;
+
+                    for (int i = 0; i < paramParts.Length; i++)
+                    {
+                        string part = paramParts[i];
+
+                        if (!string.IsNullOrWhiteSpace(part))
+                        {
+                            if (!MediaType.acceptParamsStartExpression.IsMatch(part))
+                            {
+                                parameters.Add(part.Trim().ToLowerInvariant());
+                            }
+                            else
+                            {
+                                acceptIndex = i;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (acceptIndex > -1)
+                    {
+                        acceptParams = AcceptParameters.Parse(string.Join(";", paramParts.Skip(acceptIndex)));
+                    }
+                }
+
+                result.RangeParams = parameters.ToArray();
+                result.AcceptParams = acceptParams ?? AcceptParameters.Empty;
+                return result;
+            }
+            else
+            {
+                throw new FormatException("Invalid media type format. Format must be: ( ( \"*/*\" | ( type \"/\" \"*\" ) | ( type \"/\" subtype ) ) *( \";\" parameter ) [ accept-params ] ). See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html");
+            }
+        }
+
+        public static bool TryParse(string value, out MediaType result)
+        {
+            result = null;
+
+            try
+            {
+                result = MediaType.Parse(value);
+                return true;
+            }
+            catch (FormatException)
+            {
+                return false;
+            }
+        }
+
         public bool Equals(MediaType other)
         {
-            throw new NotImplementedException();
+            if ((object)other != null)
+            {
+                return this.AcceptParams.Equals(other.AcceptParams)
+                    && this.RangeParams.SequenceEqual(other.RangeParams)
+                    && this.RootType.Equals(other.RootType, StringComparison.OrdinalIgnoreCase)
+                    && this.SubType.Equals(other.SubType, StringComparison.OrdinalIgnoreCase);
+            }
+
+            return false;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return this.Equals(obj as MediaType);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.AcceptParams.GetHashCode()
+                ^ this.RangeParams.GetHashCode()
+                ^ this.RootType.GetHashCode()
+                ^ this.SubType.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            string result = this.RootType + "/" + this.SubType;
+
+            if (this.RangeParams.Any())
+            {
+                result += ";" + string.Join(";", this.RangeParams);
+            }
+
+            if (this.AcceptParams != AcceptParameters.Empty)
+            {
+                result += ";" + this.AcceptParams.ToString();
+            }
+
+            return result;
         }
 
         #region Extension Class
 
         public sealed class Extension : IEquatable<Extension>
         {
-            private static readonly Regex ParseExpression = new Regex(@"^([^=]+)(\s*=\s*(.*))?$", RegexOptions.Compiled);
+            private static readonly Extension empty = Extension.Parse(null);
+            private static readonly Regex parseExpression = new Regex(@"^([^=]+)(\s*=\s*(.*))?$", RegexOptions.Compiled);
 
             private Extension()
             {
+            }
+
+            public static Extension Empty
+            {
+                get { return Extension.empty; }
             }
 
             public string Key { get; private set; }
@@ -41,27 +180,7 @@
 
             public static bool operator ==(Extension left, Extension right)
             {
-                if (Object.ReferenceEquals(left, right))
-                {
-                    return true;
-                }
-
-                object l = (object)left;
-                object r = (object)right;
-
-                if ((l != null && r == null)
-                    || (l == null && r != null))
-                {
-                    return false;
-                }
-                else if (l == null && r == null)
-                {
-                    return true;
-                }
-                else
-                {
-                    return left.Equals(right);
-                }
+                return Extensions.EqualsOperator(left, right);
             }
 
             public static bool operator !=(Extension left, Extension right)
@@ -71,24 +190,26 @@
 
             public static Extension Parse(string value)
             {
-                if (string.IsNullOrEmpty(value))
+                if (!string.IsNullOrWhiteSpace(value))
                 {
-                    throw new ArgumentNullException("value", "value must contain a value.");
-                }
+                    Match match = Extension.parseExpression.Match(value.Trim());
 
-                Match match = Extension.ParseExpression.Match(value.Trim());
-
-                if (match.Success)
-                {
-                    return new Extension()
+                    if (match.Success)
                     {
-                        Key = match.Groups[1].Value.ToLowerInvariant(),
-                        Value = match.Groups[3].Value.Coalesce(string.Empty).ToLowerInvariant()
-                    };
+                        return new Extension()
+                        {
+                            Key = match.Groups[1].Value.ToLowerInvariant(),
+                            Value = match.Groups[3].Value.Coalesce(string.Empty).ToLowerInvariant()
+                        };
+                    }
+                    else
+                    {
+                        throw new FormatException("Invalid extension format. Format must be: token [ \"=\" ( token | quoted-string ) ]. See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html");
+                    }
                 }
                 else
                 {
-                    throw new FormatException("Invalid extension format. Format must be: token [ \"=\" ( token | quoted-string ) ]. See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html");
+                    return new Extension() { Key = string.Empty, Value = string.Empty };
                 }
             }
 
@@ -131,11 +252,16 @@
 
             public override string ToString()
             {
-                string result = this.Key;
+                string result = string.Empty;
 
-                if (!string.IsNullOrEmpty(this.Value))
+                if (this != Extension.Empty)
                 {
-                    result += "=" + this.Value;
+                    result = this.Key;
+
+                    if (!string.IsNullOrEmpty(this.Value))
+                    {
+                        result += "=" + this.Value;
+                    }
                 }
 
                 return result;
@@ -144,92 +270,80 @@
 
         #endregion
 
-        #region Params Class
+        #region AcceptParameters Class
 
-        public sealed class Params : IEquatable<Params>
+        public sealed class AcceptParameters : IEquatable<AcceptParameters>
         {
-            private static Regex ParseExpression = new Regex(@"^q\s*=\s*([^;]+)(.*)$", RegexOptions.Compiled);
+            private static readonly AcceptParameters empty = AcceptParameters.Parse(null);
+            private static Regex parseExpression = new Regex(@"^q\s*=\s*([^;]+)(.*)$", RegexOptions.Compiled);
 
-            private Params()
+            private AcceptParameters()
             {
+            }
+
+            public static AcceptParameters Empty
+            {
+                get { return AcceptParameters.empty; }
             }
 
             public IEnumerable<Extension> Extensions { get; private set; }
 
             public string Value { get; private set; }
 
-            public static bool operator ==(Params left, Params right)
+            public static bool operator ==(AcceptParameters left, AcceptParameters right)
             {
-                if (Object.ReferenceEquals(left, right))
-                {
-                    return true;
-                }
-
-                object l = (object)left;
-                object r = (object)right;
-
-                if ((l != null && r == null)
-                    || (l == null && r != null))
-                {
-                    return false;
-                }
-                else if (l == null && r == null)
-                {
-                    return true;
-                }
-                else
-                {
-                    return left.Equals(right);
-                }
+                return SmallFry.Extensions.EqualsOperator(left, right);
             }
 
-            public static bool operator !=(Params left, Params right)
+            public static bool operator !=(AcceptParameters left, AcceptParameters right)
             {
                 return !(left == right);
             }
 
-            public static Params Parse(string value)
+            public static AcceptParameters Parse(string value)
             {
-                if (string.IsNullOrEmpty(value))
+                if (!string.IsNullOrWhiteSpace(value))
                 {
-                    throw new ArgumentNullException("value", "value must contain a value.");
-                }
+                    Match match = AcceptParameters.parseExpression.Match(value.Trim());
 
-                Match match = Params.ParseExpression.Match(value.Trim());
-
-                if (match.Success)
-                {
-                    Params result = new Params()
+                    if (match.Success)
                     {
-                        Value = match.Groups[1].Value.Trim().ToLowerInvariant()
-                    };
+                        AcceptParameters result = new AcceptParameters()
+                        {
+                            Value = match.Groups[1].Value.Trim().ToLowerInvariant()
+                        };
 
-                    if (match.Groups[2].Success && !string.IsNullOrEmpty(match.Groups[2].Value))
-                    {
-                        result.Extensions = match.Groups[2].Value.Trim().Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
-                            .Select(s => Extension.Parse(s))
-                            .ToArray();
+                        if (match.Groups[2].Success && !string.IsNullOrEmpty(match.Groups[2].Value))
+                        {
+                            result.Extensions = match.Groups[2].Value.Trim().Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
+                                .Select(s => Extension.Parse(s))
+                                .ToArray();
+                        }
+                        else
+                        {
+                            result.Extensions = new Extension[0];
+                        }
+
+                        return result;
                     }
                     else
                     {
-                        result.Extensions = new Extension[0];
+                        throw new FormatException("Invalid params format. Format must be: \"q\" \"=\" qvalue *( accept-extension ). See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html");
                     }
-
-                    return result;
                 }
                 else
                 {
-                    throw new FormatException("Invalid params format. Format must be: \"q\" \"=\" qvalue *( accept-extension ). See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html");
+                    return new AcceptParameters() { Extensions = new Extension[0], Value = string.Empty };
                 }
             }
 
-            public static bool TryParse(string value, out Params result)
+            public static bool TryParse(string value, out AcceptParameters result)
             {
                 result = null;
 
                 try
                 {
-                    result = Params.Parse(value);
+                    result = AcceptParameters.Parse(value);
                     return true;
                 }
                 catch (FormatException)
@@ -238,7 +352,7 @@
                 }
             }
 
-            public bool Equals(Params other)
+            public bool Equals(AcceptParameters other)
             {
                 if ((object)other != null)
                 {
@@ -251,7 +365,7 @@
 
             public override bool Equals(object obj)
             {
-                return this.Equals(obj as Params);
+                return this.Equals(obj as AcceptParameters);
             }
 
             public override int GetHashCode()
@@ -262,11 +376,16 @@
 
             public override string ToString()
             {
-                string result = "q=" + this.Value;
+                string result = string.Empty;
 
-                if (this.Extensions.Any())
+                if (this != AcceptParameters.Empty)
                 {
-                    result += ";" + string.Join(";", this.Extensions);
+                    result = "q=" + this.Value;
+
+                    if (this.Extensions.Any())
+                    {
+                        result += ";" + string.Join(";", this.Extensions);
+                    }
                 }
 
                 return result;

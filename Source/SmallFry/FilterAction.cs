@@ -56,30 +56,7 @@
 
         public static bool operator ==(FilterAction left, FilterAction right)
         {
-            if (Object.ReferenceEquals(left, right))
-            {
-                return true;
-            }
-
-            object l = (object)left;
-            object r = (object)right;
-
-            if (l != null && r == null)
-            {
-                return false;
-            }
-            else if (l == null && r != null)
-            {
-                return false;
-            }
-            else if (l == null && r == null)
-            {
-                return true;
-            }
-            else
-            {
-                return left.Equals(right);
-            }
+            return Extensions.EqualsOperator(left, right);
         }
 
         public static bool operator !=(FilterAction left, FilterAction right)
