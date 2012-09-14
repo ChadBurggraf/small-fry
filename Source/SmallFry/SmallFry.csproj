@@ -43,6 +43,9 @@
     <Compile Include="IEndpointCollection.cs" />
     <Compile Include="IFormat.cs" />
     <Compile Include="IMethodCollection.cs" />
+    <Compile Include="IRequestMessage.cs" />
+    <Compile Include="IRequestMessage{T}.cs" />
+    <Compile Include="IResponseMessage.cs" />
     <Compile Include="IServiceCollection.cs" />
     <Compile Include="JsonFormat.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
