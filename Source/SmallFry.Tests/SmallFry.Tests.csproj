@@ -51,6 +51,8 @@
     </Compile>
     <Compile Include="DefinitionTests.cs" />
     <Compile Include="FilterActionTests.cs" />
+    <Compile Include="FormatFilterTests.cs" />
+    <Compile Include="MediaTypeTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VirtualKeychainServices.cs" />
   </ItemGroup>

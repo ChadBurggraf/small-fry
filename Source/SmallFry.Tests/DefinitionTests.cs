@@ -1,6 +1,7 @@
 ﻿namespace SmallFry.Tests
 {
     using System;
+    using System.IO;
     using Moq;
     using NUnit.Framework;
 
@@ -39,6 +40,19 @@
                         .Delete(vkc.DeleteEntryLabels)
                     .AfterService((req, res) => true);
                     //.ErrorService();
+        }
+
+        private sealed class JsonFormat : IFormat
+        {
+            public object Deserialize(Type type, Stream stream)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void Serialize(object value, Stream stream)
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }

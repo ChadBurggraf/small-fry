@@ -2,6 +2,7 @@
 *.snk
 *.suo
 *.VisualState.xml
+StyleCop.Cache
 TestResult.xml
 [Bb]in/
 [Bb]uild/

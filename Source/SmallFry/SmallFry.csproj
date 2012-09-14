@@ -58,7 +58,7 @@
     <Compile Include="IResponseMessage.cs" />
     <Compile Include="IServiceCollection.cs" />
     <Compile Include="IServiceHost.cs" />
-    <Compile Include="JsonFormat.cs" />
+    <Compile Include="MediaType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service.cs" />
     <Compile Include="ServiceCollection.cs" />
