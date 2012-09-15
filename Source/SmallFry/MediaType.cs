@@ -275,7 +275,7 @@
         public sealed class AcceptParameters : IEquatable<AcceptParameters>
         {
             private static readonly AcceptParameters empty = AcceptParameters.Parse(null);
-            private static Regex parseExpression = new Regex(@"^q\s*=\s*(\d(\.\d+)?)(.*)$", RegexOptions.Compiled);
+            private static Regex parseExpression = new Regex(@"^q\s*=\s*(\d(\.\d+)?)(.*)$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
             private AcceptParameters()
             {

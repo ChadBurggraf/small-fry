@@ -1,0 +1,128 @@
+﻿namespace SmallFry
+{
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.Text.RegularExpressions;
+
+    internal sealed class EncodingType : IEquatable<EncodingType>
+    {
+        private static readonly Regex parseExpression = new Regex(@"^\s*([^;]+)(\s*;\s*q\s*=\s*(\d(\.\d*)?))?\s*$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private static readonly EncodingType empty = EncodingType.Parse(null);
+        
+        private EncodingType()
+        {
+        }
+
+        public static EncodingType Empty
+        {
+            get { return EncodingType.empty; }
+        }
+
+        public string Name { get; private set; }
+
+        public float QValue { get; private set; }
+
+        public static bool operator ==(EncodingType left, EncodingType right)
+        {
+            return Extensions.EqualsOperator(left, right);
+        }
+
+        public static bool operator !=(EncodingType left, EncodingType right)
+        {
+            return !(left == right);
+        }
+
+        public static EncodingType Parse(string value)
+        {
+            const string FormatExceptionMessage = "Invalid encoding format. Format must be: ( ( content-coding | \"*\" ) [ \";\" \"q\" \"=\" qvalue ] ). See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html";
+
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                value = "*";
+            }
+
+            Match match = EncodingType.parseExpression.Match(value);
+
+            if (match.Success)
+            {
+                string name = match.Groups[1].Value.Trim();
+
+                EncodingType result = new EncodingType() 
+                { 
+                    Name = !string.IsNullOrEmpty(name) ? name : "*",
+                    QValue = 1
+                };
+
+                if (match.Groups[3].Success)
+                {
+                    float q;
+
+                    if (float.TryParse(match.Groups[3].Value, NumberStyles.Any, CultureInfo.InvariantCulture, out q))
+                    {
+                        result.QValue = q > 1 ? 1 : (q < 0 ? 0 : q);
+                    }
+                    else
+                    {
+                        throw new FormatException(FormatExceptionMessage);
+                    }
+                }
+
+                return result;
+            }
+            else
+            {
+                throw new FormatException(FormatExceptionMessage);
+            }
+        }
+
+        public static bool TryParse(string value, out EncodingType result)
+        {
+            result = null;
+
+            try
+            {
+                result = EncodingType.Parse(value);
+                return true;
+            }
+            catch (FormatException)
+            {
+                return false;
+            }
+        }
+
+        public bool Equals(EncodingType other)
+        {
+            if ((object)other != null)
+            {
+                return this.Name.Equals(other.Name, StringComparison.OrdinalIgnoreCase)
+                    && this.QValue.EqualsFloat(other.QValue, .001f);
+            }
+
+            return false;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return this.Equals(obj as EncodingType);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Name.GetHashCode()
+                ^ this.QValue.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            string result = this.Name;
+
+            if (this.QValue < 1)
+            {
+                result += string.Format(CultureInfo.InvariantCulture, ";q={0:0.###}", this.QValue);
+            }
+
+            return result;
+        }
+    }
+}
