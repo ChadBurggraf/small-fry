@@ -4,6 +4,6 @@
     
     public interface IRequestMessage<T> : IRequestMessage
     {
-        T Request { get; }
+        T RequestObject { get; }
     }
 }

@@ -31,6 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ServiceStack.Text">
+      <HintPath>..\..\Lib\ServiceStack.Text.3.9.9\lib\net35\ServiceStack.Text.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Web" />
@@ -59,7 +62,15 @@
     <Compile Include="IResponseMessage.cs" />
     <Compile Include="IServiceCollection.cs" />
     <Compile Include="IServiceHost.cs" />
+    <Compile Include="JsonFormat.cs" />
     <Compile Include="MediaType.cs" />
+    <Compile Include="Method.cs" />
+    <Compile Include="MethodCollection.cs" />
+    <Compile Include="MethodResult.cs" />
+    <Compile Include="MethodType.cs" />
+    <Compile Include="Method{T}.cs" />
+    <Compile Include="Pipeline.cs" />
+    <Compile Include="PlainTextFormat.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service.cs" />
     <Compile Include="ServiceCollection.cs" />

@@ -5,9 +5,17 @@
 
     public interface IMethodCollection : IEndpointCollection
     {
-        IMethodCollection AfterMethod();
+        IMethodCollection AfterMethod(Func<bool> action);
 
-        IMethodCollection BeforeMethod();
+        IMethodCollection AfterMethod(Func<IRequestMessage, IResponseMessage, bool> action);
+
+        IMethodCollection AfterMethod<T>(Func<IRequestMessage<T>, IResponseMessage, bool> action);
+
+        IMethodCollection BeforeMethod(Func<bool> action);
+
+        IMethodCollection BeforeMethod(Func<IRequestMessage, IResponseMessage, bool> action);
+
+        IMethodCollection BeforeMethod<T>(Func<IRequestMessage<T>, IResponseMessage, bool> action);
 
         IMethodCollection Delete(Action action);
 
@@ -15,7 +23,11 @@
 
         IMethodCollection Delete(Action<IRequestMessage, IResponseMessage> action);
 
-        IMethodCollection ErrorMethod();
+        IMethodCollection ErrorMethod(Func<bool> action);
+
+        IMethodCollection ErrorMethod(Func<IRequestMessage, IResponseMessage, bool> action);
+
+        IMethodCollection ErrorMethod<T>(Func<IRequestMessage<T>, IResponseMessage, bool> action);
 
         IMethodCollection Get(Action action);
 
@@ -47,10 +59,22 @@
 
         IMethodCollection Put<T>(Action<IRequestMessage<T>, IResponseMessage> action);
 
-        IMethodCollection WithoutAfterMethod();
+        IMethodCollection WithoutAfterMethod(Func<bool> action);
 
-        IMethodCollection WithoutBeforeMethod();
+        IMethodCollection WithoutAfterMethod(Func<IRequestMessage, IResponseMessage, bool> action);
 
-        IMethodCollection WithoutErrorMethod();
+        IMethodCollection WithoutAfterMethod<T>(Func<IRequestMessage<T>, IResponseMessage, bool> action);
+
+        IMethodCollection WithoutBeforeMethod(Func<bool> action);
+
+        IMethodCollection WithoutBeforeMethod(Func<IRequestMessage, IResponseMessage, bool> action);
+
+        IMethodCollection WithoutBeforeMethod<T>(Func<IRequestMessage<T>, IResponseMessage, bool> action);
+
+        IMethodCollection WithoutErrorMethod(Func<bool> action);
+
+        IMethodCollection WithoutErrorMethod(Func<IRequestMessage, IResponseMessage, bool> action);
+
+        IMethodCollection WithoutErrorMethod<T>(Func<IRequestMessage<T>, IResponseMessage, bool> action);
     }
 }

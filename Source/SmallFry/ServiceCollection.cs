@@ -9,6 +9,12 @@
     {
         private const string CurrentServiceNotSetMessage = "Please add a service by calling WithService() before attempting to call this method.";
         private List<Service> list = new List<Service>();
+
+        public ServiceCollection()
+        {
+            this.list = new List<Service>();
+            this.Pipeline = new Pipeline();
+        }
         
         public int Count
         {
@@ -22,6 +28,8 @@
             get { return false; }
         }
 
+        public Pipeline Pipeline { get; private set; }
+
         public void Add(Service item)
         {
             this.list.Add(item);
@@ -34,7 +42,7 @@
                 throw new InvalidOperationException(ServiceCollection.CurrentServiceNotSetMessage);
             }
 
-            this.CurrentService.AfterActions.Add(new FilterAction(action));
+            this.CurrentService.Pipeline.AfterActions.Add(new FilterAction(action));
             return this.CurrentService.Endpoints;
         }
 
@@ -45,7 +53,7 @@
                 throw new InvalidOperationException(ServiceCollection.CurrentServiceNotSetMessage);
             }
 
-            this.CurrentService.AfterActions.Add(new FilterAction(action));
+            this.CurrentService.Pipeline.AfterActions.Add(new FilterAction(action));
             return this.CurrentService.Endpoints;
         }
 
@@ -56,7 +64,7 @@
                 throw new InvalidOperationException(ServiceCollection.CurrentServiceNotSetMessage);
             }
 
-            this.CurrentService.AfterActions.Add(new FilterAction<T>(action));
+            this.CurrentService.Pipeline.AfterActions.Add(new FilterAction<T>(action));
             return this.CurrentService.Endpoints;
         }
 
@@ -67,7 +75,7 @@
                 throw new InvalidOperationException(ServiceCollection.CurrentServiceNotSetMessage);
             }
 
-            this.CurrentService.BeforeActions.Add(new FilterAction(action));
+            this.CurrentService.Pipeline.BeforeActions.Add(new FilterAction(action));
             return this.CurrentService.Endpoints;
         }
 
@@ -78,7 +86,7 @@
                 throw new InvalidOperationException(ServiceCollection.CurrentServiceNotSetMessage);
             }
 
-            this.CurrentService.BeforeActions.Add(new FilterAction(action));
+            this.CurrentService.Pipeline.BeforeActions.Add(new FilterAction(action));
             return this.CurrentService.Endpoints;
         }
 
@@ -89,7 +97,7 @@
                 throw new InvalidOperationException(ServiceCollection.CurrentServiceNotSetMessage);
             }
 
-            this.CurrentService.BeforeActions.Add(new FilterAction<T>(action));
+            this.CurrentService.Pipeline.BeforeActions.Add(new FilterAction<T>(action));
             return this.CurrentService.Endpoints;
         }
 
@@ -116,7 +124,7 @@
                 throw new InvalidOperationException(ServiceCollection.CurrentServiceNotSetMessage);
             }
 
-            this.CurrentService.ErrorActions.Add(new FilterAction(action));
+            this.CurrentService.Pipeline.ErrorActions.Add(new FilterAction(action));
             return this.CurrentService.Endpoints;
         }
 
@@ -127,7 +135,7 @@
                 throw new InvalidOperationException(ServiceCollection.CurrentServiceNotSetMessage);
             }
 
-            this.CurrentService.ErrorActions.Add(new FilterAction(action));
+            this.CurrentService.Pipeline.ErrorActions.Add(new FilterAction(action));
             return this.CurrentService.Endpoints;
         }
 
@@ -138,7 +146,7 @@
                 throw new InvalidOperationException(ServiceCollection.CurrentServiceNotSetMessage);
             }
 
-            this.CurrentService.ErrorActions.Add(new FilterAction<T>(action));
+            this.CurrentService.Pipeline.ErrorActions.Add(new FilterAction<T>(action));
             return this.CurrentService.Endpoints;
         }
 
@@ -161,42 +169,76 @@
 
         public IMethodCollection WithEndpoint(string route)
         {
-            throw new NotImplementedException();
+            if (this.CurrentService == null)
+            {
+                throw new InvalidOperationException(ServiceCollection.CurrentServiceNotSetMessage);
+            }
+
+            return this.CurrentService.Endpoints.WithEndpoint(route);
         }
 
-        public IEndpointCollection WithoutServiceEncoding(string names, IEncoding encoding)
+        public IEndpointCollection WithoutServiceEncoding(string accept, IEncoding encoding)
         {
-            throw new NotImplementedException();
+            if (this.CurrentService == null)
+            {
+                throw new InvalidOperationException(ServiceCollection.CurrentServiceNotSetMessage);
+            }
+
+            this.CurrentService.Pipeline.ExcludeEncodings.Add(new EncodingFilter(accept, encoding));
+            return this.CurrentService.Endpoints;
         }
 
-        public IEndpointCollection WithoutServiceFormat(string mimeTypes, IFormat format)
+        public IEndpointCollection WithoutServiceFormat(string mediaTypes, IFormat format)
         {
-            throw new NotImplementedException();
+            if (this.CurrentService == null)
+            {
+                throw new InvalidOperationException(ServiceCollection.CurrentServiceNotSetMessage);
+            }
+
+            this.CurrentService.Pipeline.ExcludeFormats.Add(new FormatFilter(mediaTypes, format));
+            return this.CurrentService.Endpoints;
         }
 
-        public IEndpointCollection WithService(string name)
+        public IEndpointCollection WithService(string name, string baseUrl)
         {
-            throw new NotImplementedException();
+            Service service = new Service(name, baseUrl, this);
+            this.Add(service);
+            this.CurrentService = service;
+            return service.Endpoints;
         }
 
-        public IEndpointCollection WithServiceEncoding(string names, IEncoding encoding)
+        public IEndpointCollection WithServiceEncoding(string accept, IEncoding encoding)
         {
-            throw new NotImplementedException();
+            if (this.CurrentService == null)
+            {
+                throw new InvalidOperationException(ServiceCollection.CurrentServiceNotSetMessage);
+            }
+
+            this.CurrentService.Pipeline.Encodings.Add(new EncodingFilter(accept, encoding));
+            return this.CurrentService.Endpoints;
         }
 
-        public IEndpointCollection WithServiceFormat(string mimeTypes, IFormat format)
+        public IEndpointCollection WithServiceFormat(string mediaTypes, IFormat format)
         {
-            throw new NotImplementedException();
+            if (this.CurrentService == null)
+            {
+                throw new InvalidOperationException(ServiceCollection.CurrentServiceNotSetMessage);
+            }
+
+            this.CurrentService.Pipeline.Formats.Add(new FormatFilter(mediaTypes, format));
+            return this.CurrentService.Endpoints;
         }
 
-        public IServiceCollection WithServicesEncoding(string names, IEncoding encoding)
+        public IServiceCollection WithServicesEncoding(string accept, IEncoding encoding)
         {
-            throw new NotImplementedException();
+            this.Pipeline.Encodings.Add(new EncodingFilter(accept, encoding));
+            return this;
         }
 
-        public IServiceCollection WithServicesFormat(string mimeTypes, IFormat format)
+        public IServiceCollection WithServicesFormat(string mediaTypes, IFormat format)
         {
-            throw new NotImplementedException();
+            this.Pipeline.Formats.Add(new FormatFilter(mediaTypes, format));
+            return this;
         }
 
         IEnumerator IEnumerable.GetEnumerator()

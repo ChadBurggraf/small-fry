@@ -7,6 +7,7 @@
 
     internal sealed class EndpointCollection : ICollection<Endpoint>, IEnumerable<Endpoint>, IEnumerable, IEndpointCollection
     {
+        private const string CurrentEndpointNotSetMessage = "Please add an endpoint by calling WithEndpoint() before attempting to call this method.";
         private List<Endpoint> list = new List<Endpoint>();
 
         public EndpointCollection(Service service)
@@ -24,6 +25,8 @@
             get { return this.list.Count; }
         }
 
+        public Endpoint CurrentEndpoint { get; private set; }
+
         public bool IsReadOnly
         {
             get { return false; }
@@ -36,9 +39,40 @@
             this.list.Add(item);
         }
 
+        public IEndpointCollection AfterService(Func<bool> action)
+        {
+            return this.Service.ServiceCollection.AfterService(action);
+        }
+
+        public IEndpointCollection AfterService(Func<IRequestMessage, IResponseMessage, bool> action)
+        {
+            return this.Service.ServiceCollection.AfterService(action);
+        }
+
+        public IEndpointCollection AfterService<T>(Func<IRequestMessage<T>, IResponseMessage, bool> action)
+        {
+            return this.Service.ServiceCollection.AfterService(action);
+        }
+
+        public IEndpointCollection BeforeService(Func<bool> action)
+        {
+            return this.Service.ServiceCollection.BeforeService(action);
+        }
+
+        public IEndpointCollection BeforeService(Func<IRequestMessage, IResponseMessage, bool> action)
+        {
+            return this.Service.ServiceCollection.BeforeService(action);
+        }
+
+        public IEndpointCollection BeforeService<T>(Func<IRequestMessage<T>, IResponseMessage, bool> action)
+        {
+            return this.Service.ServiceCollection.BeforeService(action);
+        }
+
         public void Clear()
         {
             this.list.Clear();
+            this.CurrentEndpoint = null;
         }
 
         public bool Contains(Endpoint item)
@@ -51,6 +85,21 @@
             this.list.CopyTo(array, arrayIndex);
         }
 
+        public IEndpointCollection ErrorService(Func<Exception, bool> action)
+        {
+            return this.Service.ServiceCollection.ErrorService(action);
+        }
+
+        public IEndpointCollection ErrorService(Func<Exception, IRequestMessage, IResponseMessage, bool> action)
+        {
+            return this.Service.ServiceCollection.ErrorService(action);
+        }
+
+        public IEndpointCollection ErrorService<T>(Func<Exception, IRequestMessage<T>, IResponseMessage, bool> action)
+        {
+            return this.Service.ServiceCollection.ErrorService(action);
+        }
+
         public IEnumerator<Endpoint> GetEnumerator()
         {
             return this.list.GetEnumerator();
@@ -58,12 +107,57 @@
 
         public bool Remove(Endpoint item)
         {
-            return this.list.Remove(item);
+            bool removed = this.list.Remove(item);
+
+            if (item == this.CurrentEndpoint)
+            {
+                this.CurrentEndpoint = this.list.LastOrDefault();
+            }
+
+            return removed;
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
+        public IMethodCollection WithEndpoint(string route)
         {
-            return ((IEnumerable)this.list).GetEnumerator();
+            Endpoint endpoint = new Endpoint(route, this.Service, this);
+            this.Add(endpoint);
+            this.CurrentEndpoint = endpoint;
+            return endpoint.MethodCollection;
+        }
+
+        public IEndpointCollection WithoutServiceEncoding(string accept, IEncoding encoding)
+        {
+            return this.Service.ServiceCollection.WithoutServiceEncoding(accept, encoding);
+        }
+
+        public IEndpointCollection WithoutServiceFormat(string mediaTypes, IFormat format)
+        {
+            return this.Service.ServiceCollection.WithoutServiceFormat(mediaTypes, format);
+        }
+
+        public IEndpointCollection WithService(string name, string baseUrl)
+        {
+            return this.Service.ServiceCollection.WithService(name, baseUrl);
+        }
+
+        public IEndpointCollection WithServiceEncoding(string accept, IEncoding encoding)
+        {
+            return this.Service.ServiceCollection.WithServiceEncoding(accept, encoding);
+        }
+
+        public IEndpointCollection WithServiceFormat(string mediaTypes, IFormat format)
+        {
+            return this.Service.ServiceCollection.WithServiceFormat(mediaTypes, format);
+        }
+
+        public IServiceCollection WithServicesEncoding(string accept, IEncoding encoding)
+        {
+            return this.Service.ServiceCollection.WithServicesEncoding(accept, encoding);
+        }
+
+        public IServiceCollection WithServicesFormat(string mediaTypes, IFormat format)
+        {
+            return this.Service.ServiceCollection.WithServicesFormat(mediaTypes, format);
         }
 
         IEnumerator<Endpoint> IEnumerable<Endpoint>.GetEnumerator()
@@ -71,138 +165,207 @@
             return ((IEnumerable<Endpoint>)this.list).GetEnumerator();
         }
 
-        #region IEndpointCollection Members
-
-        public IMethodCollection AfterEndpoint()
+        IEnumerator IEnumerable.GetEnumerator()
         {
-            throw new NotImplementedException();
+            return ((IEnumerable)this.list).GetEnumerator();
         }
 
-        public IMethodCollection BeforeEndpoint()
+        public IMethodCollection AfterEndpoint(Func<bool> action)
         {
-            throw new NotImplementedException();
+            if (this.CurrentEndpoint == null)
+            {
+                throw new InvalidOperationException(EndpointCollection.CurrentEndpointNotSetMessage);
+            }
+
+            this.CurrentEndpoint.Pipeline.AfterActions.Add(new FilterAction(action));
+            return this.CurrentEndpoint.MethodCollection;
         }
 
-        public IMethodCollection ErrorEndpoint()
+        public IMethodCollection AfterEndpoint(Func<IRequestMessage, IResponseMessage, bool> action)
         {
-            throw new NotImplementedException();
+            if (this.CurrentEndpoint == null)
+            {
+                throw new InvalidOperationException(EndpointCollection.CurrentEndpointNotSetMessage);
+            }
+
+            this.CurrentEndpoint.Pipeline.AfterActions.Add(new FilterAction(action));
+            return this.CurrentEndpoint.MethodCollection;
         }
 
-        public IMethodCollection WithoutAfterEndpoint()
+        public IMethodCollection AfterEndpoint<T>(Func<IRequestMessage<T>, IResponseMessage, bool> action)
         {
-            throw new NotImplementedException();
+            if (this.CurrentEndpoint == null)
+            {
+                throw new InvalidOperationException(EndpointCollection.CurrentEndpointNotSetMessage);
+            }
+
+            this.CurrentEndpoint.Pipeline.AfterActions.Add(new FilterAction<T>(action));
+            return this.CurrentEndpoint.MethodCollection;
         }
 
-        public IMethodCollection WithoutBeforeEndpoint()
+        public IMethodCollection BeforeEndpoint(Func<bool> action)
         {
-            throw new NotImplementedException();
+            if (this.CurrentEndpoint == null)
+            {
+                throw new InvalidOperationException(EndpointCollection.CurrentEndpointNotSetMessage);
+            }
+
+            this.CurrentEndpoint.Pipeline.BeforeActions.Add(new FilterAction(action));
+            return this.CurrentEndpoint.MethodCollection;
         }
 
-        public IMethodCollection WithoutErrorEndpoint()
+        public IMethodCollection BeforeEndpoint(Func<IRequestMessage, IResponseMessage, bool> action)
         {
-            throw new NotImplementedException();
+            if (this.CurrentEndpoint == null)
+            {
+                throw new InvalidOperationException(EndpointCollection.CurrentEndpointNotSetMessage);
+            }
+
+            this.CurrentEndpoint.Pipeline.BeforeActions.Add(new FilterAction(action));
+            return this.CurrentEndpoint.MethodCollection;
         }
 
-        #endregion
-
-        #region IServiceCollection Members
-
-        public IEndpointCollection AfterService(Func<bool> action)
+        public IMethodCollection BeforeEndpoint<T>(Func<IRequestMessage<T>, IResponseMessage, bool> action)
         {
-            this.Service.AfterActions.Add(new FilterAction(action));
-            return this;
+            if (this.CurrentEndpoint == null)
+            {
+                throw new InvalidOperationException(EndpointCollection.CurrentEndpointNotSetMessage);
+            }
+
+            this.CurrentEndpoint.Pipeline.BeforeActions.Add(new FilterAction<T>(action));
+            return this.CurrentEndpoint.MethodCollection;
         }
 
-        public IEndpointCollection AfterService(Func<IRequestMessage, IResponseMessage, bool> action)
+        public IMethodCollection ErrorEndpoint(Func<Exception, bool> action)
         {
-            this.Service.AfterActions.Add(new FilterAction(action));
-            return this;
+            if (this.CurrentEndpoint == null)
+            {
+                throw new InvalidOperationException(EndpointCollection.CurrentEndpointNotSetMessage);
+            }
+
+            this.CurrentEndpoint.Pipeline.ErrorActions.Add(new FilterAction(action));
+            return this.CurrentEndpoint.MethodCollection;
         }
 
-        public IEndpointCollection AfterService<T>(Func<IRequestMessage<T>, IResponseMessage, bool> action)
+        public IMethodCollection ErrorEndpoint(Func<Exception, IRequestMessage, IResponseMessage, bool> action)
         {
-            this.Service.AfterActions.Add(new FilterAction<T>(action));
-            return this;
+            if (this.CurrentEndpoint == null)
+            {
+                throw new InvalidOperationException(EndpointCollection.CurrentEndpointNotSetMessage);
+            }
+
+            this.CurrentEndpoint.Pipeline.ErrorActions.Add(new FilterAction(action));
+            return this.CurrentEndpoint.MethodCollection;
         }
 
-        public IEndpointCollection BeforeService(Func<bool> action)
+        public IMethodCollection ErrorEndpoint<T>(Func<Exception, IRequestMessage<T>, IResponseMessage, bool> action)
         {
-            this.Service.BeforeActions.Add(new FilterAction(action));
-            return this;
+            if (this.CurrentEndpoint == null)
+            {
+                throw new InvalidOperationException(EndpointCollection.CurrentEndpointNotSetMessage);
+            }
+
+            this.CurrentEndpoint.Pipeline.ErrorActions.Add(new FilterAction<T>(action));
+            return this.CurrentEndpoint.MethodCollection;
         }
 
-        public IEndpointCollection BeforeService(Func<IRequestMessage, IResponseMessage, bool> action)
+        public IMethodCollection WithoutAfterEndpoint(Func<bool> action)
         {
-            this.Service.BeforeActions.Add(new FilterAction(action));
-            return this;
+            if (this.CurrentEndpoint == null)
+            {
+                throw new InvalidOperationException(EndpointCollection.CurrentEndpointNotSetMessage);
+            }
+
+            this.CurrentEndpoint.Pipeline.ExcludeAfterActions.Add(new FilterAction(action));
+            return this.CurrentEndpoint.MethodCollection;
         }
 
-        public IEndpointCollection BeforeService<T>(Func<IRequestMessage<T>, IResponseMessage, bool> action)
+        public IMethodCollection WithoutAfterEndpoint(Func<IRequestMessage, IResponseMessage, bool> action)
         {
-            this.Service.BeforeActions.Add(new FilterAction<T>(action));
-            return this;
+            if (this.CurrentEndpoint == null)
+            {
+                throw new InvalidOperationException(EndpointCollection.CurrentEndpointNotSetMessage);
+            }
+
+            this.CurrentEndpoint.Pipeline.ExcludeAfterActions.Add(new FilterAction(action));
+            return this.CurrentEndpoint.MethodCollection;
         }
 
-        public IEndpointCollection ErrorService(Func<Exception, bool> action)
+        public IMethodCollection WithoutAfterEndpoint<T>(Func<IRequestMessage<T>, IResponseMessage, bool> action)
         {
-            this.Service.ErrorActions.Add(new FilterAction(action));
-            return this;
+            if (this.CurrentEndpoint == null)
+            {
+                throw new InvalidOperationException(EndpointCollection.CurrentEndpointNotSetMessage);
+            }
+
+            this.CurrentEndpoint.Pipeline.ExcludeAfterActions.Add(new FilterAction<T>(action));
+            return this.CurrentEndpoint.MethodCollection;
         }
 
-        public IEndpointCollection ErrorService(Func<Exception, IRequestMessage, IResponseMessage, bool> action)
+        public IMethodCollection WithoutBeforeEndpoint(Func<bool> action)
         {
-            this.Service.ErrorActions.Add(new FilterAction(action));
-            return this;
+            if (this.CurrentEndpoint == null)
+            {
+                throw new InvalidOperationException(EndpointCollection.CurrentEndpointNotSetMessage);
+            }
+
+            this.CurrentEndpoint.Pipeline.ExcludeBeforeActions.Add(new FilterAction(action));
+            return this.CurrentEndpoint.MethodCollection;
         }
 
-        public IEndpointCollection ErrorService<T>(Func<Exception, IRequestMessage<T>, IResponseMessage, bool> action)
+        public IMethodCollection WithoutBeforeEndpoint(Func<IRequestMessage, IResponseMessage, bool> action)
         {
-            this.Service.ErrorActions.Add(new FilterAction<T>(action));
-            return this;
+            if (this.CurrentEndpoint == null)
+            {
+                throw new InvalidOperationException(EndpointCollection.CurrentEndpointNotSetMessage);
+            }
+
+            this.CurrentEndpoint.Pipeline.ExcludeBeforeActions.Add(new FilterAction(action));
+            return this.CurrentEndpoint.MethodCollection;
         }
 
-        public IMethodCollection WithEndpoint(string route)
+        public IMethodCollection WithoutBeforeEndpoint<T>(Func<IRequestMessage<T>, IResponseMessage, bool> action)
         {
-            throw new NotImplementedException();
+            if (this.CurrentEndpoint == null)
+            {
+                throw new InvalidOperationException(EndpointCollection.CurrentEndpointNotSetMessage);
+            }
+
+            this.CurrentEndpoint.Pipeline.ExcludeBeforeActions.Add(new FilterAction<T>(action));
+            return this.CurrentEndpoint.MethodCollection;
         }
 
-        public IEndpointCollection WithoutServiceEncoding(string names, IEncoding encoding)
+        public IMethodCollection WithoutErrorEndpoint(Func<bool> action)
         {
-            throw new NotImplementedException();
+            if (this.CurrentEndpoint == null)
+            {
+                throw new InvalidOperationException(EndpointCollection.CurrentEndpointNotSetMessage);
+            }
+
+            this.CurrentEndpoint.Pipeline.ExcludeErrorActions.Add(new FilterAction(action));
+            return this.CurrentEndpoint.MethodCollection;
         }
 
-        public IEndpointCollection WithoutServiceFormat(string mimeTypes, IFormat format)
+        public IMethodCollection WithoutErrorEndpoint(Func<IRequestMessage, IResponseMessage, bool> action)
         {
-            throw new NotImplementedException();
+            if (this.CurrentEndpoint == null)
+            {
+                throw new InvalidOperationException(EndpointCollection.CurrentEndpointNotSetMessage);
+            }
+
+            this.CurrentEndpoint.Pipeline.ExcludeErrorActions.Add(new FilterAction(action));
+            return this.CurrentEndpoint.MethodCollection;
         }
 
-        public IEndpointCollection WithService(string name)
+        public IMethodCollection WithoutErrorEndpoint<T>(Func<IRequestMessage<T>, IResponseMessage, bool> action)
         {
-            return this.Service.ServiceCollection.WithService(name);
-        }
+            if (this.CurrentEndpoint == null)
+            {
+                throw new InvalidOperationException(EndpointCollection.CurrentEndpointNotSetMessage);
+            }
 
-        public IEndpointCollection WithServiceEncoding(string names, IEncoding encoding)
-        {
-            this.Service.Encodings.Add(new EncodingFilter(names, encoding));
-            return this;
+            this.CurrentEndpoint.Pipeline.ExcludeErrorActions.Add(new FilterAction<T>(action));
+            return this.CurrentEndpoint.MethodCollection;
         }
-
-        public IEndpointCollection WithServiceFormat(string mimeTypes, IFormat format)
-        {
-            this.Service.Formats.Add(new FormatFilter(mimeTypes, format));
-            return this;
-        }
-
-        public IServiceCollection WithServicesEncoding(string names, IEncoding encoding)
-        {
-            return this.Service.ServiceCollection.WithServicesEncoding(names, encoding);
-        }
-
-        public IServiceCollection WithServicesFormat(string mimeTypes, IFormat format)
-        {
-            return this.Service.ServiceCollection.WithServicesFormat(mimeTypes, format);
-        }
-
-        #endregion
     }
 }

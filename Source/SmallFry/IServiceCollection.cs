@@ -25,18 +25,18 @@
 
         IMethodCollection WithEndpoint(string route);
 
-        IEndpointCollection WithoutServiceEncoding(string names, IEncoding encoding);
+        IEndpointCollection WithoutServiceEncoding(string accept, IEncoding encoding);
 
-        IEndpointCollection WithoutServiceFormat(string mimeTypes, IFormat format);
+        IEndpointCollection WithoutServiceFormat(string mediaTypes, IFormat format);
 
-        IEndpointCollection WithService(string name);
+        IEndpointCollection WithService(string name, string baseUrl);
 
-        IEndpointCollection WithServiceEncoding(string names, IEncoding encoding);
+        IEndpointCollection WithServiceEncoding(string accept, IEncoding encoding);
 
-        IEndpointCollection WithServiceFormat(string mimeTypes, IFormat format);
+        IEndpointCollection WithServiceFormat(string mediaTypes, IFormat format);
 
-        IServiceCollection WithServicesEncoding(string names, IEncoding encoding);
+        IServiceCollection WithServicesEncoding(string accept, IEncoding encoding);
 
-        IServiceCollection WithServicesFormat(string mimeTypes, IFormat format);
+        IServiceCollection WithServicesFormat(string mediaTypes, IFormat format);
     }
 }

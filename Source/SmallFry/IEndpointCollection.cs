@@ -5,16 +5,40 @@
 
     public interface IEndpointCollection : IServiceCollection
     {
-        IMethodCollection AfterEndpoint();
+        IMethodCollection AfterEndpoint(Func<bool> action);
 
-        IMethodCollection BeforeEndpoint();
+        IMethodCollection AfterEndpoint(Func<IRequestMessage, IResponseMessage, bool> action);
 
-        IMethodCollection ErrorEndpoint();
+        IMethodCollection AfterEndpoint<T>(Func<IRequestMessage<T>, IResponseMessage, bool> action);
 
-        IMethodCollection WithoutAfterEndpoint();
+        IMethodCollection BeforeEndpoint(Func<bool> action);
 
-        IMethodCollection WithoutBeforeEndpoint();
+        IMethodCollection BeforeEndpoint(Func<IRequestMessage, IResponseMessage, bool> action);
 
-        IMethodCollection WithoutErrorEndpoint();
+        IMethodCollection BeforeEndpoint<T>(Func<IRequestMessage<T>, IResponseMessage, bool> action);
+
+        IMethodCollection ErrorEndpoint(Func<Exception, bool> action);
+
+        IMethodCollection ErrorEndpoint(Func<Exception, IRequestMessage, IResponseMessage, bool> action);
+
+        IMethodCollection ErrorEndpoint<T>(Func<Exception, IRequestMessage<T>, IResponseMessage, bool> action);
+
+        IMethodCollection WithoutAfterEndpoint(Func<bool> action);
+
+        IMethodCollection WithoutAfterEndpoint(Func<IRequestMessage, IResponseMessage, bool> action);
+
+        IMethodCollection WithoutAfterEndpoint<T>(Func<IRequestMessage<T>, IResponseMessage, bool> action);
+
+        IMethodCollection WithoutBeforeEndpoint(Func<bool> action);
+
+        IMethodCollection WithoutBeforeEndpoint(Func<IRequestMessage, IResponseMessage, bool> action);
+
+        IMethodCollection WithoutBeforeEndpoint<T>(Func<IRequestMessage<T>, IResponseMessage, bool> action);
+
+        IMethodCollection WithoutErrorEndpoint(Func<bool> action);
+
+        IMethodCollection WithoutErrorEndpoint(Func<IRequestMessage, IResponseMessage, bool> action);
+
+        IMethodCollection WithoutErrorEndpoint<T>(Func<IRequestMessage<T>, IResponseMessage, bool> action);
     }
 }

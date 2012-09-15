@@ -2,6 +2,7 @@
 {
     using System;
     using System.IO;
+    using System.Linq;
     using Moq;
     using NUnit.Framework;
 
@@ -9,50 +10,89 @@
     public sealed class DefinitionTests
     {
         [Test]
-        public void DefinitionVirtualKeychain()
+        public void DefinitionPassbook()
         {
-            VirtualKeychainServices vkc = new VirtualKeychainServices();
-
-            new Mock<IServiceCollection>().Object
-                .WithServicesEncoding("gzip, deflate", new GzipDeflateEncoding())
-                .WithServicesFormat("application/json, */*", new JsonFormat())
-                .WithService("Virtual Keychain")
-                //.BeforeService()
-                //.BeforeService()
-                //.BeforeService()
-                    .WithEndpoint("accounts")
-                        .Get(vkc.GetAccounts)
-                        .Post(vkc.PostAccounts)
-                            .WithoutBeforeMethod()
-                        .Delete(vkc.DeleteAccounts)
-                    .WithEndpoint("preferences")
-                        .Put<VirtualKeychainServices.Preferences>(vkc.PutPreferences)
-                    .WithEndpoint("entries/{?id}")
-                        .Post<VirtualKeychainServices.Entry>(vkc.PostEntries)
-                        .Put<VirtualKeychainServices.Entry>(vkc.PutEntries)
-                        .Delete(vkc.DeleteEntries)
-                    .WithEndpoint("labels/{?id}")
-                        .Post<VirtualKeychainServices.Label>(vkc.PostLabels)
-                        .Put<VirtualKeychainServices.Label>(vkc.PutLabels)
-                        .Delete(vkc.DeleteLabels)
-                    .WithEndpoint("entries/{entryId}/labels/{?labelId}")
-                        .Post<VirtualKeychainServices.EntryLabel>(vkc.PostEntryLabels)
-                        .Delete(vkc.DeleteEntryLabels)
-                    .AfterService((req, res) => true);
-                    //.ErrorService();
+            DefinitionTests.DefinePassbook(new ServiceCollection());
         }
 
-        private sealed class JsonFormat : IFormat
+        [Test]
+        public void DefinitionPassbookContainsDeviceRegistrationEndpointAndMethods()
         {
-            public object Deserialize(Type type, Stream stream)
-            {
-                throw new NotImplementedException();
-            }
+            ServiceCollection services = new ServiceCollection();
+            DefinitionTests.DefinePassbook(services);
 
-            public void Serialize(object value, Stream stream)
-            {
-                throw new NotImplementedException();
-            }
+            EndpointCollection endpoints = services.Last().Endpoints as EndpointCollection;
+            Assert.IsNotNull(endpoints);
+            Assert.IsTrue(2 <= endpoints.Count());
+            Assert.AreEqual("devices/{deviceLibraryIdentifier}/registrations/{passTypeIdentifier}", endpoints.ElementAt(1).Route);
+
+            MethodCollection methods = endpoints.ElementAt(1).MethodCollection as MethodCollection;
+            Assert.IsNotNull(methods);
+            Assert.AreEqual(2, methods.Count());
+            Assert.AreEqual(MethodType.Get, methods.First().MethodType);
+            Assert.AreEqual(MethodType.Post, methods.Last().MethodType);
+        }
+
+        [Test]
+        public void DefinitionPassbookContainsDeviceUnRegistrationEndpointAndMethods()
+        {
+            ServiceCollection services = new ServiceCollection();
+            DefinitionTests.DefinePassbook(services);
+
+            EndpointCollection endpoints = services.Last().Endpoints as EndpointCollection;
+            Assert.IsNotNull(endpoints);
+            Assert.IsTrue(3 <= endpoints.Count());
+            Assert.AreEqual("devices/{deviceLibraryIdentifier}/registrations/{passTypeIdentifier}/{serialNumber}", endpoints.ElementAt(2).Route);
+
+            MethodCollection methods = endpoints.ElementAt(2).MethodCollection as MethodCollection;
+            Assert.IsNotNull(methods);
+            Assert.AreEqual(1, methods.Count());
+            Assert.AreEqual(MethodType.Delete, methods.First().MethodType);
+        }
+
+        [Test]
+        public void DefinitionPassbookContainsGetLatestVersionOfPassEndpointAndMethods()
+        {
+            ServiceCollection services = new ServiceCollection();
+            DefinitionTests.DefinePassbook(services);
+
+            EndpointCollection endpoints = services.Last().Endpoints as EndpointCollection;
+            Assert.IsNotNull(endpoints);
+            Assert.IsTrue(endpoints.Any());
+            Assert.AreEqual("passes/{passTypeIdentifier}/{serialNumber}", endpoints.First().Route);
+
+            MethodCollection methods = endpoints.First().MethodCollection as MethodCollection;
+            Assert.IsNotNull(methods);
+            Assert.AreEqual(1, methods.Count());
+            Assert.AreEqual(MethodType.Get, methods.First().MethodType);
+        }
+
+        [Test]
+        public void DefinitionPassbookContainsService()
+        {
+            ServiceCollection services = new ServiceCollection();
+            DefinitionTests.DefinePassbook(services);
+
+            Assert.AreEqual(1, services.Count);
+            Assert.IsNotNull(services.CurrentService);
+            Assert.AreEqual(services.Last(), services.CurrentService);
+            Assert.AreEqual("Passbook", services.CurrentService.Name);
+        }
+
+        private static void DefinePassbook(IServiceCollection services)
+        {
+            IEndpointCollection endpoints = services.WithService("Passbook", "/v1");
+            endpoints = endpoints.WithServiceFormat("*/*", new JsonFormat());
+
+            IMethodCollection methods = endpoints.WithEndpoint("passes/{passTypeIdentifier}/{serialNumber}");
+            methods = methods.Get(() => { });
+
+            methods = methods = methods.WithEndpoint("devices/{deviceLibraryIdentifier}/registrations/{passTypeIdentifier}");
+            methods = methods.Get(() => { });
+            methods = methods.Post(() => { });
+
+            methods = methods.WithEndpoint("devices/{deviceLibraryIdentifier}/registrations/{passTypeIdentifier}/{serialNumber}");
+            methods = methods.Delete(() => { });
         }
     }
 }

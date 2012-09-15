@@ -38,6 +38,16 @@
                 throw new NotImplementedException();
             }
 
+            public bool Equals(IFormat other)
+            {
+                if ((object)other != null)
+                {
+                    return this.GetType().Equals(other.GetType());
+                }
+
+                return false;
+            }
+
             public void Serialize(object value, Stream stream)
             {
                 throw new NotImplementedException();
@@ -49,6 +59,16 @@
             public object Deserialize(Type type, Stream stream)
             {
                 throw new NotImplementedException();
+            }
+
+            public bool Equals(IFormat other)
+            {
+                if ((object)other != null)
+                {
+                    return this.GetType().Equals(other.GetType());
+                }
+
+                return false;
             }
 
             public void Serialize(object value, Stream stream)
