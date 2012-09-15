@@ -14,5 +14,25 @@
         {
             throw new NotImplementedException();
         }
+
+        public bool Equals(IEncoding other)
+        {
+            if ((object)other != null)
+            {
+                return this.GetType().Equals(other.GetType());
+            }
+
+            return false;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return this.Equals(obj as IEncoding);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.GetType().GetHashCode();
+        }
     }
 }

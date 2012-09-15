@@ -104,31 +104,38 @@
 
             FilterActionResult result = new FilterActionResult();
 
-            try
+            if (this.action != null)
             {
-                if (this.action != null)
+                try
                 {
                     result.Continue = this.action(request, response);
+                    result.Success = true;
                 }
-                else if (this.exceptionAction != null)
+                catch (Exception ex)
                 {
-                    if (exception == null)
-                    {
-                        throw new ArgumentNullException("exception", "exception cannot be null when invoking an error action.");
-                    }
-
-                    result.Continue = this.exceptionAction(exception, request, response);
+                    result.Exception = ex;
                 }
-                else
-                {
-                    throw new InvalidOperationException("No action was found to invoke.");
-                }
-
-                result.Success = true;
             }
-            catch (Exception ex)
+            else if (this.exceptionAction != null)
             {
-                result.Exception = ex;
+                if (exception == null)
+                {
+                    throw new ArgumentNullException("exception", "exception cannot be null when invoking an error action.");
+                }
+
+                try
+                {
+                    result.Continue = this.exceptionAction(exception, request, response);
+                    result.Success = true;
+                }
+                catch (Exception ex)
+                {
+                    result.Exception = ex;
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException("No action was found to invoke.");
             }
 
             return result;

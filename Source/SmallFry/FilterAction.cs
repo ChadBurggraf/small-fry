@@ -141,49 +141,72 @@
 
             FilterActionResult result = new FilterActionResult();
 
-            try
-            {
-                bool actionFound = false;
+            bool actionFound = false;
 
-                if (this.requestResponseAction != null)
+            if (this.requestResponseAction != null)
+            {
+                try
                 {
                     result.Continue = this.requestResponseAction(request, response);
+                    result.Success = true;
                     actionFound = true;
                 }
-                else if (this.simpleAction != null)
+                catch (Exception ex)
+                {
+                    result.Exception = ex;
+                }
+            }
+            else if (this.simpleAction != null)
+            {
+                try
                 {
                     result.Continue = this.simpleAction();
+                    result.Success = true;
                     actionFound = true;
                 }
-                else
+                catch (Exception ex)
                 {
-                    if (exception == null)
-                    {
-                        throw new ArgumentNullException("exception", "exception cannot be null when invoking an error action.");
-                    }
+                    result.Exception = ex;
+                }
+            }
+            else
+            {
+                if (exception == null)
+                {
+                    throw new ArgumentNullException("exception", "exception cannot be null when invoking an error action.");
+                }
 
-                    if (this.requestResponseExceptionAction != null)
+                if (this.requestResponseExceptionAction != null)
+                {
+                    try
                     {
                         result.Continue = this.requestResponseExceptionAction(exception, request, response);
+                        result.Success = true;
                         actionFound = true;
                     }
-                    else if (this.simpleExceptionAction != null)
+                    catch (Exception ex)
+                    {
+                        result.Exception = ex;
+                    }
+                }
+                else if (this.simpleExceptionAction != null)
+                {
+                    try
                     {
                         result.Continue = this.simpleExceptionAction(exception);
+                        result.Success = true;
                         actionFound = true;
                     }
+                    catch (Exception ex)
+                    {
+                        result.Exception = ex;
+                    }
                 }
-
-                if (!actionFound)
-                {
-                    throw new InvalidOperationException("No action was found to invoke.");
-                }
-
-                result.Success = true;
             }
-            catch (Exception ex)
+
+            if (!actionFound)
             {
-                result.Exception = ex;
+                throw new InvalidOperationException("No action was found to invoke.");
             }
 
             return result;

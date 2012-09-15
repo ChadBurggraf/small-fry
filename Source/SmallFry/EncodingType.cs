@@ -50,7 +50,7 @@
 
                 EncodingType result = new EncodingType() 
                 { 
-                    Name = !string.IsNullOrEmpty(name) ? name : "*",
+                    Name = (!string.IsNullOrEmpty(name) ? name : "*").ToLowerInvariant(),
                     QValue = 1
                 };
 

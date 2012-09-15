@@ -50,6 +50,7 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="DefinitionTests.cs" />
+    <Compile Include="EncodingFilterTests.cs" />
     <Compile Include="EncodingTypeTests.cs" />
     <Compile Include="FilterActionTests.cs" />
     <Compile Include="FormatFilterTests.cs" />

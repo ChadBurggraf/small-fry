@@ -3,7 +3,7 @@
     using System;
     using System.IO;
 
-    public interface IEncoding
+    public interface IEncoding : IEquatable<IEncoding>
     {
         void Decode(Stream inputStream, Stream outputStream);
 
