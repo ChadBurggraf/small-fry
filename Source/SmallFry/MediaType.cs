@@ -9,9 +9,9 @@
     internal sealed class MediaType : IEquatable<MediaType>
     {
         private static readonly Regex acceptParamsStartExpression = new Regex(@"^\s*q\s*=.*", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-        private static readonly MediaType empty = new MediaType() { AcceptParams = AcceptParameters.Empty, RangeParams = new string[0], RootType = string.Empty, SubType = string.Empty };
         private static readonly Regex parseExpression = new Regex(@"^(\*/\*|[a-z0-9]+/\*|[a-z0-9]+/[a-z0-9]+)(.*)$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-
+        private static readonly MediaType empty = MediaType.Parse(null);
+        
         private MediaType()
         {
         }
@@ -275,7 +275,7 @@
         public sealed class AcceptParameters : IEquatable<AcceptParameters>
         {
             private static readonly AcceptParameters empty = AcceptParameters.Parse(null);
-            private static Regex parseExpression = new Regex(@"^q\s*=\s*([^;]+)(.*)$", RegexOptions.Compiled);
+            private static Regex parseExpression = new Regex(@"^q\s*=\s*(\d(\.\d+)?)(.*)$", RegexOptions.Compiled);
 
             private AcceptParameters()
             {
@@ -288,7 +288,7 @@
 
             public IEnumerable<Extension> Extensions { get; private set; }
 
-            public string Value { get; private set; }
+            public float Value { get; private set; }
 
             public static bool operator ==(AcceptParameters left, AcceptParameters right)
             {
@@ -302,38 +302,49 @@
 
             public static AcceptParameters Parse(string value)
             {
+                const string FormatExceptionMessage = "Invalid params format. Format must be: \"q\" \"=\" qvalue *( accept-extension ). See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html";
+
                 if (!string.IsNullOrWhiteSpace(value))
                 {
                     Match match = AcceptParameters.parseExpression.Match(value.Trim());
 
                     if (match.Success)
                     {
-                        AcceptParameters result = new AcceptParameters()
-                        {
-                            Value = match.Groups[1].Value.Trim().ToLowerInvariant()
-                        };
+                        float floatValue;
 
-                        if (match.Groups[2].Success && !string.IsNullOrEmpty(match.Groups[2].Value))
+                        if (float.TryParse(match.Groups[1].Value, NumberStyles.Any, CultureInfo.InvariantCulture, out floatValue))
                         {
-                            result.Extensions = match.Groups[2].Value.Trim().Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
-                                .Select(s => Extension.Parse(s))
-                                .ToArray();
+                            AcceptParameters result = new AcceptParameters()
+                            {
+                                Value = floatValue > 1 ? 1 : (floatValue < 0 ? 0 : floatValue)
+                            };
+
+                            if (match.Groups[3].Success && !string.IsNullOrEmpty(match.Groups[3].Value))
+                            {
+                                result.Extensions = match.Groups[3].Value.Trim().Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
+                                    .Select(s => Extension.Parse(s))
+                                    .ToArray();
+                            }
+                            else
+                            {
+                                result.Extensions = new Extension[0];
+                            }
+
+                            return result;
                         }
                         else
                         {
-                            result.Extensions = new Extension[0];
+                            throw new FormatException(FormatExceptionMessage);
                         }
-
-                        return result;
                     }
                     else
                     {
-                        throw new FormatException("Invalid params format. Format must be: \"q\" \"=\" qvalue *( accept-extension ). See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html");
+                        throw new FormatException(FormatExceptionMessage);
                     }
                 }
                 else
                 {
-                    return new AcceptParameters() { Extensions = new Extension[0], Value = string.Empty };
+                    return new AcceptParameters() { Extensions = new Extension[0], Value = 1 };
                 }
             }
 
@@ -357,7 +368,7 @@
                 if ((object)other != null)
                 {
                     return this.Extensions.SequenceEqual(other.Extensions)
-                        && this.Value.Equals(other.Value, StringComparison.OrdinalIgnoreCase);
+                        && this.Value.EqualsFloat(other.Value, .001f);
                 }
 
                 return false;
@@ -380,7 +391,7 @@
 
                 if (this != AcceptParameters.Empty)
                 {
-                    result = "q=" + this.Value;
+                    result = "q=" + this.Value.ToString("0.###", CultureInfo.InvariantCulture);
 
                     if (this.Extensions.Any())
                     {

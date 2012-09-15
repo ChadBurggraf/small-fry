@@ -55,6 +55,22 @@
             return result;
         }
 
+        public static bool EqualsFloat(this float left, float right, float margin)
+        {
+            float l = Math.Abs(left);
+            float r = Math.Abs(right);
+            float diff = Math.Abs(l - r);
+
+            if (l * r == 0)
+            {
+                return diff < (margin * margin);
+            }
+            else
+            {
+                return diff / (l + r) < margin;
+            }
+        }
+
         public static bool EqualsOperator<T>(T left, T right) where T : IEquatable<T>
         {
             if (Object.ReferenceEquals(left, right))

@@ -31,25 +31,25 @@
             MediaType.AcceptParameters p;
 
             Assert.IsTrue(MediaType.AcceptParameters.TryParse("q=0.5", out p));
-            Assert.AreEqual("0.5", p.Value);
+            Assert.AreEqual(.5f, p.Value);
             Assert.IsNotNull(p.Extensions);
             Assert.IsFalse(p.Extensions.Any());
 
             Assert.IsTrue(MediaType.AcceptParameters.TryParse("q=0.5;token", out p));
-            Assert.AreEqual("0.5", p.Value);
+            Assert.AreEqual(.5f, p.Value);
             Assert.IsNotNull(p.Extensions);
             Assert.AreEqual(1, p.Extensions.Count());
             Assert.AreEqual(MediaType.Extension.Parse("token"), p.Extensions.First());
 
             Assert.IsTrue(MediaType.AcceptParameters.TryParse("q=0.5;token;token=value", out p));
-            Assert.AreEqual("0.5", p.Value);
+            Assert.AreEqual(.5f, p.Value);
             Assert.IsNotNull(p.Extensions);
             Assert.AreEqual(2, p.Extensions.Count());
             Assert.AreEqual(MediaType.Extension.Parse("token"), p.Extensions.First());
             Assert.AreEqual(MediaType.Extension.Parse("token=value"), p.Extensions.Last());
 
             Assert.IsTrue(MediaType.AcceptParameters.TryParse("q=0.5;token;token=value;token=\"quoted value\"", out p));
-            Assert.AreEqual("0.5", p.Value);
+            Assert.AreEqual(.5f, p.Value);
             Assert.IsNotNull(p.Extensions);
             Assert.AreEqual(3, p.Extensions.Count());
             Assert.AreEqual(MediaType.Extension.Parse("token"), p.Extensions.First());
@@ -74,15 +74,6 @@
             Assert.AreEqual(MediaType.Parse("text/html;q=0.5"), MediaType.Parse("text/html;q=0.5"));
             Assert.AreEqual(MediaType.Parse("text/html;level=2;q=0.4"), MediaType.Parse("text/html;level=2;q=0.4"));
             Assert.AreEqual(MediaType.Parse("text/html;level=1;level=2;q=0.5;token;token=value;token=\"quoted value\""), MediaType.Parse("text/html;level=1;level=2;q=0.5;token;token=value;token=\"quoted value\""));
-        }
-
-        [Test]
-        public void MediaTypeNotEquals()
-        {
-            Assert.AreNotEqual(MediaType.Parse("application/json"), MediaType.Parse("text/html"));
-            Assert.AreNotEqual(MediaType.Parse("text/html"), MediaType.Parse("text/html;level=1"));
-            Assert.AreNotEqual(MediaType.Parse("text/html"), MediaType.Parse("text/html;q=0.5"));
-            Assert.AreNotEqual(MediaType.Parse("text/html"), MediaType.Parse("text/html;level=1;q=0.5"));
         }
 
         [Test]
@@ -135,9 +126,34 @@
         }
 
         [Test]
+        public void MediaTypeNotEquals()
+        {
+            Assert.AreNotEqual(MediaType.Parse("application/json"), MediaType.Parse("text/html"));
+            Assert.AreNotEqual(MediaType.Parse("text/html"), MediaType.Parse("text/html;level=1"));
+            Assert.AreNotEqual(MediaType.Parse("text/html"), MediaType.Parse("text/html;q=0.5"));
+            Assert.AreNotEqual(MediaType.Parse("text/html"), MediaType.Parse("text/html;level=1;q=0.5"));
+        }
+
+        [Test]
         public void MediaTypeParse()
         {
             MediaType mediaType;
+            Assert.IsTrue(MediaType.TryParse("*/*", out mediaType));
+            Assert.AreEqual("*", mediaType.RootType);
+            Assert.AreEqual("*", mediaType.SubType);
+            Assert.IsNotNull(mediaType.RangeParams);
+            Assert.IsFalse(mediaType.RangeParams.Any());
+            Assert.IsNotNull(mediaType.AcceptParams);
+            Assert.AreEqual(MediaType.AcceptParameters.Empty, mediaType.AcceptParams);
+
+            Assert.IsTrue(MediaType.TryParse(null, out mediaType));
+            Assert.AreEqual("*", mediaType.RootType);
+            Assert.AreEqual("*", mediaType.SubType);
+            Assert.IsNotNull(mediaType.RangeParams);
+            Assert.IsFalse(mediaType.RangeParams.Any());
+            Assert.IsNotNull(mediaType.AcceptParams);
+            Assert.AreEqual(MediaType.AcceptParameters.Empty, mediaType.AcceptParams);
+
             Assert.IsTrue(MediaType.TryParse("application/json", out mediaType));
             Assert.AreEqual("application", mediaType.RootType);
             Assert.AreEqual("json", mediaType.SubType);
