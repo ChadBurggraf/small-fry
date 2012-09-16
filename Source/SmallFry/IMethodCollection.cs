@@ -114,7 +114,7 @@ namespace SmallFry
         IMethodCollection ErrorMethod<T>(Func<IRequestMessage<T>, IResponseMessage, bool> action);
 
         /// <summary>
-        /// Adds a POST method to the current endpoint and returns the endpoint's
+        /// Adds a GET method to the current endpoint and returns the endpoint's
         /// <see cref="IMethodCollection"/>.
         /// </summary>
         /// <param name="action">The action to perform.</param>
@@ -122,7 +122,7 @@ namespace SmallFry
         IMethodCollection Get(Action action);
 
         /// <summary>
-        /// Adds a POST method to the current endpoint and returns the endpoint's
+        /// Adds a GET method to the current endpoint and returns the endpoint's
         /// <see cref="IMethodCollection"/>.
         /// </summary>
         /// <param name="action">The action to perform.</param>
