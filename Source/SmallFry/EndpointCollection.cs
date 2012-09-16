@@ -150,16 +150,6 @@
             return this.Service.ServiceCollection.WithServiceFormat(mediaTypes, format);
         }
 
-        public IServiceCollection WithServicesEncoding(string accept, IEncoding encoding)
-        {
-            return this.Service.ServiceCollection.WithServicesEncoding(accept, encoding);
-        }
-
-        public IServiceCollection WithServicesFormat(string mediaTypes, IFormat format)
-        {
-            return this.Service.ServiceCollection.WithServicesFormat(mediaTypes, format);
-        }
-
         IEnumerator<Endpoint> IEnumerable<Endpoint>.GetEnumerator()
         {
             return ((IEnumerable<Endpoint>)this.list).GetEnumerator();
@@ -267,6 +257,16 @@
 
             this.CurrentEndpoint.Pipeline.ErrorActions.Add(new FilterAction<T>(action));
             return this.CurrentEndpoint.MethodCollection;
+        }
+
+        public IServiceCollection WithHostEncoding(string accept, IEncoding encoding)
+        {
+            return this.Service.ServiceCollection.WithHostEncoding(accept, encoding);
+        }
+
+        public IServiceCollection WithHostFormat(string mediaTypes, IFormat format)
+        {
+            return this.Service.ServiceCollection.WithHostFormat(mediaTypes, format);
         }
 
         public IMethodCollection WithoutAfterEndpoint(Func<bool> action)

@@ -177,6 +177,18 @@
             return this.CurrentService.Endpoints.WithEndpoint(route);
         }
 
+        public IServiceCollection WithHostEncoding(string accept, IEncoding encoding)
+        {
+            this.Pipeline.Encodings.Add(new EncodingFilter(accept, encoding));
+            return this;
+        }
+
+        public IServiceCollection WithHostFormat(string mediaTypes, IFormat format)
+        {
+            this.Pipeline.Formats.Add(new FormatFilter(mediaTypes, format));
+            return this;
+        }
+
         public IEndpointCollection WithoutServiceEncoding(string accept, IEncoding encoding)
         {
             if (this.CurrentService == null)
@@ -227,18 +239,6 @@
 
             this.CurrentService.Pipeline.Formats.Add(new FormatFilter(mediaTypes, format));
             return this.CurrentService.Endpoints;
-        }
-
-        public IServiceCollection WithServicesEncoding(string accept, IEncoding encoding)
-        {
-            this.Pipeline.Encodings.Add(new EncodingFilter(accept, encoding));
-            return this;
-        }
-
-        public IServiceCollection WithServicesFormat(string mediaTypes, IFormat format)
-        {
-            this.Pipeline.Formats.Add(new FormatFilter(mediaTypes, format));
-            return this;
         }
 
         IEnumerator IEnumerable.GetEnumerator()

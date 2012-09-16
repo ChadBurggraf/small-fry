@@ -25,6 +25,10 @@
 
         IMethodCollection WithEndpoint(string route);
 
+        IServiceCollection WithHostEncoding(string accept, IEncoding encoding);
+
+        IServiceCollection WithHostFormat(string mediaTypes, IFormat format);
+
         IEndpointCollection WithoutServiceEncoding(string accept, IEncoding encoding);
 
         IEndpointCollection WithoutServiceFormat(string mediaTypes, IFormat format);
@@ -34,9 +38,5 @@
         IEndpointCollection WithServiceEncoding(string accept, IEncoding encoding);
 
         IEndpointCollection WithServiceFormat(string mediaTypes, IFormat format);
-
-        IServiceCollection WithServicesEncoding(string accept, IEncoding encoding);
-
-        IServiceCollection WithServicesFormat(string mediaTypes, IFormat format);
     }
 }

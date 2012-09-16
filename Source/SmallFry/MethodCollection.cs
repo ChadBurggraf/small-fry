@@ -356,6 +356,16 @@
             return this.Endpoint.EndpointCollection.WithEndpoint(route);
         }
 
+        public IServiceCollection WithHostEncoding(string accept, IEncoding encoding)
+        {
+            return this.Endpoint.EndpointCollection.WithHostEncoding(accept, encoding);
+        }
+
+        public IServiceCollection WithHostFormat(string mediaTypes, IFormat format)
+        {
+            return this.Endpoint.EndpointCollection.WithHostFormat(mediaTypes, format);
+        }
+
         public IMethodCollection WithoutAfterEndpoint(Func<bool> action)
         {
             return this.Endpoint.EndpointCollection.WithoutAfterEndpoint(action);
@@ -523,16 +533,6 @@
         public IEndpointCollection WithServiceFormat(string mediaTypes, IFormat format)
         {
             return this.Endpoint.EndpointCollection.WithServiceFormat(mediaTypes, format);
-        }
-
-        public IServiceCollection WithServicesEncoding(string accept, IEncoding encoding)
-        {
-            return this.Endpoint.EndpointCollection.WithServicesEncoding(accept, encoding);
-        }
-
-        public IServiceCollection WithServicesFormat(string mediaTypes, IFormat format)
-        {
-            return this.Endpoint.EndpointCollection.WithServicesFormat(mediaTypes, format);
         }
 
         private IMethodCollection AddMethod(Method method)
