@@ -1,4 +1,10 @@
-﻿namespace SmallFry
+﻿//-----------------------------------------------------------------------------
+// <copyright file="Extensions.cs" company="Tasty Codes">
+//     Copyright (c) 2012 Chad Burggraf.
+// </copyright>
+//-----------------------------------------------------------------------------
+
+namespace SmallFry
 {
     using System;
     using System.Collections.Generic;
@@ -73,7 +79,7 @@
 
         public static bool EqualsOperator<T>(T left, T right) where T : IEquatable<T>
         {
-            if (Object.ReferenceEquals(left, right))
+            if (object.ReferenceEquals(left, right))
             {
                 return true;
             }

@@ -1,3 +1,9 @@
+//-----------------------------------------------------------------------------
+// <copyright file="SolutionInfo.cs" company="Tasty Codes">
+//     Copyright (c) 2012 Chad Burggraf.
+// </copyright>
+//-----------------------------------------------------------------------------
+
 using System;
 using System.Reflection;
 using System.Runtime.InteropServices;

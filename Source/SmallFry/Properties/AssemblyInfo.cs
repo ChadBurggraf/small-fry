@@ -1,4 +1,10 @@
-﻿using System.Reflection;
+﻿//-----------------------------------------------------------------------------
+// <copyright file="AssemblyInfo.cs" company="Tasty Codes">
+//     Copyright (c) 2012 Chad Burggraf.
+// </copyright>
+//-----------------------------------------------------------------------------
+
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 

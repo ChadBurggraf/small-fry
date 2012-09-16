@@ -1,4 +1,10 @@
-﻿namespace SmallFry
+﻿//-----------------------------------------------------------------------------
+// <copyright file="FormatFilter.cs" company="Tasty Codes">
+//     Copyright (c) 2012 Chad Burggraf.
+// </copyright>
+//-----------------------------------------------------------------------------
+
+namespace SmallFry
 {
     using System;
     using System.Collections.Generic;
@@ -17,6 +23,10 @@
             this.Format = format;
         }
 
+        public IFormat Format { get; private set; }
+
+        public IEnumerable<MediaType> MediaTypes { get; private set; }
+
         public static bool operator ==(FormatFilter left, FormatFilter right)
         {
             return Extensions.EqualsOperator(left, right);
@@ -27,9 +37,22 @@
             return !(left == right);
         }
 
-        public IFormat Format { get; private set; }
+        public static IEnumerable<MediaType> ParseMediaTypes(string mediaTypes)
+        {
+            if (string.IsNullOrWhiteSpace(mediaTypes))
+            {
+                mediaTypes = "*/*";
+            }
 
-        public IEnumerable<MediaType> MediaTypes { get; private set; }
+            return mediaTypes.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                .Where(s => !string.IsNullOrEmpty(s))
+                .Select(s => MediaType.Parse(s))
+                .Distinct()
+                .OrderByDescending(m => m.AcceptParams.Value)
+                .ThenBy(m => m.RootType)
+                .ThenBy(m => m.SubType)
+                .ToArray();
+        }
 
         public bool Equals(FormatFilter other)
         {
@@ -51,23 +74,6 @@
         {
             return this.Format.GetHashCode()
                 ^ this.MediaTypes.GetHashCode();
-        }
-
-        public static IEnumerable<MediaType> ParseMediaTypes(string mediaTypes)
-        {
-            if (string.IsNullOrWhiteSpace(mediaTypes))
-            {
-                mediaTypes = "*/*";
-            }
-
-            return mediaTypes.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                .Where(s => !string.IsNullOrEmpty(s))
-                .Select(s => MediaType.Parse(s))
-                .Distinct()
-                .OrderByDescending(m => m.AcceptParams.Value)
-                .ThenBy(m => m.RootType)
-                .ThenBy(m => m.SubType)
-                .ToArray();
         }
     }
 }

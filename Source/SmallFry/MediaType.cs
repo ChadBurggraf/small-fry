@@ -1,4 +1,10 @@
-﻿namespace SmallFry
+﻿//-----------------------------------------------------------------------------
+// <copyright file="MediaType.cs" company="Tasty Codes">
+//     Copyright (c) 2012 Chad Burggraf.
+// </copyright>
+//-----------------------------------------------------------------------------
+
+namespace SmallFry
 {
     using System;
     using System.Collections.Generic;
@@ -8,9 +14,9 @@
 
     internal sealed class MediaType : IEquatable<MediaType>
     {
-        private static readonly Regex acceptParamsStartExpression = new Regex(@"^\s*q\s*=.*", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-        private static readonly Regex parseExpression = new Regex(@"^(\*/\*|[a-z0-9]+/\*|[a-z0-9]+/[a-z0-9]+)(.*)$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-        private static readonly MediaType empty = MediaType.Parse(null);
+        private static readonly Regex AcceptParamsStartExpression = new Regex(@"^\s*q\s*=.*", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private static readonly Regex ParseExpression = new Regex(@"^(\*/\*|[a-z0-9]+/\*|[a-z0-9]+/[a-z0-9]+)(.*)$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private static readonly MediaType EmptyType = MediaType.Parse(null);
         
         private MediaType()
         {
@@ -18,7 +24,7 @@
 
         public static MediaType Empty
         {
-            get { return MediaType.empty; }
+            get { return MediaType.EmptyType; }
         }
 
         public AcceptParameters AcceptParams { get; private set; }
@@ -46,7 +52,7 @@
                 value = "*/*";
             }
 
-            Match match = MediaType.parseExpression.Match(value);
+            Match match = MediaType.ParseExpression.Match(value);
 
             if (match.Success)
             {
@@ -72,7 +78,7 @@
 
                         if (!string.IsNullOrWhiteSpace(part))
                         {
-                            if (!MediaType.acceptParamsStartExpression.IsMatch(part))
+                            if (!MediaType.AcceptParamsStartExpression.IsMatch(part))
                             {
                                 parameters.Add(part.Trim().ToLowerInvariant());
                             }
@@ -162,16 +168,16 @@
 
         public sealed class Extension : IEquatable<Extension>
         {
-            private static readonly Extension empty = Extension.Parse(null);
-            private static readonly Regex parseExpression = new Regex(@"^([^=]+)(\s*=\s*(.*))?$", RegexOptions.Compiled);
-
+            private static readonly Regex ParseExpression = new Regex(@"^([^=]+)(\s*=\s*(.*))?$", RegexOptions.Compiled);
+            private static readonly Extension EmptyExtension = Extension.Parse(null);
+            
             private Extension()
             {
             }
 
             public static Extension Empty
             {
-                get { return Extension.empty; }
+                get { return Extension.EmptyExtension; }
             }
 
             public string Key { get; private set; }
@@ -192,7 +198,7 @@
             {
                 if (!string.IsNullOrWhiteSpace(value))
                 {
-                    Match match = Extension.parseExpression.Match(value.Trim());
+                    Match match = Extension.ParseExpression.Match(value.Trim());
 
                     if (match.Success)
                     {
@@ -274,16 +280,16 @@
 
         public sealed class AcceptParameters : IEquatable<AcceptParameters>
         {
-            private static readonly AcceptParameters empty = AcceptParameters.Parse(null);
-            private static Regex parseExpression = new Regex(@"^q\s*=\s*(\d(\.\d+)?)(.*)$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-
+            private static readonly Regex ParseExpression = new Regex(@"^q\s*=\s*(\d(\.\d+)?)(.*)$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+            private static readonly AcceptParameters EmptyParameters = AcceptParameters.Parse(null);
+            
             private AcceptParameters()
             {
             }
 
             public static AcceptParameters Empty
             {
-                get { return AcceptParameters.empty; }
+                get { return AcceptParameters.EmptyParameters; }
             }
 
             public IEnumerable<Extension> Extensions { get; private set; }
@@ -306,7 +312,7 @@
 
                 if (!string.IsNullOrWhiteSpace(value))
                 {
-                    Match match = AcceptParameters.parseExpression.Match(value.Trim());
+                    Match match = AcceptParameters.ParseExpression.Match(value.Trim());
 
                     if (match.Success)
                     {

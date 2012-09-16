@@ -1,4 +1,10 @@
-﻿namespace SmallFry
+﻿//-----------------------------------------------------------------------------
+// <copyright file="FilterAction.cs" company="Tasty Codes">
+//     Copyright (c) 2012 Chad Burggraf.
+// </copyright>
+//-----------------------------------------------------------------------------
+
+namespace SmallFry
 {
     using System;
     using System.Collections.Generic;
@@ -9,10 +15,6 @@
         private Func<Exception, bool> simpleExceptionAction;
         private Func<IRequestMessage, IResponseMessage, bool> requestResponseAction;
         private Func<Exception, IRequestMessage, IResponseMessage, bool> requestResponseExceptionAction;
-
-        protected FilterAction()
-        {
-        }
 
         public FilterAction(Func<bool> action)
         {
@@ -52,6 +54,10 @@
             }
 
             this.requestResponseExceptionAction = action;
+        }
+
+        protected FilterAction()
+        {
         }
 
         public static bool operator ==(FilterAction left, FilterAction right)

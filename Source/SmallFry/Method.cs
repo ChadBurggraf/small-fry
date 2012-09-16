@@ -1,4 +1,10 @@
-﻿namespace SmallFry
+﻿//-----------------------------------------------------------------------------
+// <copyright file="Method.cs" company="Tasty Codes">
+//     Copyright (c) 2012 Chad Burggraf.
+// </copyright>
+//-----------------------------------------------------------------------------
+
+namespace SmallFry
 {
     using System;
     using System.Collections.Generic;
@@ -8,10 +14,6 @@
         private Action action;
         private Action<IRequestMessage> requestAction;
         private Action<IRequestMessage, IResponseMessage> requestResponseAction;
-
-        protected Method()
-        {
-        }
 
         public Method(MethodType methodType, Endpoint endpoint, IMethodCollection methodCollection, Action action)
         {
@@ -44,6 +46,10 @@
 
             this.Initialize(methodType, endpoint, methodCollection);
             this.requestResponseAction = action;
+        }
+
+        protected Method()
+        {
         }
 
         public Endpoint Endpoint { get; protected set; }

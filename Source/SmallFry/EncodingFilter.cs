@@ -1,4 +1,10 @@
-﻿namespace SmallFry
+﻿//-----------------------------------------------------------------------------
+// <copyright file="EncodingFilter.cs" company="Tasty Codes">
+//     Copyright (c) 2012 Chad Burggraf.
+// </copyright>
+//-----------------------------------------------------------------------------
+
+namespace SmallFry
 {
     using System;
     using System.Collections.Generic;
@@ -17,6 +23,10 @@
             this.Encoding = encoding;
         }
 
+        public IEnumerable<EncodingType> AcceptTypes { get; private set; }
+
+        public IEncoding Encoding { get; private set; }
+
         public static bool operator ==(EncodingFilter left, EncodingFilter right)
         {
             return Extensions.EqualsOperator(left, right);
@@ -26,10 +36,6 @@
         {
             return !(left == right);
         }
-
-        public IEnumerable<EncodingType> AcceptTypes { get; private set; }
-
-        public IEncoding Encoding { get; private set; }
 
         public static IEnumerable<EncodingType> ParseAcceptTypes(string accept)
         {

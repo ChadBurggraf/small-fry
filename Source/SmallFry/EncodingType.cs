@@ -1,4 +1,10 @@
-﻿namespace SmallFry
+﻿//-----------------------------------------------------------------------------
+// <copyright file="EncodingType.cs" company="Tasty Codes">
+//     Copyright (c) 2012 Chad Burggraf.
+// </copyright>
+//-----------------------------------------------------------------------------
+
+namespace SmallFry
 {
     using System;
     using System.Collections.Generic;
@@ -7,8 +13,8 @@
 
     internal sealed class EncodingType : IEquatable<EncodingType>
     {
-        private static readonly Regex parseExpression = new Regex(@"^\s*([^;]+)(\s*;\s*q\s*=\s*(\d(\.\d*)?))?\s*$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-        private static readonly EncodingType empty = EncodingType.Parse(null);
+        private static readonly Regex ParseExpression = new Regex(@"^\s*([^;]+)(\s*;\s*q\s*=\s*(\d(\.\d*)?))?\s*$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private static readonly EncodingType EmptyType = EncodingType.Parse(null);
         
         private EncodingType()
         {
@@ -16,7 +22,7 @@
 
         public static EncodingType Empty
         {
-            get { return EncodingType.empty; }
+            get { return EncodingType.EmptyType; }
         }
 
         public string Name { get; private set; }
@@ -42,7 +48,7 @@
                 value = "*";
             }
 
-            Match match = EncodingType.parseExpression.Match(value);
+            Match match = EncodingType.ParseExpression.Match(value);
 
             if (match.Success)
             {

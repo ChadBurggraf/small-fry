@@ -1,4 +1,10 @@
-﻿namespace SmallFry
+﻿//-----------------------------------------------------------------------------
+// <copyright file="MethodCollection.cs" company="Tasty Codes">
+//     Copyright (c) 2012 Chad Burggraf.
+// </copyright>
+//-----------------------------------------------------------------------------
+
+namespace SmallFry
 {
     using System;
     using System.Collections;
@@ -535,13 +541,6 @@
             return this.Endpoint.EndpointCollection.WithServiceFormat(mediaTypes, format);
         }
 
-        private IMethodCollection AddMethod(Method method)
-        {
-            this.Add(method);
-            this.CurrentMethod = method;
-            return this;
-        }
-
         IEnumerator<Method> IEnumerable<Method>.GetEnumerator()
         {
             return ((IEnumerable<Method>)this.list).GetEnumerator();
@@ -550,6 +549,13 @@
         IEnumerator IEnumerable.GetEnumerator()
         {
             return ((IEnumerable)this.list).GetEnumerator();
+        }
+
+        private IMethodCollection AddMethod(Method method)
+        {
+            this.Add(method);
+            this.CurrentMethod = method;
+            return this;
         }
     }
 }
