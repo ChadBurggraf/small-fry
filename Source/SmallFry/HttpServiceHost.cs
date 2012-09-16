@@ -9,25 +9,45 @@ namespace SmallFry
     using System;
     using System.Web;
 
+    /// <summary>
+    /// Implements <see cref="IServiceHost"/> as an <see cref="IHttpHandler"/>
+    /// for hosting HTTP services.
+    /// </summary>
     public sealed class HttpServiceHost : IHttpHandler, IServiceHost
     {
         private IServiceCollection services = new ServiceCollection();
 
+        /// <summary>
+        /// Gets a value indicating whether another request can use the <see cref="IHttpHandler"/> instance.
+        /// </summary>
         public bool IsReusable
         {
             get { return true; }
         }
 
+        /// <summary>
+        /// Gets the collection of services hosted by this host.
+        /// </summary>
         public IServiceCollection Services
         {
             get { return this.services; }
         }
 
+        /// <summary>
+        /// Enables processing of HTTP Web requests by a custom HttpHandler that implements the <see cref="IHttpHandler"/> interface.
+        /// </summary>
+        /// <param name="httpContext">An <see cref="HttpContext"/> object that provides references to the intrinsic server objects 
+        /// (for example, Request, Response, Session, and Server) used to service HTTP requests.</param>
         public void ProcessRequest(HttpContext httpContext)
         {
             this.ProcessRequest(new HttpContextWrapper(httpContext));
         }
 
+        /// <summary>
+        /// Enables processing of HTTP Web requests by a custom HttpHandler that implements the <see cref="IHttpHandler"/> interface.
+        /// </summary>
+        /// <param name="httpContext">An <see cref="HttpContextBase"/> object that provides references to the intrinsic server objects 
+        /// (for example, Request, Response, Session, and Server) used to service HTTP requests.</param>
         public void ProcessRequest(HttpContextBase httpContext)
         {
             if (httpContext == null)
