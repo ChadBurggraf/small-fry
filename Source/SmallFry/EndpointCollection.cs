@@ -341,7 +341,7 @@ namespace SmallFry
             return this.CurrentEndpoint.MethodCollection;
         }
 
-        public IMethodCollection WithoutErrorEndpoint(Func<bool> action)
+        public IMethodCollection WithoutErrorEndpoint(Func<Exception, bool> action)
         {
             if (this.CurrentEndpoint == null)
             {
@@ -352,7 +352,7 @@ namespace SmallFry
             return this.CurrentEndpoint.MethodCollection;
         }
 
-        public IMethodCollection WithoutErrorEndpoint(Func<IRequestMessage, IResponseMessage, bool> action)
+        public IMethodCollection WithoutErrorEndpoint(Func<Exception, IRequestMessage, IResponseMessage, bool> action)
         {
             if (this.CurrentEndpoint == null)
             {
@@ -363,7 +363,7 @@ namespace SmallFry
             return this.CurrentEndpoint.MethodCollection;
         }
 
-        public IMethodCollection WithoutErrorEndpoint<T>(Func<IRequestMessage<T>, IResponseMessage, bool> action)
+        public IMethodCollection WithoutErrorEndpoint<T>(Func<Exception, IRequestMessage<T>, IResponseMessage, bool> action)
         {
             if (this.CurrentEndpoint == null)
             {

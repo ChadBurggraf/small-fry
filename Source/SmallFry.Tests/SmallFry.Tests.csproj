@@ -52,6 +52,7 @@
     <Compile Include="DefinitionTests.cs" />
     <Compile Include="EncodingFilterTests.cs" />
     <Compile Include="EncodingTypeTests.cs" />
+    <Compile Include="EndpointCollectionTests.cs" />
     <Compile Include="FilterActionTests.cs" />
     <Compile Include="FormatFilterTests.cs" />
     <Compile Include="MediaTypeTests.cs" />
