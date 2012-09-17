@@ -58,7 +58,7 @@ namespace SmallFry
         {
             if ((object)other != null)
             {
-                return this.Format.Equals(other)
+                return this.Format.Equals(other.Format)
                     && this.MediaTypes.SequenceEqual(other.MediaTypes);
             }
 

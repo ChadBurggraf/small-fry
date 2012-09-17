@@ -11,70 +11,24 @@
         public void FormatFilterEquals()
         {
             FormatFilter jsonFilter = new FormatFilter("application/json", new JsonFormat());
-            FormatFilter xmlFilter = new FormatFilter("text/xml", new XmlFormat());
+            FormatFilter textFilter = new FormatFilter("text/plain", new PlainTextFormat());
 
             Assert.AreEqual(jsonFilter, new FormatFilter("application/json", new JsonFormat()));
-            Assert.AreEqual(xmlFilter, new FormatFilter("text/xml", new XmlFormat()));
+            Assert.AreEqual(textFilter, new FormatFilter("text/plain", new PlainTextFormat()));
         }
 
         [Test]
         public void FormatFilterNotEquals()
         {
             FormatFilter jsonFilter = new FormatFilter("application/json", new JsonFormat());
-            FormatFilter xmlFilter = new FormatFilter("text/xml", new XmlFormat());
+            FormatFilter textFilter = new FormatFilter("text/plain", new PlainTextFormat());
 
-            Assert.AreNotEqual(jsonFilter, xmlFilter);
-            Assert.AreNotEqual(jsonFilter, new FormatFilter("application/json", new XmlFormat()));
+            Assert.AreNotEqual(jsonFilter, textFilter);
+            Assert.AreNotEqual(jsonFilter, new FormatFilter("application/json", new PlainTextFormat()));
             Assert.AreNotEqual(jsonFilter, new FormatFilter("text/json", new JsonFormat()));
 
-            Assert.AreNotEqual(xmlFilter, new FormatFilter("text/xml", new JsonFormat()));
-            Assert.AreNotEqual(xmlFilter, new FormatFilter("application/xml", new XmlFormat()));
-        }
-
-        private sealed class JsonFormat : IFormat
-        {
-            public object Deserialize(Type type, Stream stream)
-            {
-                throw new NotImplementedException();
-            }
-
-            public bool Equals(IFormat other)
-            {
-                if ((object)other != null)
-                {
-                    return this.GetType().Equals(other.GetType());
-                }
-
-                return false;
-            }
-
-            public void Serialize(object value, Stream stream)
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        private sealed class XmlFormat : IFormat
-        {
-            public object Deserialize(Type type, Stream stream)
-            {
-                throw new NotImplementedException();
-            }
-
-            public bool Equals(IFormat other)
-            {
-                if ((object)other != null)
-                {
-                    return this.GetType().Equals(other.GetType());
-                }
-
-                return false;
-            }
-
-            public void Serialize(object value, Stream stream)
-            {
-                throw new NotImplementedException();
-            }
+            Assert.AreNotEqual(textFilter, new FormatFilter("text/xml", new JsonFormat()));
+            Assert.AreNotEqual(textFilter, new FormatFilter("application/xml", new PlainTextFormat()));
         }
     }
 }

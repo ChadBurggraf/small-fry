@@ -64,7 +64,7 @@ namespace SmallFry
         /// <returns>True if the specified object is equal to the current object, otherwise false.</returns>
         public override bool Equals(object obj)
         {
-            return this.Equals(obj as IEncoding);
+            return this.Equals(obj as IFormat);
         }
 
         /// <summary>
