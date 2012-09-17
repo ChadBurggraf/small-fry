@@ -161,10 +161,6 @@
 
             endpoints.WithEndpoint("endpoint/route");
 
-            Func<string, bool> l = s => true;
-            Func<string, bool> r = s => true;
-            Assert.IsTrue(Delegate.Equals(l, r));
-
             endpoints
                 .WithoutErrorEndpoint(ex => true)
                 .WithoutErrorEndpoint((ex, req, res) => true)
