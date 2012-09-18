@@ -7,7 +7,10 @@
 namespace SmallFry
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
+    using System.IO.Compression;
+    using System.Linq;
 
     /// <summary>
     /// Implements <see cref="IEncoding"/> to perform GZip and Deflate 
@@ -16,25 +19,56 @@ namespace SmallFry
     public sealed class GzipDeflateEncoding : IEncoding
     {
         /// <summary>
+        /// Gets a content encoding value to send when this encoding
+        /// is chosen from the given accept encoding values.
+        /// </summary>
+        /// <param name="acceptEncodings">A collection of accept encoding values.</param>
+        /// <returns>A content encoding value.</returns>
+        public string ContentEncoding(IEnumerable<string> acceptEncodings)
+        {
+            string result = null;
+
+            if (acceptEncodings != null)
+            {
+                result = acceptEncodings.Any(e => "deflate".Equals(e, StringComparison.OrdinalIgnoreCase))
+                    && !acceptEncodings.Any(e => "gzip".Equals(e, StringComparison.OrdinalIgnoreCase))
+                    ? "deflate"
+                    : "gzip";
+            }
+
+            return result ?? "gzip";
+        }
+
+        /// <summary>
         /// Decodes an input stream and writes the decoded content to the
         /// given output stream.
         /// </summary>
+        /// <param name="acceptEncodings">The collection of accept encoding values used
+        /// to choose this encoding.</param>
         /// <param name="inputStream">The stream to read encoded content from.</param>
         /// <param name="outputStream">The stream to write decoded content to.</param>
-        public void Decode(Stream inputStream, Stream outputStream)
+        public void Decode(IEnumerable<string> acceptEncodings, Stream inputStream, Stream outputStream)
         {
-            throw new NotImplementedException();
+            using (Stream compressionStream = this.GetCompressionStream(acceptEncodings, inputStream, CompressionMode.Decompress))
+            {
+                compressionStream.CopyTo(outputStream);
+            }
         }
 
         /// <summary>
         /// Encodes an input stream and writes the encoded content to the
         /// given output stream.
         /// </summary>
+        /// <param name="acceptEncodings">The collection of accept encoding values used
+        /// to choose this encoding.</param>
         /// <param name="inputStream">The input stream to read content from.</param>
         /// <param name="outputStream">The output stream to write encoded content to.</param>
-        public void Encode(Stream inputStream, Stream outputStream)
+        public void Encode(IEnumerable<string> acceptEncodings, Stream inputStream, Stream outputStream)
         {
-            throw new NotImplementedException();
+            using (Stream compressionStream = this.GetCompressionStream(acceptEncodings, outputStream, CompressionMode.Compress))
+            {
+                inputStream.CopyTo(compressionStream);
+            }
         }
 
         /// <summary>
@@ -69,6 +103,13 @@ namespace SmallFry
         public override int GetHashCode()
         {
             return this.GetType().GetHashCode();
+        }
+
+        private Stream GetCompressionStream(IEnumerable<string> acceptEncodings, Stream inputStream, CompressionMode mode)
+        {
+            return "deflate".Equals(this.ContentEncoding(acceptEncodings), StringComparison.OrdinalIgnoreCase)
+                ? new DeflateStream(inputStream, mode) as Stream
+                : new GZipStream(inputStream, mode) as Stream;
         }
     }
 }

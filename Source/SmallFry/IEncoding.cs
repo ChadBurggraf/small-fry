@@ -7,6 +7,7 @@
 namespace SmallFry
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
 
     /// <summary>
@@ -16,19 +17,31 @@ namespace SmallFry
     public interface IEncoding : IEquatable<IEncoding>
     {
         /// <summary>
+        /// Gets a content encoding value to send when this encoding
+        /// is chosen from the given accept encoding values.
+        /// </summary>
+        /// <param name="acceptEncodings">A collection of accept encoding values.</param>
+        /// <returns>A content encoding value.</returns>
+        string ContentEncoding(IEnumerable<string> acceptEncodings);
+
+        /// <summary>
         /// Decodes an input stream and writes the decoded content to the
         /// given output stream.
         /// </summary>
+        /// <param name="acceptEncodings">The collection of accept encoding values used
+        /// to choose this encoding.</param>
         /// <param name="inputStream">The stream to read encoded content from.</param>
         /// <param name="outputStream">The stream to write decoded content to.</param>
-        void Decode(Stream inputStream, Stream outputStream);
+        void Decode(IEnumerable<string> acceptEncodings, Stream inputStream, Stream outputStream);
 
         /// <summary>
         /// Encodes an input stream and writes the encoded content to the
         /// given output stream.
         /// </summary>
+        /// <param name="acceptEncodings">The collection of accept encoding values used
+        /// to choose this encoding.</param>
         /// <param name="inputStream">The input stream to read content from.</param>
         /// <param name="outputStream">The output stream to write encoded content to.</param>
-        void Encode(Stream inputStream, Stream outputStream);
+        void Encode(IEnumerable<string> acceptEncodings, Stream inputStream, Stream outputStream);
     }
 }

@@ -101,5 +101,39 @@ namespace SmallFry
                 return left.Equals(right);
             }
         }
+
+        public static IEnumerable<string> ToAcceptEncodings(this IEnumerable<EncodingType> encodingTypes)
+        {
+            List<string> result = new List<string>();
+
+            if (encodingTypes != null)
+            {
+                result.AddRange(encodingTypes.Select(e => e.Name));
+            }
+
+            if (result.Count == 0)
+            {
+                result.Add("*");
+            }
+
+            return result;
+        }
+
+        public static IEnumerable<string> ToAcceptFormats(this IEnumerable<MediaType> mediaTypes)
+        {
+            List<string> result = new List<string>();
+
+            if (mediaTypes != null)
+            {
+                result.AddRange(mediaTypes.Select(m => m.RootType + "/" + m.SubType));
+            }
+
+            if (result.Count == 0)
+            {
+                result.Add("*/*");
+            }
+
+            return result;
+        }
     }
 }

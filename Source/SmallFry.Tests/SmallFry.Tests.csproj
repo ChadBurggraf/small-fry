@@ -55,6 +55,7 @@
     <Compile Include="EndpointCollectionTests.cs" />
     <Compile Include="FilterActionTests.cs" />
     <Compile Include="FormatFilterTests.cs" />
+    <Compile Include="GzipDeflateEncodingTests.cs" />
     <Compile Include="MediaTypeTests.cs" />
     <Compile Include="MethodCollectionTests.cs" />
     <Compile Include="PrimitiveRouteValueParserTests.cs" />
@@ -67,6 +68,12 @@
       <Project>{9E0DA447-DF8B-496D-AB50-2424710FF374}</Project>
       <Name>SmallFry</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Content.deflate" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Content.gzip" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

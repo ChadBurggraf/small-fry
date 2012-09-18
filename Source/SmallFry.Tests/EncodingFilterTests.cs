@@ -47,12 +47,17 @@
 
         private sealed class IdentityEncoding : IEncoding
         {
-            public void Decode(Stream inputStream, Stream outputStream)
+            public string ContentEncoding(IEnumerable<string> acceptEncodings)
             {
                 throw new NotImplementedException();
             }
 
-            public void Encode(Stream inputStream, Stream outputStream)
+            public void Decode(IEnumerable<string> acceptEncodings, Stream inputStream, Stream outputStream)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void Encode(IEnumerable<string> acceptEncodings, Stream inputStream, Stream outputStream)
             {
                 throw new NotImplementedException();
             }
