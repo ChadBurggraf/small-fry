@@ -58,7 +58,8 @@
     <Compile Include="GzipDeflateEncodingTests.cs" />
     <Compile Include="MediaTypeTests.cs" />
     <Compile Include="MethodCollectionTests.cs" />
-    <Compile Include="PrimitiveRouteValueParserTests.cs" />
+    <Compile Include="NoOpRouteParameterParser.cs" />
+    <Compile Include="RouteParameterParserTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RoutePatternTests.cs" />
     <Compile Include="ServiceCollectionTests.cs" />

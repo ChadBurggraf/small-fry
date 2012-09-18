@@ -20,6 +20,7 @@ namespace SmallFry
         {
             this.list = new List<Service>();
             this.Pipeline = new Pipeline();
+            this.RouteValueBinder = new RouteValueBinder();
         }
         
         public int Count
@@ -35,6 +36,8 @@ namespace SmallFry
         }
 
         public Pipeline Pipeline { get; private set; }
+
+        public RouteValueBinder RouteValueBinder { get; private set; }
 
         public void Add(Service item)
         {
@@ -192,6 +195,12 @@ namespace SmallFry
         public IServiceCollection WithHostFormat(string mediaTypes, IFormat format)
         {
             this.Pipeline.Formats.Add(new FormatFilter(mediaTypes, format));
+            return this;
+        }
+
+        public IServiceCollection WithHostRouteParameterParser(IRouteParameterParser parser)
+        {
+            this.RouteValueBinder.AddParser(parser);
             return this;
         }
 

@@ -128,7 +128,7 @@ namespace SmallFry
             Endpoint endpoint = new Endpoint(route, this.Service, this);
             this.Add(endpoint);
             this.CurrentEndpoint = endpoint;
-            return endpoint.MethodCollection;
+            return endpoint.Methods;
         }
 
         public IEndpointCollection WithoutServiceEncoding(string accept, IEncoding encoding)
@@ -139,6 +139,22 @@ namespace SmallFry
         public IEndpointCollection WithoutServiceFormat(string mediaTypes, IFormat format)
         {
             return this.Service.ServiceCollection.WithoutServiceFormat(mediaTypes, format);
+        }
+
+        public IMethodCollection WithParameterType<T>(string name)
+        {
+            if (this.CurrentEndpoint == null)
+            {
+                throw new InvalidOperationException(EndpointCollection.CurrentEndpointNotSetMessage);
+            }
+
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ArgumentNullException("name", "name must contain a value.");
+            }
+
+            this.CurrentEndpoint.ParameterTypes[name] = typeof(T);
+            return this.CurrentEndpoint.Methods;
         }
 
         public IEndpointCollection WithService(string name, string baseUrl)
@@ -174,7 +190,7 @@ namespace SmallFry
             }
 
             this.CurrentEndpoint.Pipeline.AfterActions.Add(new FilterAction(action));
-            return this.CurrentEndpoint.MethodCollection;
+            return this.CurrentEndpoint.Methods;
         }
 
         public IMethodCollection AfterEndpoint(Func<IRequestMessage, IResponseMessage, bool> action)
@@ -185,7 +201,7 @@ namespace SmallFry
             }
 
             this.CurrentEndpoint.Pipeline.AfterActions.Add(new FilterAction(action));
-            return this.CurrentEndpoint.MethodCollection;
+            return this.CurrentEndpoint.Methods;
         }
 
         public IMethodCollection AfterEndpoint<T>(Func<IRequestMessage<T>, IResponseMessage, bool> action)
@@ -196,7 +212,7 @@ namespace SmallFry
             }
 
             this.CurrentEndpoint.Pipeline.AfterActions.Add(new FilterAction<T>(action));
-            return this.CurrentEndpoint.MethodCollection;
+            return this.CurrentEndpoint.Methods;
         }
 
         public IMethodCollection BeforeEndpoint(Func<bool> action)
@@ -207,7 +223,7 @@ namespace SmallFry
             }
 
             this.CurrentEndpoint.Pipeline.BeforeActions.Add(new FilterAction(action));
-            return this.CurrentEndpoint.MethodCollection;
+            return this.CurrentEndpoint.Methods;
         }
 
         public IMethodCollection BeforeEndpoint(Func<IRequestMessage, IResponseMessage, bool> action)
@@ -218,7 +234,7 @@ namespace SmallFry
             }
 
             this.CurrentEndpoint.Pipeline.BeforeActions.Add(new FilterAction(action));
-            return this.CurrentEndpoint.MethodCollection;
+            return this.CurrentEndpoint.Methods;
         }
 
         public IMethodCollection BeforeEndpoint<T>(Func<IRequestMessage<T>, IResponseMessage, bool> action)
@@ -229,7 +245,7 @@ namespace SmallFry
             }
 
             this.CurrentEndpoint.Pipeline.BeforeActions.Add(new FilterAction<T>(action));
-            return this.CurrentEndpoint.MethodCollection;
+            return this.CurrentEndpoint.Methods;
         }
 
         public IMethodCollection ErrorEndpoint(Func<Exception, bool> action)
@@ -240,7 +256,7 @@ namespace SmallFry
             }
 
             this.CurrentEndpoint.Pipeline.ErrorActions.Add(new FilterAction(action));
-            return this.CurrentEndpoint.MethodCollection;
+            return this.CurrentEndpoint.Methods;
         }
 
         public IMethodCollection ErrorEndpoint(Func<Exception, IRequestMessage, IResponseMessage, bool> action)
@@ -251,7 +267,7 @@ namespace SmallFry
             }
 
             this.CurrentEndpoint.Pipeline.ErrorActions.Add(new FilterAction(action));
-            return this.CurrentEndpoint.MethodCollection;
+            return this.CurrentEndpoint.Methods;
         }
 
         public IMethodCollection ErrorEndpoint<T>(Func<Exception, IRequestMessage<T>, IResponseMessage, bool> action)
@@ -262,7 +278,7 @@ namespace SmallFry
             }
 
             this.CurrentEndpoint.Pipeline.ErrorActions.Add(new FilterAction<T>(action));
-            return this.CurrentEndpoint.MethodCollection;
+            return this.CurrentEndpoint.Methods;
         }
 
         public IServiceCollection WithHostEncoding(string accept, IEncoding encoding)
@@ -275,6 +291,11 @@ namespace SmallFry
             return this.Service.ServiceCollection.WithHostFormat(mediaTypes, format);
         }
 
+        public IServiceCollection WithHostRouteParameterParser(IRouteParameterParser parser)
+        {
+            return this.Service.ServiceCollection.WithHostRouteParameterParser(parser);
+        }
+
         public IMethodCollection WithoutAfterEndpoint(Func<bool> action)
         {
             if (this.CurrentEndpoint == null)
@@ -283,7 +304,7 @@ namespace SmallFry
             }
 
             this.CurrentEndpoint.Pipeline.ExcludeAfterActions.Add(new FilterAction(action));
-            return this.CurrentEndpoint.MethodCollection;
+            return this.CurrentEndpoint.Methods;
         }
 
         public IMethodCollection WithoutAfterEndpoint(Func<IRequestMessage, IResponseMessage, bool> action)
@@ -294,7 +315,7 @@ namespace SmallFry
             }
 
             this.CurrentEndpoint.Pipeline.ExcludeAfterActions.Add(new FilterAction(action));
-            return this.CurrentEndpoint.MethodCollection;
+            return this.CurrentEndpoint.Methods;
         }
 
         public IMethodCollection WithoutAfterEndpoint<T>(Func<IRequestMessage<T>, IResponseMessage, bool> action)
@@ -305,7 +326,7 @@ namespace SmallFry
             }
 
             this.CurrentEndpoint.Pipeline.ExcludeAfterActions.Add(new FilterAction<T>(action));
-            return this.CurrentEndpoint.MethodCollection;
+            return this.CurrentEndpoint.Methods;
         }
 
         public IMethodCollection WithoutBeforeEndpoint(Func<bool> action)
@@ -316,7 +337,7 @@ namespace SmallFry
             }
 
             this.CurrentEndpoint.Pipeline.ExcludeBeforeActions.Add(new FilterAction(action));
-            return this.CurrentEndpoint.MethodCollection;
+            return this.CurrentEndpoint.Methods;
         }
 
         public IMethodCollection WithoutBeforeEndpoint(Func<IRequestMessage, IResponseMessage, bool> action)
@@ -327,7 +348,7 @@ namespace SmallFry
             }
 
             this.CurrentEndpoint.Pipeline.ExcludeBeforeActions.Add(new FilterAction(action));
-            return this.CurrentEndpoint.MethodCollection;
+            return this.CurrentEndpoint.Methods;
         }
 
         public IMethodCollection WithoutBeforeEndpoint<T>(Func<IRequestMessage<T>, IResponseMessage, bool> action)
@@ -338,7 +359,7 @@ namespace SmallFry
             }
 
             this.CurrentEndpoint.Pipeline.ExcludeBeforeActions.Add(new FilterAction<T>(action));
-            return this.CurrentEndpoint.MethodCollection;
+            return this.CurrentEndpoint.Methods;
         }
 
         public IMethodCollection WithoutErrorEndpoint(Func<Exception, bool> action)
@@ -349,7 +370,7 @@ namespace SmallFry
             }
 
             this.CurrentEndpoint.Pipeline.ExcludeErrorActions.Add(new FilterAction(action));
-            return this.CurrentEndpoint.MethodCollection;
+            return this.CurrentEndpoint.Methods;
         }
 
         public IMethodCollection WithoutErrorEndpoint(Func<Exception, IRequestMessage, IResponseMessage, bool> action)
@@ -360,7 +381,7 @@ namespace SmallFry
             }
 
             this.CurrentEndpoint.Pipeline.ExcludeErrorActions.Add(new FilterAction(action));
-            return this.CurrentEndpoint.MethodCollection;
+            return this.CurrentEndpoint.Methods;
         }
 
         public IMethodCollection WithoutErrorEndpoint<T>(Func<Exception, IRequestMessage<T>, IResponseMessage, bool> action)
@@ -371,7 +392,7 @@ namespace SmallFry
             }
 
             this.CurrentEndpoint.Pipeline.ExcludeErrorActions.Add(new FilterAction<T>(action));
-            return this.CurrentEndpoint.MethodCollection;
+            return this.CurrentEndpoint.Methods;
         }
     }
 }

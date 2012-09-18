@@ -66,6 +66,15 @@
         }
 
         [Test]
+        public void ServiceCollectionWithHostRouteParameterParser()
+        {
+            ServiceCollection services = new ServiceCollection();
+            Assert.IsFalse(services.RouteValueBinder.HasParserForType(typeof(Service)));
+            services.WithHostRouteParameterParser(new NoOpRouteParameterParser(new Type[] { typeof(Service) }));
+            Assert.IsTrue(services.RouteValueBinder.HasParserForType(typeof(Service)));
+        }
+
+        [Test]
         public void ServiceCollectionWithoutServiceEncoding()
         {
             ServiceCollection services = new ServiceCollection();

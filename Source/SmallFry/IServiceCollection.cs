@@ -96,7 +96,9 @@ namespace SmallFry
         /// </summary>
         /// <param name="route">The route defining the endpoint's URL format, relative to the service's
         /// base URL. Route parameters should be enclosed in curly brackets, with optional parameters
-        /// identified by a quest mark (e.g., "accounts/{id}/{?emailAddress}").</param>
+        /// identified by a quest mark (e.g., "accounts/{id}/{?emailAddress}"). You may add a wildcard
+        /// parameter to the end of the route to capture arbitrary paths 
+        /// (e.g., "accounts/{id}/{?emailAddress}/{*pathInfo}").</param>
         /// <returns>The new endpoint's <see cref="IMethodCollection"/>.</returns>
         IMethodCollection WithEndpoint(string route);
 
@@ -123,6 +125,17 @@ namespace SmallFry
         /// <returns>The root <see cref="IServiceCollection"/>.</returns>
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed.")]
         IServiceCollection WithHostFormat(string mediaTypes, IFormat format);
+
+        /// <summary>
+        /// Adds a new <see cref="IRouteParameterParser"/> to the current <see cref="IServiceHost"/>
+        /// and returns the root <see cref="IServiceCollection"/>. Use this method to add custom route
+        /// parameter type handling to all services. Note that all primitive .NET types are handled
+        /// by the default <see cref="IRouteParameterParser"/> implementation.
+        /// </summary>
+        /// <param name="parser">An <see cref="IRouteParameterParser"/> that can be used for cust
+        /// route parameter type handling.</param>
+        /// <returns>The root <see cref="IServiceCollection"/>.</returns>
+        IServiceCollection WithHostRouteParameterParser(IRouteParameterParser parser);
 
         /// <summary>
         /// Removes a <see cref="IEncoding"/> from the current service. Use this method

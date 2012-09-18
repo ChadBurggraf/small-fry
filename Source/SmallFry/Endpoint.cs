@@ -23,20 +23,23 @@ namespace SmallFry
                 throw new ArgumentNullException("endpointCollection", "endpointCollection cannot be null.");
             }
 
-            this.Route = (route ?? string.Empty).Trim();
+            this.Route = RoutePattern.Parse((route ?? string.Empty).Trim());
             this.Service = service;
             this.EndpointCollection = endpointCollection;
-            this.MethodCollection = new MethodCollection(this);
+            this.Methods = new MethodCollection(this);
+            this.ParameterTypes = new Dictionary<string, Type>();
             this.Pipeline = new Pipeline();
         }
 
         public IEndpointCollection EndpointCollection { get; private set; }
 
-        public IMethodCollection MethodCollection { get; private set; }
+        public IMethodCollection Methods { get; private set; }
+
+        public IDictionary<string, Type> ParameterTypes { get; private set; }
 
         public Pipeline Pipeline { get; private set; }
 
-        public string Route { get; private set; }
+        public RoutePattern Route { get; private set; }
 
         public Service Service { get; private set; }
     }

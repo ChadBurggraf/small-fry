@@ -194,6 +194,19 @@
         }
 
         [Test]
+        public void EndpointCollectionWithParameterType()
+        {
+            ServiceCollection services = new ServiceCollection();
+            EndpointCollection endpoints = services.WithService("Test", "/") as EndpointCollection;
+
+            endpoints.WithEndpoint("endpoint/{parameter}");
+
+            endpoints.WithParameterType<EndpointCollectionTests>("parameter");
+            Assert.IsTrue(endpoints.First().ParameterTypes.ContainsKey("parameter"));
+            Assert.AreEqual(typeof(EndpointCollectionTests), endpoints.First().ParameterTypes["parameter"]);
+        }
+
+        [Test]
         public void EndpointCollectionWithService()
         {
             ServiceCollection services = new ServiceCollection();

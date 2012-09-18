@@ -10,21 +10,8 @@
     {
         private const string WildcardFormatMessage = "A wildcard parameter must be the last segment of a route.";
 
-        public RoutePattern(string route)
+        private RoutePattern()
         {
-            route = RoutePattern.NormalizeRouteUrl(route);
-
-            if (string.IsNullOrEmpty(route))
-            {
-                throw new ArgumentNullException("route", "route must contain a value other than / or ~/.");
-            }
-
-            this.Route = route;
-            this.Segments = RoutePattern.Parse(this.Route);
-            this.IsEmpty = !this.Segments.Any();
-            this.IsAllLiteral = this.Segments.All(s => s.Tokens.All(t => t.TokenType == RouteTokenType.Literal));
-            this.IsAllOptional = this.Segments.All(s => s.Tokens.All(t => t.IsOptional));
-            this.IsAllWildcard = this.Segments.All(s => s.Tokens.All(t => t.TokenType == RouteTokenType.Wildcard));
         }
 
         public bool IsEmpty { get; private set; }
@@ -39,79 +26,222 @@
 
         public IEnumerable<RouteSegment> Segments { get; private set; }
 
-        public bool TryMatch(string url, out IDictionary<string, object> routeValues)
+        public static RoutePattern Parse(string route)
         {
-            bool matches = false;
-            url = RoutePattern.NormalizeRouteUrl(url);
-            Dictionary<string, object> d = new Dictionary<string, object>();
-            
-            if (string.IsNullOrEmpty(url))
+            route = RoutePattern.NormalizeRouteUrl(route);
+
+            if (string.IsNullOrEmpty(route))
             {
-                if (this.IsEmpty || this.IsAllOptional || this.IsAllWildcard)
-                {
-                    RoutePattern.SeedRouteValues(this.Segments, d);
-                    matches = true;
-                }
+                throw new ArgumentNullException("route", "route must contain a value other than / or ~/.");
             }
-            else
+
+            IEnumerable<RouteSegment> segments = RoutePattern.ParseAll(route);
+
+            return new RoutePattern()
             {
-                RouteSegment[] urlSegments = null;
+                Route = route,
+                Segments = segments,
+                IsEmpty = !segments.Any(),
+                IsAllLiteral = segments.All(s => s.Tokens.All(t => t.TokenType == RouteTokenType.Literal)),
+                IsAllOptional = segments.All(s => s.Tokens.All(t => t.IsOptional)),
+                IsAllWildcard = segments.All(s => s.Tokens.All(t => t.TokenType == RouteTokenType.Wildcard))
+            };
+        }
 
-                try
-                {
-                    urlSegments = RoutePattern.Parse(url).ToArray();
-                }
-                catch (FormatException)
-                {
-                }
+        public static bool TryParse(string route, out RoutePattern result)
+        {
+            bool success = false;
+            result = null;
 
-                if (urlSegments != null)
-                {
-                    int i = 0, urlLength = urlSegments.Length;
+            try
+            {
+                result = RoutePattern.Parse(route);
+                success = true;
+            }
+            catch (FormatException)
+            {
+            }
 
-                    if (urlLength > 0)
+            return success;
+        }
+
+        public IDictionary<string, object> Match(string url)
+        {
+            url = RoutePattern.NormalizeRouteUrl(url);
+
+            bool match = true;
+            Dictionary<string, object> routeValues = new Dictionary<string, object>();
+            RouteSegment[] segments = this.Segments.ToArray();
+
+            if (url.Contains('?'))
+            {
+                url = url.Split(new char[] { '?' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? string.Empty;
+            }
+
+            if (!string.IsNullOrEmpty(url))
+            {
+                RoutePattern.SeedRouteValues(segments, routeValues);
+
+                string[] urlSegments = url.Split('/');
+                int segmentCount = segments.Length, urlSegmentCount = urlSegments.Length;
+
+                // If the URL is longer than the route, the route must either be empty or have a
+                // wildcard at the end.
+                if (urlSegmentCount <= segmentCount || (segmentCount > 0 && segments[segmentCount - 1].HasWildcard))
+                {
+                    RouteSegment segment;
+                    string urlSegment;
+
+                    for (int i = 0; i < segmentCount; i++)
                     {
-                        RouteSegment[] patternSegments = this.Segments.ToArray();
-                        RoutePattern.SeedRouteValues(patternSegments, d);
-                        matches = true;
+                        segment = segments[i];
 
-                        foreach (RouteSegment segment in patternSegments)
+                        if (urlSegmentCount > i)
                         {
-                            if (urlLength > i)
+                            urlSegment = urlSegments[i];
+                            match = RoutePattern.MatchSegment(urlSegments[i], segment, routeValues);
+
+                            if (match)
                             {
-                                if (!RoutePattern.MatchSegment(segment, urlSegments[i], d))
+                                // If the matched segment has a wildcard, it means we're going to be at the end
+                                // of the route. Add the remainder of the URL to the wildcard route value.
+                                if (segment.HasWildcard)
                                 {
-                                    matches = false;
+                                    RouteToken wildcardToken = segment.Tokens.First(t => t.TokenType == RouteTokenType.Wildcard);
+                                    string value = routeValues[wildcardToken.Value] as string ?? string.Empty;
+
+                                    if (urlSegmentCount > i + 1)
+                                    {
+                                        if (!value.EndsWith("/", StringComparison.Ordinal))
+                                        {
+                                            value += "/";
+                                        }
+
+                                        value += string.Join("/", urlSegments.Skip(i + 1));
+                                        routeValues[wildcardToken.Value] = value;
+                                    }
+
+                                    break;
                                 }
                             }
                             else
                             {
-                                IEnumerable<RouteSegment> tail = patternSegments.Skip(i);
-
-                                matches = tail.All(s => s.Tokens.All(t => t.TokenType == RouteTokenType.Wildcard))
-                                    || tail.All(s => s.Tokens.All(t => t.IsOptional));
-
                                 break;
                             }
+                        }
+                        else
+                        {
+                            // If we are at the end of the URL, it only matches if we've reached a
+                            // wildcard or if all of the remaining tokens in the pattern are optional.
+                            match = segment.HasWildcard
+                                || segments.Skip(i).All(s => s.Tokens.All(t => t.IsOptional));
 
-                            i++;
+                            break;
                         }
                     }
-                    else if (this.IsEmpty || this.IsAllOptional || this.IsAllWildcard)
-                    {
-                        RoutePattern.SeedRouteValues(this.Segments, d);
-                        matches = true;
-                    }
+                }
+                else
+                {
+                    match = false;
+                }
+            }
+            else
+            {
+                // If the URL is empty, we match if the pattern is also empty,
+                // the pattern is just a wildcard, or the pattern is all optional.
+                match = segments.Length == 0
+                    || this.IsAllOptional
+                    || this.IsAllWildcard;
+
+                if (match)
+                {
+                    RoutePattern.SeedRouteValues(segments, routeValues);
                 }
             }
 
-            routeValues = matches ? d : new Dictionary<string, object>();
-            return matches;
+            return match ? routeValues : null;
         }
 
-        private static bool MatchSegment(RouteSegment patternSegment, RouteSegment urlSegment, IDictionary<string, object> routeValues)
+        public override string ToString()
         {
-            throw new NotImplementedException();
+            return this.Route;
+        }
+
+        private static bool MatchSegment(string urlSegment, RouteSegment segment, IDictionary<string, object> routeValues)
+        {
+            bool match = true;
+            RouteToken[] tokens = segment.Tokens.ToArray();
+            int start = 0, position = 0, tokenCount = tokens.Length, urlSegmentLength = urlSegment.Length;
+            RouteToken previousToken = null;
+
+            for (int i = 0; i < tokenCount; i++)
+            {
+                RouteToken token = tokens[i];
+
+                // Literals must be matched.
+                if (token.TokenType == RouteTokenType.Literal)
+                {
+                    // Find the first occurrance of the literal after our current position.
+                    start = urlSegment.IndexOf(token.Value, position, StringComparison.OrdinalIgnoreCase);
+
+                    if (start > -1)
+                    {
+                        // If the literal exists and we have a previous token, 
+                        // then that token is named. If the token is not optional,
+                        // it must exist and start must be beyound our current position.
+                        if (i > 0)
+                        {
+                            if (start > position)
+                            {
+                                routeValues[previousToken.Value] = urlSegment.Substring(position, start - position);
+                            }
+                            else if (!previousToken.IsOptional)
+                            {
+                                match = false;
+                                break;
+                            }
+                        }
+
+                        // Move the position to the end of the current token.
+                        position = start + token.Value.Length;
+                    }
+                    else
+                    {
+                        match = false;
+                        break;
+                    }
+                }
+                else if (token.TokenType == RouteTokenType.Named
+                    || token.TokenType == RouteTokenType.Wildcard)
+                {
+                    // If we're on a named or wildcard token and it is the last token,
+                    // add the remainder of the URL segment to the token's route value.
+                    if (i == tokenCount - 1)
+                    {
+                        bool hasValue = urlSegmentLength > position;
+
+                        if (hasValue
+                            || token.TokenType == RouteTokenType.Wildcard
+                            || token.IsOptional)
+                        {
+                            if (hasValue)
+                            {
+                                routeValues[token.Value] = urlSegment.Substring(position);
+                            }
+                        }
+                        else
+                        {
+                            match = false;
+                        }
+
+                        break;
+                    }
+                }
+
+                previousToken = token;
+            }
+
+            return match;
         }
 
         private static string NormalizeRouteUrl(string value)
@@ -128,15 +258,15 @@
                 value = value.Substring(2);
             }
 
-            if (value.Contains('?'))
+            if (value.EndsWith("/", StringComparison.Ordinal))
             {
-                value = value.Split('?').First().Trim();
+                value = value.Substring(0, value.Length - 1);
             }
 
             return value;
         }
 
-        private static IEnumerable<RouteSegment> Parse(string route)
+        private static IEnumerable<RouteSegment> ParseAll(string route)
         {
             List<RouteSegment> segments = new List<RouteSegment>();
             Dictionary<string, bool> lookup = new Dictionary<string, bool>();
@@ -161,7 +291,7 @@
         {
             List<RouteToken> tokens = new List<RouteToken>();
             bool hasWildcard = false, hasNamed = false, optional, wildcard;
-            int length = part.Length, start = part.IndexOf('{'), end = part.IndexOf('}'), i = 0;
+            int length = part.Length, start = part.IndexOf('{'), end = part.IndexOf('}'), i = 0, tokenCount = 0;
 
             if (start > -1)
             {
@@ -181,6 +311,7 @@
                     if (start - i > 0)
                     {
                         tokens.Add(new RouteToken(RouteTokenType.Literal, part.Substring(i, start - i), false));
+                        tokenCount = tokenCount + 1;
                         i = start;
                     }
 
@@ -206,9 +337,20 @@
                             throw new FormatException(string.Format(CultureInfo.InvariantCulture, "The route segment \"{0}\" contains a named parameter \"{1}\" that exists more than once in the route.", part, token.Value));
                         }
 
+                        if (tokenCount > 0)
+                        {
+                            RouteToken previousToken = tokens[tokenCount - 1];
+
+                            if (previousToken.TokenType != RouteTokenType.Literal)
+                            {
+                                throw new FormatException(string.Format(CultureInfo.InvariantCulture, "The route segment \"{0}\" contains two named parameters in a row without a literal separator.", part));
+                            }
+                        }
+
                         tokens.Add(token);
                         lookup[name] = true;
                         hasNamed = true;
+                        tokenCount = tokenCount + 1;
                         i = end + 1;
                     }
                     else
@@ -225,6 +367,7 @@
                 if (end < 0)
                 {
                     tokens.Add(new RouteToken(RouteTokenType.Literal, part, false));
+                    tokenCount = tokenCount + 1;
                 }
                 else
                 {

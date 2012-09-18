@@ -417,6 +417,17 @@
         }
 
         [Test]
+        public void MethodCollectionWithParameterType()
+        {
+            ServiceCollection services = new ServiceCollection();
+            EndpointCollection endpoints = services.WithService("Test", "/") as EndpointCollection;
+            MethodCollection methods = endpoints.WithEndpoint("endpoint/route") as MethodCollection;
+            methods.WithParameterType<EndpointCollectionTests>("parameter");
+            Assert.IsTrue(endpoints.First().ParameterTypes.ContainsKey("parameter"));
+            Assert.AreEqual(typeof(EndpointCollectionTests), endpoints.First().ParameterTypes["parameter"]);
+        }
+
+        [Test]
         public void MethodCollectionWithService()
         {
             ServiceCollection services = new ServiceCollection();
