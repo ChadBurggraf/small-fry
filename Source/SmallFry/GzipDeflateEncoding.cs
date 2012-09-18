@@ -49,6 +49,16 @@ namespace SmallFry
         /// <param name="outputStream">The stream to write decoded content to.</param>
         public void Decode(IEnumerable<string> acceptEncodings, Stream inputStream, Stream outputStream)
         {
+            if (inputStream == null)
+            {
+                throw new ArgumentNullException("inputStream", "inputStream cannot be null.");
+            }
+
+            if (outputStream == null)
+            {
+                throw new ArgumentNullException("outputStream", "outputStream cannot be null.");
+            }
+
             using (Stream compressionStream = this.GetCompressionStream(acceptEncodings, inputStream, CompressionMode.Decompress))
             {
                 compressionStream.CopyTo(outputStream);
@@ -65,6 +75,16 @@ namespace SmallFry
         /// <param name="outputStream">The output stream to write encoded content to.</param>
         public void Encode(IEnumerable<string> acceptEncodings, Stream inputStream, Stream outputStream)
         {
+            if (inputStream == null)
+            {
+                throw new ArgumentNullException("inputStream", "inputStream cannot be null.");
+            }
+
+            if (outputStream == null)
+            {
+                throw new ArgumentNullException("outputStream", "outputStream cannot be null.");
+            }
+
             using (Stream compressionStream = this.GetCompressionStream(acceptEncodings, outputStream, CompressionMode.Compress))
             {
                 inputStream.CopyTo(compressionStream);
