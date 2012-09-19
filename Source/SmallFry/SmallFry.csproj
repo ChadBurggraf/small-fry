@@ -75,6 +75,7 @@
     <Compile Include="PlainTextFormat.cs" />
     <Compile Include="PrimitiveRouteParameterParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ResolvedService.cs" />
     <Compile Include="RoutePattern.cs" />
     <Compile Include="RouteSegment.cs" />
     <Compile Include="RouteToken.cs" />
@@ -82,6 +83,7 @@
     <Compile Include="RouteValueBinder.cs" />
     <Compile Include="Service.cs" />
     <Compile Include="ServiceCollection.cs" />
+    <Compile Include="ServiceResolver.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

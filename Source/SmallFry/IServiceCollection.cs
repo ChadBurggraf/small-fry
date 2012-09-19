@@ -103,6 +103,7 @@ namespace SmallFry
         /// (e.g., new { id = typeof(int) }). Each type must be represented in the current host's
         /// <see cref="IRouteParameterParser"/> collection. All primitive .NET types are supported by default.</param>
         /// <returns>The new endpoint's <see cref="IMethodCollection"/>.</returns>
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed.")]
         IMethodCollection WithEndpoint(string route, object typeConstraints = null);
 
         /// <summary>

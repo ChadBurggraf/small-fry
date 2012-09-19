@@ -97,6 +97,16 @@ namespace SmallFry
             }
         }
 
+        public bool Accepts(EncodingType other)
+        {
+            return other == null
+                || other.Equals(EncodingType.Empty)
+                || this.Equals(EncodingType.Empty)
+                || this.Name.Equals(other.Name, StringComparison.OrdinalIgnoreCase)
+                || this.Name == "*"
+                || other.Name == "*";
+        }
+
         public bool Equals(EncodingType other)
         {
             if ((object)other != null)

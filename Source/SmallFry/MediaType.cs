@@ -121,6 +121,18 @@ namespace SmallFry
             }
         }
 
+        public bool Accepts(MediaType other)
+        {
+            return other == null
+                || other.Equals(MediaType.Empty)
+                || ((this.RootType.Equals(other.RootType, StringComparison.OrdinalIgnoreCase)
+                || this.RootType == "*"
+                || other.RootType == "*")
+                && (this.SubType.Equals(other.SubType, StringComparison.OrdinalIgnoreCase)
+                || this.SubType == "*"
+                || other.SubType == "*"));
+        }
+
         public bool Equals(MediaType other)
         {
             if ((object)other != null)
