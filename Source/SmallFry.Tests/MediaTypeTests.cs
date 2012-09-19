@@ -1,6 +1,7 @@
 ﻿namespace SmallFry.Tests
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using NUnit.Framework;
 
@@ -64,6 +65,47 @@
             Assert.AreEqual("q=0.5;token", MediaType.AcceptParameters.Parse("q=0.5;token").ToString());
             Assert.AreEqual("q=0.5;token;token=value", MediaType.AcceptParameters.Parse("q=0.5;token;token=value").ToString());
             Assert.AreEqual("q=0.5;token;token=value;token=\"quoted value\"", MediaType.AcceptParameters.Parse("q=0.5;token;token=value;token=\"quoted value\"").ToString());
+        }
+
+        [Test]
+        public void MediaTypeCompare()
+        {
+            List<MediaType> list = new List<MediaType>(new MediaType[]
+            {
+                MediaType.Parse("text/*"),
+                MediaType.Parse("text/html"),
+                MediaType.Parse("text/html;level=1"),
+                MediaType.Parse("*/*")
+            });
+
+            list.Sort();
+            list.Reverse();
+
+            Assert.AreEqual(MediaType.Parse("text/html;level=1"), list[0]);
+            Assert.AreEqual(MediaType.Parse("text/html"), list[1]);
+            Assert.AreEqual(MediaType.Parse("text/*"), list[2]);
+            Assert.AreEqual(MediaType.Parse("*/*"), list[3]);
+
+            list.Clear();
+
+            list.AddRange(
+                new MediaType[]
+                {
+                    MediaType.Parse("text/*;q=0.3"),
+                    MediaType.Parse("text/html;q=0.7"),
+                    MediaType.Parse("text/html;level=1"),
+                    MediaType.Parse("text/html;level=2;q=0.4"),
+                    MediaType.Parse("*/*;q=0.5")
+                });
+
+            list.Sort();
+            list.Reverse();
+
+            Assert.AreEqual("text/html;level=1", list[0].ToString());
+            Assert.AreEqual("text/html;q=0.7", list[1].ToString());
+            Assert.AreEqual("*/*;q=0.5", list[2].ToString());
+            Assert.AreEqual("text/html;level=2;q=0.4", list[3].ToString());
+            Assert.AreEqual("text/*;q=0.3", list[4].ToString());
         }
 
         [Test]

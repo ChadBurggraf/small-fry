@@ -12,7 +12,7 @@ namespace SmallFry
     using System.Linq;
     using System.Text.RegularExpressions;
 
-    internal sealed class MediaType : IEquatable<MediaType>
+    internal sealed class MediaType : IEquatable<MediaType>, IComparable<MediaType>
     {
         private static readonly Regex AcceptParamsStartExpression = new Regex(@"^\s*q\s*=.*", RegexOptions.IgnoreCase | RegexOptions.Compiled);
         private static readonly Regex ParseExpression = new Regex(@"^(\*/\*|[a-z0-9]+/\*|[a-z0-9]+/[a-z0-9]+)(.*)$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
@@ -125,12 +125,66 @@ namespace SmallFry
         {
             return other == null
                 || other.Equals(MediaType.Empty)
-                || ((this.RootType.Equals(other.RootType, StringComparison.OrdinalIgnoreCase)
-                || this.RootType == "*"
-                || other.RootType == "*")
-                && (this.SubType.Equals(other.SubType, StringComparison.OrdinalIgnoreCase)
-                || this.SubType == "*"
-                || other.SubType == "*"));
+                || this.Equals(MediaType.Empty)
+                || ((this.RootType == "*"
+                || other.RootType == "*"
+                || this.RootType.Equals(other.RootType, StringComparison.OrdinalIgnoreCase))
+                && (this.SubType == "*"
+                || other.SubType == "*"
+                || this.SubType.Equals(other.SubType, StringComparison.OrdinalIgnoreCase)));
+        }
+
+        public int CompareTo(MediaType other)
+        {
+            int result = 1;
+
+            if (other != null)
+            {
+                result = this.AcceptParams.Value.CompareTo(other.AcceptParams.Value);
+
+                if (result == 0)
+                {
+                    int rangeCount = this.RangeParams.Count();
+                    int otherRangeCount = other.RangeParams.Count();
+
+                    if (rangeCount > otherRangeCount)
+                    {
+                        result = 1;
+                    }
+                    else if (rangeCount < otherRangeCount)
+                    {
+                        result = -1;
+                    }
+                    else
+                    {
+                        if (this.SubType != "*" && other.SubType == "*")
+                        {
+                            result = 1;
+                        }
+                        else if (this.SubType == "*" && other.SubType != "*")
+                        {
+                            result = -1;
+                        }
+                        else
+                        {
+                            if (this.RootType != "*" && other.SubType == "*")
+                            {
+                                result = 1;
+                            }
+                            else if (this.SubType == "*" && other.SubType != "*")
+                            {
+                                result = -1;
+                            }
+                            else
+                            {
+                                result = this.ToString().CompareTo(other.ToString());
+                            }
+                        }
+                    }
+                }
+            }
+
+            return result;
         }
 
         public bool Equals(MediaType other)

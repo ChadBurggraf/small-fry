@@ -1,11 +1,31 @@
 ﻿namespace SmallFry.Tests
 {
     using System;
+    using System.Collections.Generic;
     using NUnit.Framework;
 
     [TestFixture]
     public sealed class EncodingTypeTests
     {
+        [Test]
+        public void EncodingTypeCompare()
+        {
+            List<EncodingType> list = new List<EncodingType>(
+                new EncodingType[]
+                {
+                    EncodingType.Parse("identity;q=0.5"),
+                    EncodingType.Parse("*;q=0"),
+                    EncodingType.Parse("gzip;q=1.0")
+                });
+
+            list.Sort();
+            list.Reverse();
+
+            Assert.AreEqual("gzip", list[0].ToString());
+            Assert.AreEqual("identity;q=0.5", list[1].ToString());
+            Assert.AreEqual("*;q=0", list[2].ToString());
+        }
+
         [Test]
         public void EncodingTypeEquals()
         {

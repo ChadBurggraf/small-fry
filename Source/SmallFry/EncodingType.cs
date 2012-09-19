@@ -11,7 +11,7 @@ namespace SmallFry
     using System.Globalization;
     using System.Text.RegularExpressions;
 
-    internal sealed class EncodingType : IEquatable<EncodingType>
+    internal sealed class EncodingType : IEquatable<EncodingType>, IComparable<EncodingType>
     {
         private static readonly Regex ParseExpression = new Regex(@"^\s*([^;]+)(\s*;\s*q\s*=\s*(\d(\.\d*)?))?\s*$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
         private static readonly EncodingType EmptyType = EncodingType.Parse(null);
@@ -102,9 +102,37 @@ namespace SmallFry
             return other == null
                 || other.Equals(EncodingType.Empty)
                 || this.Equals(EncodingType.Empty)
-                || this.Name.Equals(other.Name, StringComparison.OrdinalIgnoreCase)
                 || this.Name == "*"
-                || other.Name == "*";
+                || other.Name == "*"
+                || this.Name.Equals(other.Name, StringComparison.OrdinalIgnoreCase);
+        }
+
+        public int CompareTo(EncodingType other)
+        {
+            int result = 1;
+
+            if (other != null)
+            {
+                result = this.QValue.CompareTo(other.QValue);
+
+                if (result == 0)
+                {
+                    if (this.Name != "*" && other.Name == "*")
+                    {
+                        result = 1;
+                    }
+                    else if (this.Name == "*" && other.Name == "*")
+                    {
+                        result = -1;
+                    }
+                    else
+                    {
+                        result = this.ToString().CompareTo(other.ToString());
+                    }
+                }
+            }
+
+            return result;
         }
 
         public bool Equals(EncodingType other)

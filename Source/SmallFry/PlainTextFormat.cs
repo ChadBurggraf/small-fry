@@ -40,20 +40,20 @@ namespace SmallFry
                 throw new ArgumentNullException("type", "type cannot be null.");
             }
 
-            if (type != typeof(string))
-            {
-                throw new ArgumentException("type must identify System.String when using PlainTextFormat.", "type");
-            }
-
             if (stream == null)
             {
                 throw new ArgumentNullException("stream", "stream cannot be null.");
             }
 
-            using (StreamReader reader = new StreamReader(stream))
+            if (typeof(string).IsAssignableFrom(type))
             {
-                return reader.ReadToEnd();
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    return reader.ReadToEnd();
+                }
             }
+
+            return type.Default();
         }
 
         /// <summary>

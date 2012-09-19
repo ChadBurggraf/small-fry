@@ -12,20 +12,24 @@ namespace SmallFry
 
     internal static class Extensions
     {
-        public static bool Accepts(this IEnumerable<EncodingType> encodingTypes, string contentEncoding)
+        public static bool Accept(this IEnumerable<EncodingType> encodingTypes, EncodingType contentEncoding)
+        {
+            return encodingTypes == null
+                || !encodingTypes.Any()
+                || encodingTypes.Any(e => e.Accepts(contentEncoding));
+        }
+
+        public static bool Accept(this IEnumerable<EncodingType> encodingTypes, string contentEncoding)
         {
             bool result = true;
 
-            if (encodingTypes != null
-                && encodingTypes.Any()
-                && !encodingTypes.All(e => e.Equals(EncodingType.Empty))
-                && !string.IsNullOrEmpty(contentEncoding))
+            if (!string.IsNullOrEmpty(contentEncoding))
             {
                 EncodingType contentEncodingType;
 
                 if (EncodingType.TryParse(contentEncoding, out contentEncodingType))
                 {
-                    result = encodingTypes.Any(e => e.Accepts(contentEncodingType));
+                    result = encodingTypes.Accept(contentEncoding);
                 }
                 else
                 {
@@ -36,20 +40,24 @@ namespace SmallFry
             return result;
         }
 
-        public static bool Accepts(this IEnumerable<MediaType> mediaTypes, string contentType)
+        public static bool Accept(this IEnumerable<MediaType> mediaTypes, MediaType contentType)
+        {
+            return mediaTypes == null
+                || !mediaTypes.Any()
+                || mediaTypes.Any(m => m.Accepts(contentType));
+        }
+
+        public static bool Accept(this IEnumerable<MediaType> mediaTypes, string contentType)
         {
             bool result = true;
 
-            if (mediaTypes != null 
-                && mediaTypes.Any() 
-                && !mediaTypes.All(m => m.Equals(MediaType.Empty)) 
-                && !string.IsNullOrEmpty(contentType))
+            if (!string.IsNullOrEmpty(contentType))
             {
                 MediaType contentMediaType;
 
                 if (MediaType.TryParse(contentType, out contentMediaType))
                 {
-                    result = mediaTypes.Any(m => m.Accepts(contentMediaType));
+                    result = mediaTypes.Accept(contentMediaType);
                 }
                 else
                 {
@@ -96,6 +104,64 @@ namespace SmallFry
                     {
                     }
                 }
+            }
+        }
+
+        public static string AppendUrlPath(this string url, string path)
+        {
+            url = (url ?? string.Empty).Trim();
+            path = (path ?? string.Empty).Trim();
+
+            string result = url;
+
+            if (!string.IsNullOrEmpty(path))
+            {
+                while (url.EndsWith("/", StringComparison.Ordinal))
+                {
+                    url = url.Substring(0, url.Length - 1);
+                }
+
+                while (path.StartsWith("/", StringComparison.Ordinal))
+                {
+                    path = path.Substring(1);
+                }
+
+                bool urlEmpty = string.IsNullOrEmpty(url);
+                bool pathEmpty = string.IsNullOrEmpty(path);
+
+                if (!urlEmpty && !pathEmpty)
+                {
+                    result = url + "/" + path;
+                }
+                else if (!urlEmpty)
+                {
+                    result = url;
+                }
+                else if (!pathEmpty)
+                {
+                    result = path;
+                }
+                else
+                {
+                    result = string.Empty;
+                }
+            }
+
+            return result;
+        }
+
+        public static MethodType AsMethodType(this string value)
+        {
+            switch ((value ?? string.Empty).ToUpperInvariant())
+            {
+                case "DELETE":
+                    return MethodType.Delete;
+                case "POST":
+                    return MethodType.Post;
+                case "PUT":
+                    return MethodType.Put;
+                default:
+                    return MethodType.Get;
             }
         }
 

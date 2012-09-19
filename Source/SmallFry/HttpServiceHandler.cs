@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------------
-// <copyright file="HttpServiceHost.cs" company="Tasty Codes">
+// <copyright file="HttpServiceHandler.cs" company="Tasty Codes">
 //     Copyright (c) 2012 Chad Burggraf.
 // </copyright>
 //-----------------------------------------------------------------------------
@@ -10,27 +10,16 @@ namespace SmallFry
     using System.Web;
 
     /// <summary>
-    /// Implements <see cref="IServiceHost"/> as an <see cref="IHttpHandler"/>
-    /// for hosting HTTP services.
+    /// Handles service I/O over HTTP.
     /// </summary>
-    public sealed class HttpServiceHost : IHttpHandler, IServiceHost
+    public sealed class HttpServiceHandler : IHttpHandler
     {
-        private IServiceCollection services = new ServiceCollection();
-
         /// <summary>
         /// Gets a value indicating whether another request can use the <see cref="IHttpHandler"/> instance.
         /// </summary>
         public bool IsReusable
         {
             get { return true; }
-        }
-
-        /// <summary>
-        /// Gets the collection of services hosted by this host.
-        /// </summary>
-        public IServiceCollection Services
-        {
-            get { return this.services; }
         }
 
         /// <summary>
@@ -55,27 +44,29 @@ namespace SmallFry
                 throw new ArgumentNullException("httpContext", "httpContext cannot be null.");
             }
 
-            /*
-             *  1. Get handler-relative URL
-             *  2. Find service + endpoint + method that matches handler-relative URL
-             *  3. Invoke global encoding(s)
-             *  4. Invoke global format(s)
-             *  5. Invoke preconditions
-             *  6. Invoke endpoint method
-             *  7. Invoke postconditions
-             *  8. Invoke global format(s)
-             *  9. Invoke global encoding(s)
-             *  10. Write response
-             */
+            string url = httpContext.Request.AppRelativeCurrentExecutionFilePath.Substring(1);
+            MethodType methodType = httpContext.Request.HttpMethod.AsMethodType();
+            ResolvedService service = ServiceHost.Instance.ServiceResolver.Find(methodType, url);
 
-            // Find service endpoint + method
-            //
-            // If found
-            //     
-            // Else if services error handler
-            //
-            // Else
-            //     Respond with 404 Not Found
+            if (service != null)
+            {
+                if ((methodType == MethodType.Post
+                    || methodType == MethodType.Put)
+                    && httpContext.Request.ContentLength > 0)
+                {
+                    IEncoding requestEncoding = ServiceHost.GetEncoding(service, httpContext.Request.Headers["Content-Encoding"]) ?? new IdentityEncoding();
+                    IFormat requestFormat = ServiceHost.GetFormat(service, httpContext.Request.ContentType) ?? new PlainTextFormat();
+
+                    throw new NotImplementedException();
+                }
+            }
+            else
+            {
+                httpContext.Response.StatusCode = 404;
+                httpContext.Response.StatusDescription = "Not Found";
+            }
+
+            httpContext.Response.End();
         }
     }
 }

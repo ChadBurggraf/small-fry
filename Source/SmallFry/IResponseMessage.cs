@@ -8,6 +8,7 @@ namespace SmallFry
 {
     using System;
     using System.Collections.Specialized;
+    using System.Web;
 
     /// <summary>
     /// Defines the interface for response messages sent by a service endpoint.
@@ -17,7 +18,7 @@ namespace SmallFry
         /// <summary>
         /// Gets the collection of cookies to send with the response.
         /// </summary>
-        NameValueCollection Cookies { get; }
+        HttpCookieCollection Cookies { get; }
 
         /// <summary>
         /// Gets the collection of headers to send with the response.
@@ -35,8 +36,8 @@ namespace SmallFry
         int StatusCode { get; set; }
 
         /// <summary>
-        /// Gets or sets the status message to send with the response.
+        /// Gets or sets the status description to send with the response.
         /// </summary>
-        string StatusMessage { get; set; }
+        string StatusDescription { get; set; }
     }
 }

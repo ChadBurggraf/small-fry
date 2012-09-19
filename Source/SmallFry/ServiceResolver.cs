@@ -15,13 +15,18 @@ namespace SmallFry
         private ServiceCollection serviceCollection;
         private IDictionary<MethodType, IEnumerable<ResolvedService>> serviceLookup;
 
-        public ServiceResolver(IServiceCollection serviceCollection)
+        public ServiceResolver(ServiceCollection serviceCollection)
         {
-            this.serviceCollection = serviceCollection as ServiceCollection;
+            if (serviceCollection == null)
+            {
+                throw new ArgumentNullException("serviceCollection", "serviceCollection cannot be null.");
+            }
+
+            this.serviceCollection = serviceCollection;
             this.serviceLookup = ServiceResolver.ResolveAllServices(serviceCollection);
         }
 
-        public ResolvedService Find(MethodType methodType, MediaType accept, EncodingType acceptEncoding, string contentType, string contentEncoding, string url)
+        public ResolvedService Find(MethodType methodType, string url)
         {
             IDictionary<string, object> routeValues;
 
@@ -31,44 +36,28 @@ namespace SmallFry
 
                 if (routeValues != null)
                 {
-                    FormatFilter formatFilter = service.Formats.FirstOrDefault(
-                        f => f.MediaTypes.Any(m => m.Accepts(accept)) 
-                            && f.MediaTypes.Accepts(contentType));
+                    routeValues = this.serviceCollection.RouteValueBinder.Bind(routeValues, service.Method.Endpoint.ParameterTypes);
 
-                    if (formatFilter != null)
+                    if (routeValues != null)
                     {
-                        EncodingFilter encodingFilter = service.Encodings.FirstOrDefault(
-                            e => e.AcceptTypes.Any(t => t.Accepts(acceptEncoding)) 
-                                && e.AcceptTypes.Accepts(contentEncoding));
-
-                        if (encodingFilter != null)
-                        {
-                            routeValues = this.serviceCollection.RouteValueBinder.Bind(routeValues, service.Method.Endpoint.ParameterTypes);
-
-                            if (routeValues != null)
-                            {
-                                break;
-                            }
-                        }
+                        return new ResolvedService(service, routeValues);
                     }
                 }
             }
 
-            throw new NotImplementedException();
+            return null;
         }
 
-        private static IDictionary<MethodType, IEnumerable<ResolvedService>> ResolveAllServices(IServiceCollection serviceCollection)
+        private static IDictionary<MethodType, IEnumerable<ResolvedService>> ResolveAllServices(ServiceCollection serviceCollection)
         {
             List<ResolvedService> deleteServices = new List<ResolvedService>();
             List<ResolvedService> getServices = new List<ResolvedService>();
             List<ResolvedService> postServices = new List<ResolvedService>();
             List<ResolvedService> putServices = new List<ResolvedService>();
 
-            ServiceCollection host = serviceCollection as ServiceCollection;
-
-            if (host != null)
+            if (serviceCollection != null)
             {
-                foreach (Service service in host)
+                foreach (Service service in serviceCollection)
                 {
                     foreach (Endpoint endpoint in service.Endpoints as EndpointCollection)
                     {
@@ -76,11 +65,11 @@ namespace SmallFry
                         {
                             ResolvedService resolvedService = new ResolvedService(
                                 method,
-                                ServiceResolver.ResolveAfterActions(host.Pipeline, service.Pipeline, endpoint.Pipeline, method.Pipeline),
-                                ServiceResolver.ResolveBeforeActions(host.Pipeline, service.Pipeline, endpoint.Pipeline, method.Pipeline),
-                                ServiceResolver.ResolveEncodings(host.Pipeline, service.Pipeline, endpoint.Pipeline, method.Pipeline),
-                                ServiceResolver.ResolveErrorActions(host.Pipeline, service.Pipeline, endpoint.Pipeline, method.Pipeline),
-                                ServiceResolver.ResolveFormats(host.Pipeline, service.Pipeline, endpoint.Pipeline, method.Pipeline));
+                                ServiceResolver.ResolveAfterActions(serviceCollection.Pipeline, service.Pipeline, endpoint.Pipeline, method.Pipeline),
+                                ServiceResolver.ResolveBeforeActions(serviceCollection.Pipeline, service.Pipeline, endpoint.Pipeline, method.Pipeline),
+                                ServiceResolver.ResolveEncodings(serviceCollection.Pipeline, service.Pipeline, endpoint.Pipeline, method.Pipeline),
+                                ServiceResolver.ResolveErrorActions(serviceCollection.Pipeline, service.Pipeline, endpoint.Pipeline, method.Pipeline),
+                                ServiceResolver.ResolveFormats(serviceCollection.Pipeline, service.Pipeline, endpoint.Pipeline, method.Pipeline));
 
                             switch (method.MethodType)
                             {

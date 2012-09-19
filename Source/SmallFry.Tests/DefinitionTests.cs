@@ -24,7 +24,7 @@
             EndpointCollection endpoints = services.Last().Endpoints as EndpointCollection;
             Assert.IsNotNull(endpoints);
             Assert.IsTrue(2 <= endpoints.Count());
-            Assert.AreEqual("devices/{deviceLibraryIdentifier}/registrations/{passTypeIdentifier}", endpoints.ElementAt(1).Route.ToString());
+            Assert.AreEqual("v1/devices/{deviceLibraryIdentifier}/registrations/{passTypeIdentifier}", endpoints.ElementAt(1).Route.ToString());
 
             MethodCollection methods = endpoints.ElementAt(1).Methods as MethodCollection;
             Assert.IsNotNull(methods);
@@ -42,7 +42,7 @@
             EndpointCollection endpoints = services.Last().Endpoints as EndpointCollection;
             Assert.IsNotNull(endpoints);
             Assert.IsTrue(3 <= endpoints.Count());
-            Assert.AreEqual("devices/{deviceLibraryIdentifier}/registrations/{passTypeIdentifier}/{serialNumber}", endpoints.ElementAt(2).Route.ToString());
+            Assert.AreEqual("v1/devices/{deviceLibraryIdentifier}/registrations/{passTypeIdentifier}/{serialNumber}", endpoints.ElementAt(2).Route.ToString());
 
             MethodCollection methods = endpoints.ElementAt(2).Methods as MethodCollection;
             Assert.IsNotNull(methods);
@@ -59,7 +59,7 @@
             EndpointCollection endpoints = services.Last().Endpoints as EndpointCollection;
             Assert.IsNotNull(endpoints);
             Assert.IsTrue(endpoints.Any());
-            Assert.AreEqual("passes/{passTypeIdentifier}/{serialNumber}", endpoints.First().Route.ToString());
+            Assert.AreEqual("v1/passes/{passTypeIdentifier}/{serialNumber}", endpoints.First().Route.ToString());
 
             MethodCollection methods = endpoints.First().Methods as MethodCollection;
             Assert.IsNotNull(methods);

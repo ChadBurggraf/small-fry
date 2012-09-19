@@ -55,6 +55,23 @@ namespace SmallFry
             this.Encodings = encodings;
             this.ErrorActions = errorActions;
             this.Formats = formats;
+            this.RouteValues = new Dictionary<string, object>();
+        }
+
+        public ResolvedService(ResolvedService service, IDictionary<string, object> routeValues)
+        {
+            if (service == null)
+            {
+                throw new ArgumentNullException("service", "service cannot be null.");
+            }
+
+            this.AfterActions = new List<FilterAction>(service.AfterActions);
+            this.BeforeActions = new List<FilterAction>(service.BeforeActions);
+            this.Encodings = new List<EncodingFilter>(service.Encodings);
+            this.ErrorActions = new List<FilterAction>(service.ErrorActions);
+            this.Formats = new List<FormatFilter>(service.Formats);
+            this.Method = service.Method;
+            this.RouteValues = routeValues ?? new Dictionary<string, object>();
         }
 
         public IEnumerable<FilterAction> AfterActions { get; private set; }
@@ -68,5 +85,7 @@ namespace SmallFry
         public IEnumerable<FormatFilter> Formats { get; private set; }
 
         public Method Method { get; private set; }
+
+        public IDictionary<string, object> RouteValues { get; private set; }
     }
 }

@@ -24,7 +24,7 @@ namespace SmallFry
                 throw new ArgumentNullException("endpointCollection", "endpointCollection cannot be null.");
             }
 
-            this.Route = RoutePattern.Parse((route ?? string.Empty).Trim());
+            this.Route = RoutePattern.Parse(service.BaseUrl.AppendUrlPath(route));
             this.Service = service;
             this.EndpointCollection = endpointCollection;
             this.Methods = new MethodCollection(this);

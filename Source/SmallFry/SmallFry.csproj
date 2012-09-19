@@ -52,7 +52,11 @@
     <Compile Include="FilterAction{T}.cs" />
     <Compile Include="FormatFilter.cs" />
     <Compile Include="GzipDeflateEncoding.cs" />
-    <Compile Include="HttpServiceHost.cs" />
+    <Compile Include="HttpRequestMessage.cs" />
+    <Compile Include="HttpRequestMessage{T}.cs" />
+    <Compile Include="HttpResponseMessage.cs" />
+    <Compile Include="HttpServiceHandler.cs" />
+    <Compile Include="IdentityEncoding.cs" />
     <Compile Include="IEncoding.cs" />
     <Compile Include="IEndpointCollection.cs" />
     <Compile Include="IFormat.cs" />
@@ -83,6 +87,7 @@
     <Compile Include="RouteValueBinder.cs" />
     <Compile Include="Service.cs" />
     <Compile Include="ServiceCollection.cs" />
+    <Compile Include="ServiceHost.cs" />
     <Compile Include="ServiceResolver.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
