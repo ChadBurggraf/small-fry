@@ -176,14 +176,14 @@ namespace SmallFry
             return removed;
         }
 
-        public IMethodCollection WithEndpoint(string route)
+        public IMethodCollection WithEndpoint(string route, object typeConstraints = null)
         {
             if (this.CurrentService == null)
             {
                 throw new InvalidOperationException(ServiceCollection.CurrentServiceNotSetMessage);
             }
 
-            return this.CurrentService.Endpoints.WithEndpoint(route);
+            return this.CurrentService.Endpoints.WithEndpoint(route, typeConstraints);
         }
 
         public IServiceCollection WithHostEncoding(string accept, IEncoding encoding)
@@ -198,7 +198,7 @@ namespace SmallFry
             return this;
         }
 
-        public IServiceCollection WithHostRouteParameterParser(IRouteParameterParser parser)
+        public IServiceCollection WithHostParameterParser(IRouteParameterParser parser)
         {
             this.RouteValueBinder.AddParser(parser);
             return this;

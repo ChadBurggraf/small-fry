@@ -281,6 +281,22 @@
         }
 
         [Test]
+        public void MethodCollectionWithEndpoint()
+        {
+            ServiceCollection services = new ServiceCollection();
+            EndpointCollection endpoints = services.WithService("Test", "/") as EndpointCollection;
+
+            MethodCollection methods = endpoints.WithEndpoint("accounts/{id}") as MethodCollection;
+            Assert.AreEqual(1, endpoints.Count());
+            Assert.AreEqual(0, endpoints.First().ParameterTypes.Count);
+
+            methods.WithEndpoint("foo/{id}/bar", new { id = typeof(long) });
+            Assert.AreEqual(2, endpoints.Count());
+            Assert.IsTrue(endpoints.Last().ParameterTypes.ContainsKey("id"));
+            Assert.AreEqual(typeof(long), endpoints.Last().ParameterTypes["id"]);
+        }
+
+        [Test]
         public void MethodCollectionWithHostEncoding()
         {
             ServiceCollection services = new ServiceCollection();
@@ -298,6 +314,17 @@
             MethodCollection methods = endpoints.WithEndpoint("endpoint/route") as MethodCollection;
             methods.WithHostFormat("application/json", new JsonFormat());
             Assert.AreEqual(1, services.Pipeline.Formats.Count);
+        }
+
+        [Test]
+        public void MethodCollectionWithHostParameterParser()
+        {
+            ServiceCollection services = new ServiceCollection();
+            EndpointCollection endpoints = services.WithService("Test", "/") as EndpointCollection;
+            MethodCollection methods = endpoints.WithEndpoint("endpoint/route") as MethodCollection;
+            Assert.IsFalse(services.RouteValueBinder.HasParserForType(typeof(Service)));
+            methods.WithHostParameterParser(new NoOpRouteParameterParser(new Type[] { typeof(Service) }));
+            Assert.IsTrue(services.RouteValueBinder.HasParserForType(typeof(Service)));
         }
 
         [Test]
@@ -414,17 +441,6 @@
             MethodCollection methods = endpoints.WithEndpoint("endpoint/route") as MethodCollection;
             methods.WithoutServiceFormat("application/json", new JsonFormat());
             Assert.AreEqual(1, services.First().Pipeline.ExcludeFormats.Count);
-        }
-
-        [Test]
-        public void MethodCollectionWithParameterType()
-        {
-            ServiceCollection services = new ServiceCollection();
-            EndpointCollection endpoints = services.WithService("Test", "/") as EndpointCollection;
-            MethodCollection methods = endpoints.WithEndpoint("endpoint/route") as MethodCollection;
-            methods.WithParameterType<EndpointCollectionTests>("parameter");
-            Assert.IsTrue(endpoints.First().ParameterTypes.ContainsKey("parameter"));
-            Assert.AreEqual(typeof(EndpointCollectionTests), endpoints.First().ParameterTypes["parameter"]);
         }
 
         [Test]

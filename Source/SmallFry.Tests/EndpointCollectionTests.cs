@@ -104,6 +104,22 @@
         }
 
         [Test]
+        public void EndpointCollectionWithEndpoint()
+        {
+            ServiceCollection services = new ServiceCollection();
+            EndpointCollection endpoints = services.WithService("Test", "/") as EndpointCollection;
+
+            endpoints.WithEndpoint("accounts/{id}");
+            Assert.AreEqual(1, endpoints.Count());
+            Assert.AreEqual(0, endpoints.First().ParameterTypes.Count);
+
+            endpoints.WithEndpoint("foo/{id}/bar", new { id = typeof(long) });
+            Assert.AreEqual(2, endpoints.Count());
+            Assert.IsTrue(endpoints.Last().ParameterTypes.ContainsKey("id"));
+            Assert.AreEqual(typeof(long), endpoints.Last().ParameterTypes["id"]);
+        }
+
+        [Test]
         public void EndpointCollectionWithHostEncoding()
         {
             ServiceCollection services = new ServiceCollection();
@@ -119,6 +135,16 @@
             EndpointCollection endpoints = services.WithService("Test", "/") as EndpointCollection;
             endpoints.WithHostFormat("application/json", new JsonFormat());
             Assert.AreEqual(1, services.Pipeline.Formats.Count);
+        }
+
+        [Test]
+        public void EndpointCollectionWithHostParameterParser()
+        {
+            ServiceCollection services = new ServiceCollection();
+            EndpointCollection endpoints = services.WithService("Test", "/") as EndpointCollection;
+            Assert.IsFalse(services.RouteValueBinder.HasParserForType(typeof(Service)));
+            endpoints.WithHostParameterParser(new NoOpRouteParameterParser(new Type[] { typeof(Service) }));
+            Assert.IsTrue(services.RouteValueBinder.HasParserForType(typeof(Service)));
         }
 
         [Test]
@@ -191,19 +217,6 @@
 
             endpoints.WithoutServiceFormat("application/json", new JsonFormat());
             Assert.AreEqual(1, services.First().Pipeline.ExcludeFormats.Count);
-        }
-
-        [Test]
-        public void EndpointCollectionWithParameterType()
-        {
-            ServiceCollection services = new ServiceCollection();
-            EndpointCollection endpoints = services.WithService("Test", "/") as EndpointCollection;
-
-            endpoints.WithEndpoint("endpoint/{parameter}");
-
-            endpoints.WithParameterType<EndpointCollectionTests>("parameter");
-            Assert.IsTrue(endpoints.First().ParameterTypes.ContainsKey("parameter"));
-            Assert.AreEqual(typeof(EndpointCollectionTests), endpoints.First().ParameterTypes["parameter"]);
         }
 
         [Test]

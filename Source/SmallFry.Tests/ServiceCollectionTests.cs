@@ -50,6 +50,22 @@
         }
 
         [Test]
+        public void ServiceCollectionWithEndpoint()
+        {
+            ServiceCollection services = new ServiceCollection();
+            EndpointCollection endpoints = services.WithService("Test", "/") as EndpointCollection;
+
+            services.WithEndpoint("accounts/{id}");
+            Assert.AreEqual(1, endpoints.Count());
+            Assert.AreEqual(0, endpoints.First().ParameterTypes.Count);
+
+            services.WithEndpoint("foo/{id}/bar", new { id = typeof(long) });
+            Assert.AreEqual(2, endpoints.Count());
+            Assert.IsTrue(endpoints.Last().ParameterTypes.ContainsKey("id"));
+            Assert.AreEqual(typeof(long), endpoints.Last().ParameterTypes["id"]);
+        }
+
+        [Test]
         public void ServiceCollectionWithHostEncoding()
         {
             ServiceCollection services = new ServiceCollection();
@@ -66,11 +82,11 @@
         }
 
         [Test]
-        public void ServiceCollectionWithHostRouteParameterParser()
+        public void ServiceCollectionWithHostParameterParser()
         {
             ServiceCollection services = new ServiceCollection();
             Assert.IsFalse(services.RouteValueBinder.HasParserForType(typeof(Service)));
-            services.WithHostRouteParameterParser(new NoOpRouteParameterParser(new Type[] { typeof(Service) }));
+            services.WithHostParameterParser(new NoOpRouteParameterParser(new Type[] { typeof(Service) }));
             Assert.IsTrue(services.RouteValueBinder.HasParserForType(typeof(Service)));
         }
 

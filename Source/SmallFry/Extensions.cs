@@ -12,6 +12,45 @@ namespace SmallFry
 
     internal static class Extensions
     {
+        public static void AddDynamic(this IDictionary<string, object> dictionary, object values)
+        {
+            dictionary.AddDynamic<object>(values);
+        }
+
+        public static void AddDynamic<T>(this IDictionary<string, T> dictionary, object values)
+        {
+            if (dictionary == null)
+            {
+                throw new ArgumentNullException("dictionary", "dictionary cannot be null.");
+            }
+
+            if (values != null)
+            {
+                Type type = typeof(T);
+
+                foreach (var p in values.GetType().GetProperties())
+                {
+                    try
+                    {
+                        object value = p.GetValue(values, null);
+
+                        if (value == null)
+                        {
+                            value = type.Default();
+                        }
+
+                        if (value == null || type.IsAssignableFrom(value.GetType()))
+                        {
+                            dictionary.Add(p.Name, (T)value);
+                        }
+                    }
+                    catch
+                    {
+                    }
+                }
+            }
+        }
+
         public static string Coalesce(this string value, string fallback, bool includeWhitespace = true)
         {
             string result;
@@ -59,6 +98,16 @@ namespace SmallFry
             }
 
             return result;
+        }
+
+        public static object Default(this Type type)
+        {
+            if (type == null)
+            {
+                throw new ArgumentNullException("type", "type cannot be null.");
+            }
+
+            return type.IsValueType ? Activator.CreateInstance(type) : null;
         }
 
         public static bool EqualsFloat(this float left, float right, float margin)

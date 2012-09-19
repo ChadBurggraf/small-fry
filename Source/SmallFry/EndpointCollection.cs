@@ -123,9 +123,10 @@ namespace SmallFry
             return removed;
         }
 
-        public IMethodCollection WithEndpoint(string route)
+        public IMethodCollection WithEndpoint(string route, object typeConstraints = null)
         {
             Endpoint endpoint = new Endpoint(route, this.Service, this);
+            endpoint.ParameterTypes.AddDynamic(typeConstraints);
             this.Add(endpoint);
             this.CurrentEndpoint = endpoint;
             return endpoint.Methods;
@@ -139,22 +140,6 @@ namespace SmallFry
         public IEndpointCollection WithoutServiceFormat(string mediaTypes, IFormat format)
         {
             return this.Service.ServiceCollection.WithoutServiceFormat(mediaTypes, format);
-        }
-
-        public IMethodCollection WithParameterType<T>(string name)
-        {
-            if (this.CurrentEndpoint == null)
-            {
-                throw new InvalidOperationException(EndpointCollection.CurrentEndpointNotSetMessage);
-            }
-
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new ArgumentNullException("name", "name must contain a value.");
-            }
-
-            this.CurrentEndpoint.ParameterTypes[name] = typeof(T);
-            return this.CurrentEndpoint.Methods;
         }
 
         public IEndpointCollection WithService(string name, string baseUrl)
@@ -291,9 +276,9 @@ namespace SmallFry
             return this.Service.ServiceCollection.WithHostFormat(mediaTypes, format);
         }
 
-        public IServiceCollection WithHostRouteParameterParser(IRouteParameterParser parser)
+        public IServiceCollection WithHostParameterParser(IRouteParameterParser parser)
         {
-            return this.Service.ServiceCollection.WithHostRouteParameterParser(parser);
+            return this.Service.ServiceCollection.WithHostParameterParser(parser);
         }
 
         public IMethodCollection WithoutAfterEndpoint(Func<bool> action)

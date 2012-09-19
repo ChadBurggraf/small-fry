@@ -171,15 +171,5 @@ namespace SmallFry
         /// <param name="action">The action to perform.</param>
         /// <returns>The current endpoint's <see cref="IMethodCollection"/>.</returns>
         IMethodCollection WithoutErrorEndpoint<T>(Func<Exception, IRequestMessage<T>, IResponseMessage, bool> action);
-
-        /// <summary>
-        /// Adds a parameter type constraint to the route parameter with the given name. Requires that the
-        /// necessary <see cref="IRouteParameterParser"/> has been registered with the <see cref="IServiceCollection"/>.
-        /// All primitive .NET types are registered by default.
-        /// </summary>
-        /// <typeparam name="T">The type to constraint and parse the parameter into.</typeparam>
-        /// <param name="name">The name of the parameter to constraint.</param>
-        /// <returns>The current endpoint's <see cref="IMethodCollection"/>.</returns>
-        IMethodCollection WithParameterType<T>(string name);
     }
 }

@@ -64,7 +64,7 @@ namespace SmallFry
                 throw new ArgumentNullException("name", "name must contain a value.");
             }
 
-            object result = type.IsValueType ? Activator.CreateInstance(type) : null;
+            object result = type.Default();
             value = (value ?? string.Empty).Trim();
 
             if (!string.IsNullOrEmpty(value))

@@ -35,40 +35,42 @@
             }
         }
 
-        public void Bind(IDictionary<string, object> routeValues, IDictionary<string, Type> types)
+        public IDictionary<string, object> Bind(IDictionary<string, object> routeValues, IDictionary<string, Type> types)
         {
             if (routeValues == null)
             {
                 throw new ArgumentNullException("routeValues", "routeValues cannot be null.");
             }
 
+            Dictionary<string, object> result = new Dictionary<string, object>(routeValues);
+            bool success = true;
+
             if (types != null)
             {
+                string name, value;
+                Type type;
+
                 foreach (KeyValuePair<string, Type> pair in types)
                 {
-                    if (routeValues.ContainsKey(pair.Key) && pair.Value != null)
-                    {
-                        string routeValue = routeValues[pair.Key] as string;
+                    name = pair.Key;
+                    type = pair.Value;
 
-                        if (!string.IsNullOrEmpty(routeValue))
+                    if (result.ContainsKey(name) && type != null)
+                    {
+                        value = result[name] as string;
+
+                        if (!string.IsNullOrEmpty(value))
                         {
-                            if (this.parserLookup.ContainsKey(pair.Value))
+                            if (this.parserLookup.ContainsKey(type))
                             {
                                 try
                                 {
-                                    //routeValues[pair.Key] = this.Parsers[pair.Value].
+                                    result[name] = this.parserLookup[type].Parse(type, name, value);
                                 }
-                                catch (Exception ex)
+                                catch
                                 {
-                                    throw new InvalidOperationException(
-                                        string.Format(
-                                            CultureInfo.InvariantCulture, 
-                                            "Failed to parse route parameter \"{0}\" ({1}) with parser {3} into {4}.", 
-                                            pair.Key, 
-                                            routeValues[pair.Key],
-                                            this.parserLookup[pair.Value], 
-                                            pair.Value), 
-                                        ex);
+                                    success = false;
+                                    break;
                                 }
                             }
                             else
@@ -84,6 +86,8 @@
                     }
                 }
             }
+
+            return success ? result : null;
         }
 
         public bool HasParserForType(Type type)

@@ -99,8 +99,11 @@ namespace SmallFry
         /// identified by a quest mark (e.g., "accounts/{id}/{?emailAddress}"). You may add a wildcard
         /// parameter to the end of the route to capture arbitrary paths 
         /// (e.g., "accounts/{id}/{?emailAddress}/{*pathInfo}").</param>
+        /// <param name="typeConstraints">An object describing the type constraints of the route
+        /// (e.g., new { id = typeof(int) }). Each type must be represented in the current host's
+        /// <see cref="IRouteParameterParser"/> collection. All primitive .NET types are supported by default.</param>
         /// <returns>The new endpoint's <see cref="IMethodCollection"/>.</returns>
-        IMethodCollection WithEndpoint(string route);
+        IMethodCollection WithEndpoint(string route, object typeConstraints = null);
 
         /// <summary>
         /// Adds an encoding to the current <see cref="IServiceHost"/> and returns the
@@ -132,10 +135,10 @@ namespace SmallFry
         /// parameter type handling to all services. Note that all primitive .NET types are handled
         /// by the default <see cref="IRouteParameterParser"/> implementation.
         /// </summary>
-        /// <param name="parser">An <see cref="IRouteParameterParser"/> that can be used for cust
+        /// <param name="parser">An <see cref="IRouteParameterParser"/> that can be used for custom
         /// route parameter type handling.</param>
         /// <returns>The root <see cref="IServiceCollection"/>.</returns>
-        IServiceCollection WithHostRouteParameterParser(IRouteParameterParser parser);
+        IServiceCollection WithHostParameterParser(IRouteParameterParser parser);
 
         /// <summary>
         /// Removes a <see cref="IEncoding"/> from the current service. Use this method

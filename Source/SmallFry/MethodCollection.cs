@@ -357,9 +357,9 @@ namespace SmallFry
             return removed;
         }
 
-        public IMethodCollection WithEndpoint(string route)
+        public IMethodCollection WithEndpoint(string route, object typeConstraints = null)
         {
-            return this.Endpoint.EndpointCollection.WithEndpoint(route);
+            return this.Endpoint.EndpointCollection.WithEndpoint(route, typeConstraints);
         }
 
         public IServiceCollection WithHostEncoding(string accept, IEncoding encoding)
@@ -372,9 +372,9 @@ namespace SmallFry
             return this.Endpoint.EndpointCollection.WithHostFormat(mediaTypes, format);
         }
 
-        public IServiceCollection WithHostRouteParameterParser(IRouteParameterParser parser)
+        public IServiceCollection WithHostParameterParser(IRouteParameterParser parser)
         {
-            return this.Endpoint.EndpointCollection.WithHostRouteParameterParser(parser);
+            return this.Endpoint.EndpointCollection.WithHostParameterParser(parser);
         }
 
         public IMethodCollection WithoutAfterEndpoint(Func<bool> action)
@@ -529,11 +529,6 @@ namespace SmallFry
         public IEndpointCollection WithoutServiceFormat(string mediaTypes, IFormat format)
         {
             return this.Endpoint.EndpointCollection.WithoutServiceFormat(mediaTypes, format);
-        }
-
-        public IMethodCollection WithParameterType<T>(string name)
-        {
-            return this.Endpoint.EndpointCollection.WithParameterType<T>(name);
         }
 
         public IEndpointCollection WithService(string name, string baseUrl)
