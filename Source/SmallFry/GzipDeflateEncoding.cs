@@ -18,52 +18,53 @@ namespace SmallFry
     /// </summary>
     public class GzipDeflateEncoding : IEncoding
     {
-        private static readonly string[] Accept = new string[] { "gzip", "deflate" };
+        private static readonly EncodingType Deflate = EncodingType.Parse("deflate");
+        private static readonly EncodingType Gzip = EncodingType.Parse("gzip");
 
         /// <summary>
-        /// Gets a collection of content-encoding values this instance can decode.
+        /// Gets a value indicating whether this instance can decode the given <see cref="EncodingType"/>.
         /// </summary>
-        public virtual IEnumerable<string> AcceptableEncodings
+        /// <param name="encodingType">The <see cref="EncodingType"/> to decode.</param>
+        /// <returns>True if this instance can decode the <see cref="EncodingType"/>, false otherwise.</returns>
+        public bool CanDecode(EncodingType encodingType)
         {
-            get { return GzipDeflateEncoding.Accept; }
+            if (encodingType == null)
+            {
+                throw new ArgumentNullException("encodingType", "encodingType cannot be null.");
+            }
+
+            return GzipDeflateEncoding.Deflate.Accepts(encodingType) || GzipDeflateEncoding.Gzip.Accepts(encodingType);
         }
 
         /// <summary>
-        /// Gets a content-encoding from the given collection of acceptable encodings
-        /// this instance can encode. If none of the given encodings can be encoded by
-        /// this instance, returns null.
+        /// Gets a value indicating whether this instance can encode the given <see cref="EncodingType"/>.
         /// </summary>
-        /// <param name="acceptEncodings">A collection of acceptable encoding values.</param>
-        /// <returns>A content encoding value, or null if none of the acceptable encodings can be encoded.</returns>
-        public virtual string ContentEncoding(IEnumerable<string> acceptEncodings)
+        /// <param name="encodingType">The <see cref="EncodingType"/> to encode.</param>
+        /// <returns>True if this instance can encode the <see cref="EncodingType"/>, false otherwise.</returns>
+        public bool CanEncode(EncodingType encodingType)
         {
-            string result = null;
-
-            if (acceptEncodings != null)
+            if (encodingType == null)
             {
-                if (acceptEncodings.Any(e => "gzip".Equals(e, StringComparison.OrdinalIgnoreCase)))
-                {
-                    result = "gzip";
-                }
-                else if (acceptEncodings.Any(e => "deflate".Equals(e, StringComparison.OrdinalIgnoreCase)))
-                {
-                    result = "deflate";
-                }
+                throw new ArgumentNullException("encodingType", "encodingType cannot be null.");
             }
 
-            return result;
+            return encodingType.Accepts(GzipDeflateEncoding.Deflate) || encodingType.Accepts(GzipDeflateEncoding.Gzip);
         }
 
         /// <summary>
         /// Decodes an input stream and writes the decoded content to the
         /// given output stream.
         /// </summary>
-        /// <param name="acceptEncodings">The collection of acceptable encoding values used
-        /// to choose this encoding.</param>
+        /// <param name="encodingType">The <see cref="EncodingType"/> to decode.</param>
         /// <param name="inputStream">The stream to read encoded content from.</param>
         /// <param name="outputStream">The stream to write decoded content to.</param>
-        public void Decode(IEnumerable<string> acceptEncodings, Stream inputStream, Stream outputStream)
+        public void Decode(EncodingType encodingType, Stream inputStream, Stream outputStream)
         {
+            if (encodingType == null)
+            {
+                throw new ArgumentNullException("encodingType", "encodingType cannot be null.");
+            }
+
             if (inputStream == null)
             {
                 throw new ArgumentNullException("inputStream", "inputStream cannot be null.");
@@ -74,7 +75,7 @@ namespace SmallFry
                 throw new ArgumentNullException("outputStream", "outputStream cannot be null.");
             }
 
-            using (Stream compressionStream = this.GetCompressionStream(acceptEncodings, inputStream, CompressionMode.Decompress))
+            using (Stream compressionStream = this.GetCompressionStream(encodingType, inputStream, CompressionMode.Decompress))
             {
                 compressionStream.CopyTo(outputStream);
             }
@@ -84,12 +85,16 @@ namespace SmallFry
         /// Encodes an input stream and writes the encoded content to the
         /// given output stream.
         /// </summary>
-        /// <param name="acceptEncodings">The collection of acceptable encoding values used
-        /// to choose this encoding.</param>
+        /// <param name="encodingType">The <see cref="EncodingType"/> to encode</param>
         /// <param name="inputStream">The input stream to read content from.</param>
         /// <param name="outputStream">The output stream to write encoded content to.</param>
-        public void Encode(IEnumerable<string> acceptEncodings, Stream inputStream, Stream outputStream)
+        public void Encode(EncodingType encodingType, Stream inputStream, Stream outputStream)
         {
+            if (encodingType == null)
+            {
+                throw new ArgumentNullException("encodingType", "encodingType cannot be null.");
+            }
+
             if (inputStream == null)
             {
                 throw new ArgumentNullException("inputStream", "inputStream cannot be null.");
@@ -100,7 +105,7 @@ namespace SmallFry
                 throw new ArgumentNullException("outputStream", "outputStream cannot be null.");
             }
 
-            using (Stream compressionStream = this.GetCompressionStream(acceptEncodings, outputStream, CompressionMode.Compress))
+            using (Stream compressionStream = this.GetCompressionStream(encodingType, outputStream, CompressionMode.Compress))
             {
                 inputStream.CopyTo(compressionStream);
             }
@@ -141,16 +146,20 @@ namespace SmallFry
         }
 
         /// <summary>
-        /// Gets one of <see cref="GZipStream"/> or <see cref="DeflateStream"/> for the given collection of accept-encodings.
-        /// This method should call <see cref="ContentEncoding(IEnumerable<strong>)"/> to determine the accept-encoding to pick.
+        /// Gets one of <see cref="GZipStream"/> or <see cref="DeflateStream"/> for the given <see cref="EncodingType"/>.
         /// </summary>
-        /// <param name="acceptEncodings">The collection of accept-encoding values used to choose the encoding.</param>
+        /// <param name="acceptEncodings">The <see cref="EncodingType"/> to get the compression stream for..</param>
         /// <param name="inputStream">The input stream to read from.</param>
         /// <param name="mode">The compression mode to use.</param>
         /// <returns>A stream to use for compression.</returns>
-        protected virtual Stream GetCompressionStream(IEnumerable<string> acceptEncodings, Stream inputStream, CompressionMode mode)
+        protected virtual Stream GetCompressionStream(EncodingType encodingType, Stream inputStream, CompressionMode mode)
         {
-            return "deflate".Equals(this.ContentEncoding(acceptEncodings), StringComparison.OrdinalIgnoreCase)
+            if (encodingType == null)
+            {
+                throw new ArgumentNullException("encodingType", "encodingType cannot be null.");
+            }
+
+            return "deflate".Equals(encodingType.Name, StringComparison.OrdinalIgnoreCase)
                 ? new DeflateStream(inputStream, mode) as Stream
                 : new GZipStream(inputStream, mode) as Stream;
         }

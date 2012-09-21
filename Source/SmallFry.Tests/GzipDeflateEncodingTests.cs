@@ -20,11 +20,19 @@ Mauris libero elit, sodales nec tristique vel, vehicula quis odio. Mauris suscip
 Aliquam erat volutpat. Cras magna est, aliquet sit amet vestibulum facilisis, accumsan at nibh. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Vivamus nec ipsum nulla. Donec euismod sem et dolor auctor eu ultricies risus rutrum. Donec vel elit lorem. Vivamus ac pulvinar sem.";
 
         [Test]
-        public void GzipDeflateEncodingContentType()
+        public void GzipDeflateEncodingCanDecode()
         {
-            Assert.IsNull(new GzipDeflateEncoding().ContentEncoding(new string[] { "foo", "bar" }));
-            Assert.AreEqual("gzip", new GzipDeflateEncoding().ContentEncoding(new string[] { "gzip", "deflate" }));
-            Assert.AreEqual("deflate", new GzipDeflateEncoding().ContentEncoding(new string[] { "deflate" }));
+            Assert.IsTrue(new GzipDeflateEncoding().CanDecode(EncodingType.Parse("deflate")));
+            Assert.IsTrue(new GzipDeflateEncoding().CanDecode(EncodingType.Parse("gzip")));
+            Assert.IsFalse(new GzipDeflateEncoding().CanDecode(EncodingType.Parse("compress")));
+        }
+
+        [Test]
+        public void GzipDeflateEncodingCanEncode()
+        {
+            Assert.IsTrue(new GzipDeflateEncoding().CanEncode(EncodingType.Parse("deflate")));
+            Assert.IsTrue(new GzipDeflateEncoding().CanEncode(EncodingType.Parse("gzip")));
+            Assert.IsFalse(new GzipDeflateEncoding().CanEncode(EncodingType.Parse("compress")));
         }
 
         [Test]
@@ -86,7 +94,7 @@ Aliquam erat volutpat. Cras magna est, aliquet sit amet vestibulum facilisis, ac
             {
                 using (MemoryStream outputStream = new MemoryStream())
                 {
-                    new GzipDeflateEncoding().Decode(new string[] { encoding }, inputStream, outputStream);
+                    new GzipDeflateEncoding().Decode(EncodingType.Parse(encoding), inputStream, outputStream);
                     decoded = outputStream.ToArray();
                 }
             }
@@ -104,7 +112,7 @@ Aliquam erat volutpat. Cras magna est, aliquet sit amet vestibulum facilisis, ac
 
                 using (MemoryStream outputStream = new MemoryStream())
                 {
-                    new GzipDeflateEncoding().Encode(new string[] { encoding }, inputStream, outputStream);
+                    new GzipDeflateEncoding().Encode(EncodingType.Parse(encoding), inputStream, outputStream);
                     encoded = outputStream.ToArray();
                 }
             }
