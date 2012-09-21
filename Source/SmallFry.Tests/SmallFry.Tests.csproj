@@ -55,6 +55,7 @@
     <Compile Include="EndpointCollectionTests.cs" />
     <Compile Include="FilterActionTests.cs" />
     <Compile Include="FormatFilterTests.cs" />
+    <Compile Include="FunctionTests.cs" />
     <Compile Include="GzipDeflateEncodingTests.cs" />
     <Compile Include="MediaTypeTests.cs" />
     <Compile Include="MethodCollectionTests.cs" />

@@ -51,6 +51,8 @@
     <Compile Include="FilterActionResult.cs" />
     <Compile Include="FilterAction{T}.cs" />
     <Compile Include="FormatFilter.cs" />
+    <Compile Include="ActionApply.cs" />
+    <Compile Include="FuncApply.cs" />
     <Compile Include="GzipDeflateEncoding.cs" />
     <Compile Include="HttpRequestMessage.cs" />
     <Compile Include="HttpRequestMessage{T}.cs" />
