@@ -12,7 +12,10 @@ namespace SmallFry
     using System.Linq;
     using System.Text.RegularExpressions;
 
-    internal sealed class MediaType : IEquatable<MediaType>, IComparable<MediaType>
+    /// <summary>
+    /// Represents a Content-Type.
+    /// </summary>
+    public sealed class MediaType : IEquatable<MediaType>, IComparable<MediaType>
     {
         private static readonly Regex AcceptParamsStartExpression = new Regex(@"^\s*q\s*=.*", RegexOptions.IgnoreCase | RegexOptions.Compiled);
         private static readonly Regex ParseExpression = new Regex(@"^(\*/\*|[a-z0-9]+/\*|[a-z0-9]+/[a-z0-9]+)(.*)$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
@@ -22,29 +25,62 @@ namespace SmallFry
         {
         }
 
+        /// <summary>
+        /// Gets the empty <see cref="MediaType"/> instance.
+        /// </summary>
         public static MediaType Empty
         {
             get { return MediaType.EmptyType; }
         }
 
+        /// <summary>
+        /// Gets the <see cref="AcceptParameters"/> identified by this instance.
+        /// </summary>
         public AcceptParameters AcceptParams { get; private set; }
 
+        /// <summary>
+        /// Gets the range parameters identified by this instance.
+        /// </summary>
         public IEnumerable<string> RangeParams { get; private set; }
 
+        /// <summary>
+        /// Gets the root content type.
+        /// </summary>
         public string RootType { get; private set; }
 
+        /// <summary>
+        /// Gets the sub content type.
+        /// </summary>
         public string SubType { get; private set; }
 
+        /// <summary>
+        /// Gets a value indicating whether two <see cref="MediaType"/>s are equal.
+        /// </summary>
+        /// <param name="left">The left <see cref="MediaType"/> to compare.</param>
+        /// <param name="right">The right <see cref="MediaType"/> to compare.</param>
+        /// <returns>True if the <see cref="MediaType"/>s are equal, false otherwise.</returns>
         public static bool operator ==(MediaType left, MediaType right)
         {
             return Extensions.EqualsOperator(left, right);
         }
 
+        /// <summary>
+        /// Gets a value indicating whether two <see cref="MediaType"/>s are not equal.
+        /// </summary>
+        /// <param name="left">The left <see cref="MediaType"/> to compare.</param>
+        /// <param name="right">The right <see cref="MediaType"/> to compare.</param>
+        /// <returns>True if the <see cref="MediaType"/>s are not equal, false otherwise.</returns>
         public static bool operator !=(MediaType left, MediaType right)
         {
             return !(left == right);
         }
 
+        /// <summary>
+        /// Parses an Content-Type value into a <see cref="MediaType"/> instance.
+        /// See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html for formatting information.
+        /// </summary>
+        /// <param name="value">The Content-Type value to parse.</param>
+        /// <returns>The parsed <see cref="MediaType"/>.</returns>
         public static MediaType Parse(string value)
         {
             if (string.IsNullOrWhiteSpace(value))
@@ -106,6 +142,13 @@ namespace SmallFry
             }
         }
 
+        /// <summary>
+        /// Attempts to parse the given Content-Encoding value into an <see cref="MediaType"/> instance.
+        /// See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html for formatting information.
+        /// </summary>
+        /// <param name="value">The Content-Type value to parse.</param>
+        /// <param name="result">The parsed <see cref="MediaType"/>.</param>
+        /// <returns>True if the value was successfully parsed, otherwise false.</returns>
         public static bool TryParse(string value, out MediaType result)
         {
             result = null;
@@ -121,8 +164,28 @@ namespace SmallFry
             }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether this instance represents a superset of the given instance
+        /// (i.e., the given instance is less specific, or this instance represents the wildcard type, etc.).
+        /// </summary>
+        /// <param name="other">The <see cref="MediaType"/> to compare with this instance.</param>
+        /// <returns>True if this instance accepts the given instance, false otherwise.</returns>
         public bool Accepts(MediaType other)
         {
+            if (other == null)
+            {
+                throw new ArgumentNullException("other", "other cannot be null.");
+            }
+
+            if (this.RootType == "*" || this.RootType.Equals(other.RootType, StringComparison.OrdinalIgnoreCase))
+            {
+                if (this.SubType == "*" || this.SubType.Equals(other.SubType, StringComparison.OrdinalIgnoreCase))
+                {
+                    if (other.RangeParams.Any())
+                    {
+                    }
+                }
+            }
             return other == null
                 || other.Equals(MediaType.Empty)
                 || this.Equals(MediaType.Empty)
