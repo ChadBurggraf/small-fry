@@ -148,7 +148,7 @@ namespace SmallFry
         /// <summary>
         /// Gets one of <see cref="GZipStream"/> or <see cref="DeflateStream"/> for the given <see cref="EncodingType"/>.
         /// </summary>
-        /// <param name="acceptEncodings">The <see cref="EncodingType"/> to get the compression stream for..</param>
+        /// <param name="encodingType">The <see cref="EncodingType"/> to get the compression stream for..</param>
         /// <param name="inputStream">The input stream to read from.</param>
         /// <param name="mode">The compression mode to use.</param>
         /// <returns>A stream to use for compression.</returns>

@@ -8,6 +8,13 @@
     public sealed class EncodingTypeTests
     {
         [Test]
+        public void EncodingTypeAccepts()
+        {
+            Assert.IsTrue(EncodingType.Parse(null).Accepts(EncodingType.Parse("gzip")));
+            Assert.IsTrue(EncodingType.Parse("gzip").Accepts(EncodingType.Parse("gzip")));
+        }
+
+        [Test]
         public void EncodingTypeCompare()
         {
             List<EncodingType> list = new List<EncodingType>(
@@ -32,6 +39,14 @@
             Assert.AreEqual(EncodingType.Parse(null), EncodingType.Parse("*"));
             Assert.AreEqual(EncodingType.Parse("gzip"), EncodingType.Parse("gzip;q=1"));
             Assert.AreEqual(EncodingType.Parse("deflate;q=0.5"), EncodingType.Parse("deflate; q=0.5"));
+        }
+
+        [Test]
+        public void EncodingTypeNotAccepts()
+        {
+            Assert.IsFalse(EncodingType.Parse("compress").Accepts(EncodingType.Parse("gzip")));
+            Assert.IsFalse(EncodingType.Parse("gzip").Accepts(EncodingType.Parse(null)));
+            Assert.IsFalse(EncodingType.Parse("gzip").Accepts(EncodingType.Parse("compress")));
         }
 
         [Test]

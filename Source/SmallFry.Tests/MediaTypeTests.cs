@@ -68,6 +68,17 @@
         }
 
         [Test]
+        public void MediaTypeAccepts()
+        {
+            Assert.IsTrue(MediaType.Parse("*/*").Accepts(MediaType.Parse("application/json")));
+            Assert.IsTrue(MediaType.Parse("application/*").Accepts(MediaType.Parse("application/json")));
+            Assert.IsTrue(MediaType.Parse("*/json").Accepts(MediaType.Parse("application/json")));
+            Assert.IsTrue(MediaType.Parse("application/json").Accepts(MediaType.Parse("application/json")));
+            Assert.IsTrue(MediaType.Parse("text/html").Accepts(MediaType.Parse("text/html;level=1")));
+            Assert.IsTrue(MediaType.Parse("text/html").Accepts(MediaType.Parse("text/html;level=1;q=0.5 token")));
+        }
+
+        [Test]
         public void MediaTypeCompare()
         {
             List<MediaType> list = new List<MediaType>(new MediaType[]
@@ -165,6 +176,15 @@
 
             Assert.IsTrue(MediaType.Extension.TryParse("token=\"quoted value\"", out extension));
             Assert.AreEqual("token=\"quoted value\"", extension.ToString());
+        }
+
+        [Test]
+        public void MediaTypeNotAccepts()
+        {
+            Assert.IsFalse(MediaType.Parse("application/*").Accepts(MediaType.Parse("html/*")));
+            Assert.IsFalse(MediaType.Parse("application/json").Accepts(MediaType.Parse("application/text")));
+            Assert.IsFalse(MediaType.Parse("text/html;level=1").Accepts(MediaType.Parse("text/html")));
+            Assert.IsFalse(MediaType.Parse("text/html;q=0.5 token").Accepts(MediaType.Parse("text/html;level=1")));
         }
 
         [Test]

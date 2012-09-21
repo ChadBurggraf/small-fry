@@ -64,7 +64,7 @@ namespace SmallFry
         }
 
         /// <summary>
-        /// Parses an Content-Encoding value into an <see cref="EncodingType"/> instance.
+        /// Parses a Content-Encoding value into an <see cref="EncodingType"/> instance.
         /// See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html for formatting information.
         /// </summary>
         /// <param name="value">The Content-Encoding value to parse.</param>

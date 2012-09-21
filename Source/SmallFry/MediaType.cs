@@ -8,6 +8,7 @@ namespace SmallFry
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Linq;
     using System.Text.RegularExpressions;
@@ -18,7 +19,7 @@ namespace SmallFry
     public sealed class MediaType : IEquatable<MediaType>, IComparable<MediaType>
     {
         private static readonly Regex AcceptParamsStartExpression = new Regex(@"^\s*q\s*=.*", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-        private static readonly Regex ParseExpression = new Regex(@"^(\*/\*|[a-z0-9]+/\*|[a-z0-9]+/[a-z0-9]+)(.*)$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private static readonly Regex ParseExpression = new Regex(@"^(\*/\*|\*/[a-z-0-9]+|[a-z0-9]+/\*|[a-z0-9]+/[a-z0-9]+)(.*)$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
         private static readonly MediaType EmptyType = MediaType.Parse(null);
         
         private MediaType()
@@ -177,26 +178,74 @@ namespace SmallFry
                 throw new ArgumentNullException("other", "other cannot be null.");
             }
 
+            bool result = false;
+
             if (this.RootType == "*" || this.RootType.Equals(other.RootType, StringComparison.OrdinalIgnoreCase))
             {
                 if (this.SubType == "*" || this.SubType.Equals(other.SubType, StringComparison.OrdinalIgnoreCase))
                 {
-                    if (other.RangeParams.Any())
+                    result = true;
+
+                    string[] r = this.RangeParams.ToArray();
+                    string[] or = other.RangeParams.ToArray();
+                    int rl = r.Length, ol = or.Length;
+
+                    // This instance accepts anything more specific. So if we have
+                    // range params, the other instance must have at least all of the
+                    // range params we have. They may have more range params, however.
+                    for (int i = 0; i < rl; i++)
                     {
+                        if (i < ol)
+                        {
+                            if (!r[i].Equals(or[i], StringComparison.Ordinal))
+                            {
+                                result = false;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            result = false;
+                            break;
+                        }
+                    }
+
+                    // Same as above for extension params.
+                    if (result)
+                    {
+                        Extension[] e = this.AcceptParams.Extensions.ToArray();
+                        Extension[] oe = other.AcceptParams.Extensions.ToArray();
+                        rl = e.Length;
+                        ol = oe.Length;
+
+                        for (int i = 0; i < rl; i++)
+                        {
+                            if (i < ol)
+                            {
+                                if (!e[i].Equals(oe[i]))
+                                {
+                                    result = false;
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                result = false;
+                                break;
+                            }
+                        }
                     }
                 }
             }
-            return other == null
-                || other.Equals(MediaType.Empty)
-                || this.Equals(MediaType.Empty)
-                || ((this.RootType == "*"
-                || other.RootType == "*"
-                || this.RootType.Equals(other.RootType, StringComparison.OrdinalIgnoreCase))
-                && (this.SubType == "*"
-                || other.SubType == "*"
-                || this.SubType.Equals(other.SubType, StringComparison.OrdinalIgnoreCase)));
+
+            return result;
         }
 
+        /// <summary>
+        /// Compares the current object with another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>A value that indicates the relative order of the objects being compared.</returns>
         public int CompareTo(MediaType other)
         {
             int result = 1;
@@ -250,6 +299,11 @@ namespace SmallFry
             return result;
         }
 
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>True if the current object is equal to the other parameter, false otherwise.</returns>
         public bool Equals(MediaType other)
         {
             if ((object)other != null)
@@ -263,11 +317,20 @@ namespace SmallFry
             return false;
         }
 
+        /// <summary>
+        /// Determines whether the specified object is equal to the current object.
+        /// </summary>
+        /// <param name="obj">The object to compare with the current object.</param>
+        /// <returns>True if the specified object is equal to the current object, otherwise false.</returns>
         public override bool Equals(object obj)
         {
             return this.Equals(obj as MediaType);
         }
 
+        /// <summary>
+        /// Serves as a hash function for a particular type.
+        /// </summary>
+        /// <returns>A hash code for the current object.</returns>
         public override int GetHashCode()
         {
             return this.AcceptParams.GetHashCode()
@@ -276,6 +339,10 @@ namespace SmallFry
                 ^ this.SubType.GetHashCode();
         }
 
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>A string that represents the current object.</returns>
         public override string ToString()
         {
             string result = this.RootType + "/" + this.SubType;
@@ -295,6 +362,9 @@ namespace SmallFry
 
         #region Extension Class
 
+        /// <summary>
+        /// Represents an Accept-Extension field of a Content-Type.
+        /// </summary>
         public sealed class Extension : IEquatable<Extension>
         {
             private static readonly Regex ParseExpression = new Regex(@"^([^=]+)(\s*=\s*(.*))?$", RegexOptions.Compiled);
@@ -304,25 +374,52 @@ namespace SmallFry
             {
             }
 
+            /// <summary>
+            /// Gets the empty <see cref="Extension"/> instance.
+            /// </summary>
             public static Extension Empty
             {
                 get { return Extension.EmptyExtension; }
             }
 
+            /// <summary>
+            /// Gets the extension's key value.
+            /// </summary>
             public string Key { get; private set; }
 
+            /// <summary>
+            /// Gets the extension's value.
+            /// </summary>
             public string Value { get; private set; }
 
+            /// <summary>
+            /// Gets a value indicating whether two <see cref="Extension"/>s are equal.
+            /// </summary>
+            /// <param name="left">The left <see cref="Extension"/> to compare.</param>
+            /// <param name="right">The right <see cref="Extension"/> to compare.</param>
+            /// <returns>True if the <see cref="Extension"/>s are equal, false otherwise.</returns>
             public static bool operator ==(Extension left, Extension right)
             {
                 return Extensions.EqualsOperator(left, right);
             }
 
+            /// <summary>
+            /// Gets a value indicating whether two <see cref="Extension"/>s are not equal.
+            /// </summary>
+            /// <param name="left">The left <see cref="Extension"/> to compare.</param>
+            /// <param name="right">The right <see cref="Extension"/> to compare.</param>
+            /// <returns>True if the <see cref="Extension"/>s are not equal, false otherwise.</returns>
             public static bool operator !=(Extension left, Extension right)
             {
                 return !(left == right);
             }
 
+            /// <summary>
+            /// Parses a Content-Type Accept-Extension value into an <see cref="Extension"/> instance.
+            /// See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html for formatting information.
+            /// </summary>
+            /// <param name="value">The Accept-Extension value to parse.</param>
+            /// <returns>The parsed <see cref="Extension"/>.</returns>
             public static Extension Parse(string value)
             {
                 if (!string.IsNullOrWhiteSpace(value))
@@ -348,6 +445,13 @@ namespace SmallFry
                 }
             }
 
+            /// <summary>
+            /// Attempts to parse the given Content-Type Accept-Extension value into an <see cref="Extension"/> instance.
+            /// See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html for formatting information.
+            /// </summary>
+            /// <param name="value">The Accept-Extension value to parse.</param>
+            /// <param name="result">The parsed <see cref="Extension"/>.</param>
+            /// <returns>True if the value was successfully parsed, otherwise false.</returns>
             public static bool TryParse(string value, out Extension result)
             {
                 result = null;
@@ -363,6 +467,11 @@ namespace SmallFry
                 }
             }
 
+            /// <summary>
+            /// Indicates whether the current object is equal to another object of the same type.
+            /// </summary>
+            /// <param name="other">An object to compare with this object.</param>
+            /// <returns>True if the current object is equal to the other parameter, false otherwise.</returns>
             public bool Equals(Extension other)
             {
                 if ((object)other != null)
@@ -374,17 +483,30 @@ namespace SmallFry
                 return false;
             }
 
+            /// <summary>
+            /// Determines whether the specified object is equal to the current object.
+            /// </summary>
+            /// <param name="obj">The object to compare with the current object.</param>
+            /// <returns>True if the specified object is equal to the current object, otherwise false.</returns>
             public override bool Equals(object obj)
             {
                 return this.Equals(obj as Extension);
             }
 
+            /// <summary>
+            /// Serves as a hash function for a particular type.
+            /// </summary>
+            /// <returns>A hash code for the current object.</returns>
             public override int GetHashCode()
             {
                 return this.Key.GetHashCode()
                     ^ this.Value.GetHashCode();
             }
 
+            /// <summary>
+            /// Returns a string that represents the current object.
+            /// </summary>
+            /// <returns>A string that represents the current object.</returns>
             public override string ToString()
             {
                 string result = string.Empty;
@@ -407,6 +529,10 @@ namespace SmallFry
 
         #region AcceptParameters Class
 
+        /// <summary>
+        /// Represents an Accept-Params field of a Content-Type.
+        /// </summary>
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed.")]
         public sealed class AcceptParameters : IEquatable<AcceptParameters>
         {
             private static readonly Regex ParseExpression = new Regex(@"^q\s*=\s*(\d(\.\d+)?)(.*)$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
@@ -416,25 +542,53 @@ namespace SmallFry
             {
             }
 
+            /// <summary>
+            /// Gets the empty <see cref="AcceptParameters"/> instance.
+            /// </summary>
             public static AcceptParameters Empty
             {
                 get { return AcceptParameters.EmptyParameters; }
             }
 
+            /// <summary>
+            /// Gets the parameters' <see cref="Extension"/> collection.
+            /// </summary>
             public IEnumerable<Extension> Extensions { get; private set; }
 
+            /// <summary>
+            /// Gets the parameters' q-value.
+            /// </summary>
             public float Value { get; private set; }
 
+            /// <summary>
+            /// Gets a value indicating whether two <see cref="AcceptParameters"/>s are equal.
+            /// </summary>
+            /// <param name="left">The left <see cref="AcceptParameters"/> to compare.</param>
+            /// <param name="right">The right <see cref="AcceptParameters"/> to compare.</param>
+            /// <returns>True if the <see cref="AcceptParameters"/>s are equal, false otherwise.</returns>
             public static bool operator ==(AcceptParameters left, AcceptParameters right)
             {
                 return SmallFry.Extensions.EqualsOperator(left, right);
             }
 
+            /// <summary>
+            /// Gets a value indicating whether two <see cref="AcceptParameters"/>s are not equal.
+            /// </summary>
+            /// <param name="left">The left <see cref="AcceptParameters"/> to compare.</param>
+            /// <param name="right">The right <see cref="AcceptParameters"/> to compare.</param>
+            /// <returns>True if the <see cref="AcceptParameters"/>s are not equal, false otherwise.</returns>
             public static bool operator !=(AcceptParameters left, AcceptParameters right)
             {
                 return !(left == right);
             }
 
+            /// <summary>
+            /// Parses an Accept-Params value into an <see cref="AcceptParameters"/> instance.
+            /// See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html for formatting information.
+            /// </summary>
+            /// <param name="value">The Accept-Params value to parse.</param>
+            /// <returns>The parsed <see cref="AcceptParameters"/>.</returns>
+            [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed.")]
             public static AcceptParameters Parse(string value)
             {
                 const string FormatExceptionMessage = "Invalid params format. Format must be: \"q\" \"=\" qvalue *( accept-extension ). See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html";
@@ -483,6 +637,14 @@ namespace SmallFry
                 }
             }
 
+            /// <summary>
+            /// Attempts to parse the given Accept-Params value into an <see cref="AcceptParameters"/> instance.
+            /// See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html for formatting information.
+            /// </summary>
+            /// <param name="value">The Accept-Params value to parse.</param>
+            /// <param name="result">The parsed <see cref="AcceptParameters"/>.</param>
+            /// <returns>True if the value was successfully parsed, otherwise false.</returns>
+            [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed.")]
             public static bool TryParse(string value, out AcceptParameters result)
             {
                 result = null;
@@ -498,6 +660,11 @@ namespace SmallFry
                 }
             }
 
+            /// <summary>
+            /// Indicates whether the current object is equal to another object of the same type.
+            /// </summary>
+            /// <param name="other">An object to compare with this object.</param>
+            /// <returns>True if the current object is equal to the other parameter, false otherwise.</returns>
             public bool Equals(AcceptParameters other)
             {
                 if ((object)other != null)
@@ -509,17 +676,30 @@ namespace SmallFry
                 return false;
             }
 
+            /// <summary>
+            /// Determines whether the specified object is equal to the current object.
+            /// </summary>
+            /// <param name="obj">The object to compare with the current object.</param>
+            /// <returns>True if the specified object is equal to the current object, otherwise false.</returns>
             public override bool Equals(object obj)
             {
                 return this.Equals(obj as AcceptParameters);
             }
 
+            /// <summary>
+            /// Serves as a hash function for a particular type.
+            /// </summary>
+            /// <returns>A hash code for the current object.</returns>
             public override int GetHashCode()
             {
                 return this.Extensions.GetHashCode()
                     ^ this.Value.GetHashCode();
             }
 
+            /// <summary>
+            /// Returns a string that represents the current object.
+            /// </summary>
+            /// <returns>A string that represents the current object.</returns>
             public override string ToString()
             {
                 string result = string.Empty;
