@@ -123,18 +123,20 @@
         public void EndpointCollectionWithHostEncoding()
         {
             ServiceCollection services = new ServiceCollection();
+            int count = services.Pipeline.Encodings.Count;
             EndpointCollection endpoints = services.WithService("Test", "/") as EndpointCollection;
-            endpoints.WithHostEncoding("gzip", new GzipDeflateEncoding());
-            Assert.AreEqual(1, services.Pipeline.Encodings.Count);
+            endpoints.WithHostEncoding(new GzipDeflateEncoding());
+            Assert.AreEqual(count + 1, services.Pipeline.Encodings.Count);
         }
 
         [Test]
         public void EndpointCollectionWithHostFormat()
         {
             ServiceCollection services = new ServiceCollection();
+            int count = services.Pipeline.Formats.Count;
             EndpointCollection endpoints = services.WithService("Test", "/") as EndpointCollection;
             endpoints.WithHostFormat("application/json", new JsonFormat());
-            Assert.AreEqual(1, services.Pipeline.Formats.Count);
+            Assert.AreEqual(count + 1, services.Pipeline.Formats.Count);
         }
 
         [Test]
@@ -203,7 +205,7 @@
 
             endpoints.WithEndpoint("endpoint/route");
 
-            endpoints.WithoutServiceEncoding("gzip", new GzipDeflateEncoding());
+            endpoints.WithoutServiceEncoding(new GzipDeflateEncoding());
             Assert.AreEqual(1, services.First().Pipeline.ExcludeEncodings.Count);
         }
 
@@ -239,7 +241,7 @@
 
             endpoints.WithEndpoint("endpoint/route");
 
-            endpoints.WithServiceEncoding("gzip", new GzipDeflateEncoding());
+            endpoints.WithServiceEncoding(new GzipDeflateEncoding());
             Assert.AreEqual(1, services.First().Pipeline.Encodings.Count);
         }
 

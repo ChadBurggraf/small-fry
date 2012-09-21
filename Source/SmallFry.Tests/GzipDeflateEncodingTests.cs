@@ -22,8 +22,8 @@ Aliquam erat volutpat. Cras magna est, aliquet sit amet vestibulum facilisis, ac
         [Test]
         public void GzipDeflateEncodingContentType()
         {
-            Assert.AreEqual("gzip", new GzipDeflateEncoding().ContentEncoding(null));
-            Assert.AreEqual("gzip", new GzipDeflateEncoding().ContentEncoding(new string[] { "gzip, deflate" }));
+            Assert.IsNull(new GzipDeflateEncoding().ContentEncoding(new string[] { "foo", "bar" }));
+            Assert.AreEqual("gzip", new GzipDeflateEncoding().ContentEncoding(new string[] { "gzip", "deflate" }));
             Assert.AreEqual("deflate", new GzipDeflateEncoding().ContentEncoding(new string[] { "deflate" }));
         }
 

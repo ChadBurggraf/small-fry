@@ -42,7 +42,6 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="EncodingFilter.cs" />
     <Compile Include="EncodingType.cs" />
     <Compile Include="Endpoint.cs" />
     <Compile Include="EndpointCollection.cs" />

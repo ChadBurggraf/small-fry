@@ -132,9 +132,9 @@ namespace SmallFry
             return endpoint.Methods;
         }
 
-        public IEndpointCollection WithoutServiceEncoding(string accept, IEncoding encoding)
+        public IEndpointCollection WithoutServiceEncoding(IEncoding encoding)
         {
-            return this.Service.ServiceCollection.WithoutServiceEncoding(accept, encoding);
+            return this.Service.ServiceCollection.WithoutServiceEncoding(encoding);
         }
 
         public IEndpointCollection WithoutServiceFormat(string mediaTypes, IFormat format)
@@ -147,9 +147,9 @@ namespace SmallFry
             return this.Service.ServiceCollection.WithService(name, baseUrl);
         }
 
-        public IEndpointCollection WithServiceEncoding(string accept, IEncoding encoding)
+        public IEndpointCollection WithServiceEncoding(IEncoding encoding)
         {
-            return this.Service.ServiceCollection.WithServiceEncoding(accept, encoding);
+            return this.Service.ServiceCollection.WithServiceEncoding(encoding);
         }
 
         public IEndpointCollection WithServiceFormat(string mediaTypes, IFormat format)
@@ -266,9 +266,9 @@ namespace SmallFry
             return this.CurrentEndpoint.Methods;
         }
 
-        public IServiceCollection WithHostEncoding(string accept, IEncoding encoding)
+        public IServiceCollection WithHostEncoding(IEncoding encoding)
         {
-            return this.Service.ServiceCollection.WithHostEncoding(accept, encoding);
+            return this.Service.ServiceCollection.WithHostEncoding(encoding);
         }
 
         public IServiceCollection WithHostFormat(string mediaTypes, IFormat format)

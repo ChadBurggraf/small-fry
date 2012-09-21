@@ -69,16 +69,18 @@
         public void ServiceCollectionWithHostEncoding()
         {
             ServiceCollection services = new ServiceCollection();
-            services.WithHostEncoding("gzip", new GzipDeflateEncoding());
-            Assert.AreEqual(1, services.Pipeline.Encodings.Count);
+            int count = services.Pipeline.Encodings.Count;
+            services.WithHostEncoding(new GzipDeflateEncoding());
+            Assert.AreEqual(count + 1, services.Pipeline.Encodings.Count);
         }
 
         [Test]
         public void ServiceCollectionWithHostFormat()
         {
             ServiceCollection services = new ServiceCollection();
+            int count = services.Pipeline.Formats.Count;
             services.WithHostFormat("application/json", new JsonFormat());
-            Assert.AreEqual(1, services.Pipeline.Formats.Count);
+            Assert.AreEqual(count + 1, services.Pipeline.Formats.Count);
         }
 
         [Test]
@@ -95,7 +97,7 @@
         {
             ServiceCollection services = new ServiceCollection();
             services.WithService("Test", "/");
-            services.WithoutServiceEncoding("gzip", new GzipDeflateEncoding());
+            services.WithoutServiceEncoding(new GzipDeflateEncoding());
             Assert.AreEqual(1, services.First().Pipeline.ExcludeEncodings.Count);
         }
 
@@ -121,7 +123,7 @@
         {
             ServiceCollection services = new ServiceCollection();
             services.WithService("Test", "/");
-            services.WithServiceEncoding("gzip", new GzipDeflateEncoding());
+            services.WithServiceEncoding(new GzipDeflateEncoding());
             Assert.AreEqual(1, services.First().Pipeline.Encodings.Count);
         }
 

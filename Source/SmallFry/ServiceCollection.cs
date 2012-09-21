@@ -21,6 +21,9 @@ namespace SmallFry
             this.list = new List<Service>();
             this.Pipeline = new Pipeline();
             this.RouteValueBinder = new RouteValueBinder();
+
+            this.Pipeline.Encodings.Add(new GzipDeflateEncoding());
+            this.Pipeline.Formats.Add(new FormatFilter("application/json", new JsonFormat()));
         }
         
         public int Count
@@ -186,9 +189,9 @@ namespace SmallFry
             return this.CurrentService.Endpoints.WithEndpoint(route, typeConstraints);
         }
 
-        public IServiceCollection WithHostEncoding(string accept, IEncoding encoding)
+        public IServiceCollection WithHostEncoding(IEncoding encoding)
         {
-            this.Pipeline.Encodings.Add(new EncodingFilter(accept, encoding));
+            this.Pipeline.Encodings.Add(encoding);
             return this;
         }
 
@@ -204,14 +207,14 @@ namespace SmallFry
             return this;
         }
 
-        public IEndpointCollection WithoutServiceEncoding(string accept, IEncoding encoding)
+        public IEndpointCollection WithoutServiceEncoding(IEncoding encoding)
         {
             if (this.CurrentService == null)
             {
                 throw new InvalidOperationException(ServiceCollection.CurrentServiceNotSetMessage);
             }
 
-            this.CurrentService.Pipeline.ExcludeEncodings.Add(new EncodingFilter(accept, encoding));
+            this.CurrentService.Pipeline.ExcludeEncodings.Add(encoding);
             return this.CurrentService.Endpoints;
         }
 
@@ -234,14 +237,14 @@ namespace SmallFry
             return service.Endpoints;
         }
 
-        public IEndpointCollection WithServiceEncoding(string accept, IEncoding encoding)
+        public IEndpointCollection WithServiceEncoding(IEncoding encoding)
         {
             if (this.CurrentService == null)
             {
                 throw new InvalidOperationException(ServiceCollection.CurrentServiceNotSetMessage);
             }
 
-            this.CurrentService.Pipeline.Encodings.Add(new EncodingFilter(accept, encoding));
+            this.CurrentService.Pipeline.Encodings.Add(encoding);
             return this.CurrentService.Endpoints;
         }
 

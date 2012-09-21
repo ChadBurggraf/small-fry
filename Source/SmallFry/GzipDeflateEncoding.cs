@@ -16,34 +16,49 @@ namespace SmallFry
     /// Implements <see cref="IEncoding"/> to perform GZip and Deflate 
     /// encoding and decoding.
     /// </summary>
-    public sealed class GzipDeflateEncoding : IEncoding
+    public class GzipDeflateEncoding : IEncoding
     {
+        private static readonly string[] Accept = new string[] { "gzip", "deflate" };
+
         /// <summary>
-        /// Gets a content encoding value to send when this encoding
-        /// is chosen from the given accept encoding values.
+        /// Gets a collection of content-encoding values this instance can decode.
         /// </summary>
-        /// <param name="acceptEncodings">A collection of accept encoding values.</param>
-        /// <returns>A content encoding value.</returns>
-        public string ContentEncoding(IEnumerable<string> acceptEncodings)
+        public virtual IEnumerable<string> AcceptableEncodings
+        {
+            get { return GzipDeflateEncoding.Accept; }
+        }
+
+        /// <summary>
+        /// Gets a content-encoding from the given collection of acceptable encodings
+        /// this instance can encode. If none of the given encodings can be encoded by
+        /// this instance, returns null.
+        /// </summary>
+        /// <param name="acceptEncodings">A collection of acceptable encoding values.</param>
+        /// <returns>A content encoding value, or none if none of the acceble encodings can be encoded.</returns>
+        public virtual string ContentEncoding(IEnumerable<string> acceptEncodings)
         {
             string result = null;
 
             if (acceptEncodings != null)
             {
-                result = acceptEncodings.Any(e => "deflate".Equals(e, StringComparison.OrdinalIgnoreCase))
-                    && !acceptEncodings.Any(e => "gzip".Equals(e, StringComparison.OrdinalIgnoreCase))
-                    ? "deflate"
-                    : "gzip";
+                if (acceptEncodings.Any(e => "gzip".Equals(e, StringComparison.OrdinalIgnoreCase)))
+                {
+                    result = "gzip";
+                }
+                else if (acceptEncodings.Any(e => "deflate".Equals(e, StringComparison.OrdinalIgnoreCase)))
+                {
+                    result = "deflate";
+                }
             }
 
-            return result ?? "gzip";
+            return result;
         }
 
         /// <summary>
         /// Decodes an input stream and writes the decoded content to the
         /// given output stream.
         /// </summary>
-        /// <param name="acceptEncodings">The collection of accept encoding values used
+        /// <param name="acceptEncodings">The collection of acceptable encoding values used
         /// to choose this encoding.</param>
         /// <param name="inputStream">The stream to read encoded content from.</param>
         /// <param name="outputStream">The stream to write decoded content to.</param>
@@ -69,7 +84,7 @@ namespace SmallFry
         /// Encodes an input stream and writes the encoded content to the
         /// given output stream.
         /// </summary>
-        /// <param name="acceptEncodings">The collection of accept encoding values used
+        /// <param name="acceptEncodings">The collection of acceptable encoding values used
         /// to choose this encoding.</param>
         /// <param name="inputStream">The input stream to read content from.</param>
         /// <param name="outputStream">The output stream to write encoded content to.</param>
@@ -96,7 +111,7 @@ namespace SmallFry
         /// </summary>
         /// <param name="other">An object to compare with this object.</param>
         /// <returns>True if the current object is equal to the other parameter, otherwise false.</returns>
-        public bool Equals(IEncoding other)
+        public virtual bool Equals(IEncoding other)
         {
             if ((object)other != null)
             {
@@ -125,7 +140,15 @@ namespace SmallFry
             return this.GetType().GetHashCode();
         }
 
-        private Stream GetCompressionStream(IEnumerable<string> acceptEncodings, Stream inputStream, CompressionMode mode)
+        /// <summary>
+        /// Gets one of <see cref="GZipStream"/> or <see cref="DeflateStream"/> for the given collection of accept-encodings.
+        /// This method should call <see cref="ContentEncoding(IEnumerable<strong>)"/> to determine the accept-encoding to pick.
+        /// </summary>
+        /// <param name="acceptEncodings">The collection of accept-encoding values used to choose the encoding.</param>
+        /// <param name="inputStream">The input stream to read from.</param>
+        /// <param name="mode">The compression mode to use.</param>
+        /// <returns>A stream to use for compression.</returns>
+        protected virtual Stream GetCompressionStream(IEnumerable<string> acceptEncodings, Stream inputStream, CompressionMode mode)
         {
             return "deflate".Equals(this.ContentEncoding(acceptEncodings), StringComparison.OrdinalIgnoreCase)
                 ? new DeflateStream(inputStream, mode) as Stream

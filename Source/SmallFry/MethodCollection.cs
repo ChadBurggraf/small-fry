@@ -362,9 +362,9 @@ namespace SmallFry
             return this.Endpoint.EndpointCollection.WithEndpoint(route, typeConstraints);
         }
 
-        public IServiceCollection WithHostEncoding(string accept, IEncoding encoding)
+        public IServiceCollection WithHostEncoding(IEncoding encoding)
         {
-            return this.Endpoint.EndpointCollection.WithHostEncoding(accept, encoding);
+            return this.Endpoint.EndpointCollection.WithHostEncoding(encoding);
         }
 
         public IServiceCollection WithHostFormat(string mediaTypes, IFormat format)
@@ -521,9 +521,9 @@ namespace SmallFry
             return this;
         }
 
-        public IEndpointCollection WithoutServiceEncoding(string accept, IEncoding encoding)
+        public IEndpointCollection WithoutServiceEncoding(IEncoding encoding)
         {
-            return this.Endpoint.EndpointCollection.WithoutServiceEncoding(accept, encoding);
+            return this.Endpoint.EndpointCollection.WithoutServiceEncoding(encoding);
         }
 
         public IEndpointCollection WithoutServiceFormat(string mediaTypes, IFormat format)
@@ -536,9 +536,9 @@ namespace SmallFry
             return this.Endpoint.EndpointCollection.WithService(name, baseUrl);
         }
 
-        public IEndpointCollection WithServiceEncoding(string accept, IEncoding encoding)
+        public IEndpointCollection WithServiceEncoding(IEncoding encoding)
         {
-            return this.Endpoint.EndpointCollection.WithServiceEncoding(accept, encoding);
+            return this.Endpoint.EndpointCollection.WithServiceEncoding(encoding);
         }
 
         public IEndpointCollection WithServiceFormat(string mediaTypes, IFormat format)

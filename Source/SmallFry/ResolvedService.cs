@@ -15,7 +15,7 @@ namespace SmallFry
             Method method,
             IEnumerable<FilterAction> afterActions,
             IEnumerable<FilterAction> beforeActions,
-            IEnumerable<EncodingFilter> encodings,
+            IEnumerable<IEncoding> encodings,
             IEnumerable<FilterAction> errorActions,
             IEnumerable<FormatFilter> formats)
         {
@@ -67,7 +67,7 @@ namespace SmallFry
 
             this.AfterActions = new List<FilterAction>(service.AfterActions);
             this.BeforeActions = new List<FilterAction>(service.BeforeActions);
-            this.Encodings = new List<EncodingFilter>(service.Encodings);
+            this.Encodings = new List<IEncoding>(service.Encodings);
             this.ErrorActions = new List<FilterAction>(service.ErrorActions);
             this.Formats = new List<FormatFilter>(service.Formats);
             this.Method = service.Method;
@@ -78,7 +78,7 @@ namespace SmallFry
 
         public IEnumerable<FilterAction> BeforeActions { get; private set; }
 
-        public IEnumerable<EncodingFilter> Encodings { get; private set; }
+        public IEnumerable<IEncoding> Encodings { get; private set; }
 
         public IEnumerable<FilterAction> ErrorActions { get; private set; }
 

@@ -110,13 +110,10 @@ namespace SmallFry
         /// Adds an encoding to the current <see cref="IServiceHost"/> and returns the
         /// root <see cref="IServiceCollection"/>.
         /// </summary>
-        /// <param name="accept">A string defining the encoding types the encoding can accept.
-        /// Should be in the standard format of an HTTP Accept-Encoding header (e.g., "gzip").
-        /// Multiple values should be separated by commas. See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html.</param>
         /// <param name="encoding">An <see cref="IEncoding"/> instance to use for processing.</param>
         /// <returns>The root <see cref="IServiceCollection"/>.</returns>
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed.")]
-        IServiceCollection WithHostEncoding(string accept, IEncoding encoding);
+        IServiceCollection WithHostEncoding(IEncoding encoding);
 
         /// <summary>
         /// Adds a serialization format to the current <see cref="IServiceHost"/> and returns the
@@ -145,13 +142,9 @@ namespace SmallFry
         /// Removes a <see cref="IEncoding"/> from the current service. Use this method
         /// to exclude encodings added to the current <see cref="IServiceHost"/> from a service.
         /// </summary>
-        /// <param name="accept">A string defining the encoding types the encoding can accept.
-        /// Should be in the standard format of an HTTP Accept-Encoding header (e.g., "gzip").
-        /// Multiple values should be separated by commas. See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html.</param>
         /// <param name="encoding">An <see cref="IEncoding"/> instance to use for processing.</param>
         /// <returns>The current service's <see cref="IEndpointCollection"/>.</returns>
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed.")]
-        IEndpointCollection WithoutServiceEncoding(string accept, IEncoding encoding);
+        IEndpointCollection WithoutServiceEncoding(IEncoding encoding);
 
         /// <summary>
         /// Removes a <see cref="IFormat"/> from the current service. Use this method
@@ -178,13 +171,9 @@ namespace SmallFry
         /// Adds an encoding to the current service and returns the service's
         /// <see cref="IEndpointCollection"/>.
         /// </summary>
-        /// <param name="accept">A string defining the encoding types the encoding can accept.
-        /// Should be in the standard format of an HTTP Accept-Encoding header (e.g., "gzip").
-        /// Multiple values should be separated by commas. See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html.</param>
         /// <param name="encoding">An <see cref="IEncoding"/> instance to use for processing.</param>
         /// <returns>The current service's <see cref="IEndpointCollection"/>.</returns>
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed.")]
-        IEndpointCollection WithServiceEncoding(string accept, IEncoding encoding);
+        IEndpointCollection WithServiceEncoding(IEncoding encoding);
 
         /// <summary>
         /// Adds a serialization format to the current service and returns the service's

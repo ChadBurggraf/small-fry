@@ -150,6 +150,22 @@ namespace SmallFry
             return result;
         }
 
+        public static IEnumerable<EncodingType> AsContentEncodings(this string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                value = "*";
+            }
+
+            return value.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                .Where(s => !string.IsNullOrEmpty(s))
+                .Select(s => EncodingType.Parse(s))
+                .Distinct()
+                .OrderByDescending(e => e.QValue)
+                .ThenBy(e => e.Name, StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+        }
+
         public static MethodType AsMethodType(this string value)
         {
             switch ((value ?? string.Empty).ToUpperInvariant())

@@ -302,8 +302,9 @@
             ServiceCollection services = new ServiceCollection();
             EndpointCollection endpoints = services.WithService("Test", "/") as EndpointCollection;
             MethodCollection methods = endpoints.WithEndpoint("endpoint/route") as MethodCollection;
-            methods.WithHostEncoding("gzip", new GzipDeflateEncoding());
-            Assert.AreEqual(1, services.Pipeline.Encodings.Count);
+            int count = services.Pipeline.Encodings.Count;
+            methods.WithHostEncoding(new GzipDeflateEncoding());
+            Assert.AreEqual(count + 1, services.Pipeline.Encodings.Count);
         }
 
         [Test]
@@ -312,8 +313,9 @@
             ServiceCollection services = new ServiceCollection();
             EndpointCollection endpoints = services.WithService("Test", "/") as EndpointCollection;
             MethodCollection methods = endpoints.WithEndpoint("endpoint/route") as MethodCollection;
+            int count = services.Pipeline.Formats.Count;
             methods.WithHostFormat("application/json", new JsonFormat());
-            Assert.AreEqual(1, services.Pipeline.Formats.Count);
+            Assert.AreEqual(count + 1, services.Pipeline.Formats.Count);
         }
 
         [Test]
@@ -429,7 +431,7 @@
             ServiceCollection services = new ServiceCollection();
             EndpointCollection endpoints = services.WithService("Test", "/") as EndpointCollection;
             MethodCollection methods = endpoints.WithEndpoint("endpoint/route") as MethodCollection;
-            methods.WithoutServiceEncoding("gzip", new GzipDeflateEncoding());
+            methods.WithoutServiceEncoding(new GzipDeflateEncoding());
             Assert.AreEqual(1, services.First().Pipeline.ExcludeEncodings.Count);
         }
 
@@ -459,7 +461,7 @@
             ServiceCollection services = new ServiceCollection();
             EndpointCollection endpoints = services.WithService("Test", "/") as EndpointCollection;
             MethodCollection methods = endpoints.WithEndpoint("endpoint/route") as MethodCollection;
-            methods.WithServiceEncoding("gzip", new GzipDeflateEncoding());
+            methods.WithServiceEncoding(new GzipDeflateEncoding());
             Assert.AreEqual(1, services.First().Pipeline.Encodings.Count);
         }
 

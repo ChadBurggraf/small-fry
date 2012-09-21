@@ -151,9 +151,9 @@ namespace SmallFry
                 methodPipeline.BeforeActions);
         }
 
-        private static IEnumerable<EncodingFilter> ResolveEncodings(Pipeline hostPipeline, Pipeline servicePipeline, Pipeline endpointPipeline, Pipeline methodPipeline)
+        private static IEnumerable<IEncoding> ResolveEncodings(Pipeline hostPipeline, Pipeline servicePipeline, Pipeline endpointPipeline, Pipeline methodPipeline)
         {
-            List<EncodingFilter> encodings = new List<EncodingFilter>(hostPipeline.Encodings);
+            List<IEncoding> encodings = new List<IEncoding>(hostPipeline.Encodings);
 
             encodings.RemoveAll(e => servicePipeline.ExcludeEncodings.Any(ee => e.Equals(ee)));
             encodings.RemoveAll(e => servicePipeline.Encodings.Any(se => e.Equals(se)));
