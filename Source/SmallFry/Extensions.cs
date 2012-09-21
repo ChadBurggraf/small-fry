@@ -150,7 +150,7 @@ namespace SmallFry
             return result;
         }
 
-        public static IEnumerable<EncodingType> AsContentEncodings(this string value)
+        public static IEnumerable<EncodingType> AsEncodingTypes(this string value)
         {
             if (string.IsNullOrWhiteSpace(value))
             {
@@ -163,6 +163,23 @@ namespace SmallFry
                 .Distinct()
                 .OrderByDescending(e => e.QValue)
                 .ThenBy(e => e.Name, StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+        }
+
+        public static IEnumerable<MediaType> AsMediaTypes(this string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                value = "*/*";
+            }
+
+            return value.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                .Where(s => !string.IsNullOrEmpty(s))
+                .Select(s => MediaType.Parse(s))
+                .Distinct()
+                .OrderByDescending(m => m.AcceptParams.Value)
+                .ThenBy(m => m.RootType)
+                .ThenBy(m => m.SubType)
                 .ToArray();
         }
 

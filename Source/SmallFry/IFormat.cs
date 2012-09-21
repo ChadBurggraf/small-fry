@@ -17,11 +17,17 @@ namespace SmallFry
     public interface IFormat : IEquatable<IFormat>
     {
         /// <summary>
-        /// Gets a content type value to send when this format is chosen
-        /// from the given accept values.
+        /// Gets a collection of content-type values this instance can deserialize.
+        /// </summary>
+        IEnumerable<string> AcceptableFormats { get; }
+
+        /// <summary>
+        /// Gets a content-type from the given collection of acceptable types
+        /// this instance can serialize. If none of the given types can be serialized by
+        /// this instance, returns null.
         /// </summary>
         /// <param name="accept">A collection of accept values.</param>
-        /// <returns>A content type value.</returns>
+        /// <returns>A content type value, or null if none of the acceptable types can be serialized..</returns>
         string ContentType(IEnumerable<string> accept);
 
         /// <summary>

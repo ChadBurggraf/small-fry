@@ -112,20 +112,15 @@ namespace SmallFry
         /// </summary>
         /// <param name="encoding">An <see cref="IEncoding"/> instance to use for processing.</param>
         /// <returns>The root <see cref="IServiceCollection"/>.</returns>
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed.")]
         IServiceCollection WithHostEncoding(IEncoding encoding);
 
         /// <summary>
         /// Adds a serialization format to the current <see cref="IServiceHost"/> and returns the
         /// root <see cref="IServiceCollection"/>.
         /// </summary>
-        /// <param name="mediaTypes">A string defining the media types the format can accept. 
-        /// Should be in the standard format of an HTTP Accept header (e.g., "application/json").
-        /// Multiple values should be separated by commas. See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html.</param>
         /// <param name="format">An <see cref="IFormat"/> instance to use for serialization.</param>
         /// <returns>The root <see cref="IServiceCollection"/>.</returns>
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed.")]
-        IServiceCollection WithHostFormat(string mediaTypes, IFormat format);
+        IServiceCollection WithHostFormat(IFormat format);
 
         /// <summary>
         /// Adds a new <see cref="IRouteParameterParser"/> to the current <see cref="IServiceHost"/>
@@ -150,13 +145,9 @@ namespace SmallFry
         /// Removes a <see cref="IFormat"/> from the current service. Use this method
         /// to exclude formats added to the current <see cref="IServiceHost"/> from a service.
         /// </summary>
-        /// <param name="mediaTypes">A string defining the media types the format can accept. 
-        /// Should be in the standard format of an HTTP Accept header (e.g., "application/json").
-        /// Multiple values should be separated by commas. See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html.</param>
         /// <param name="format">An <see cref="IFormat"/> instance to use for serialization.</param>
         /// <returns>The current service's <see cref="IEndpointCollection"/>.</returns>
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed.")]
-        IEndpointCollection WithoutServiceFormat(string mediaTypes, IFormat format);
+        IEndpointCollection WithoutServiceFormat(IFormat format);
 
         /// <summary>
         /// Adds a new service to the collection and returns its <see cref="IEndpointCollection"/>.
@@ -179,12 +170,8 @@ namespace SmallFry
         /// Adds a serialization format to the current service and returns the service's
         /// <see cref="IEndpointCollection"/>.
         /// </summary>
-        /// <param name="mediaTypes">A string defining the media types the format can accept. 
-        /// Should be in the standard format of an HTTP Accept header (e.g., "application/json").
-        /// Multiple values should be separated by commas. See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html.</param>
         /// <param name="format">An <see cref="IFormat"/> instance to use for serialization.</param>
         /// <returns>The current service's <see cref="IEndpointCollection"/>.</returns>
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed.")]
-        IEndpointCollection WithServiceFormat(string mediaTypes, IFormat format);
+        IEndpointCollection WithServiceFormat(IFormat format);
     }
 }

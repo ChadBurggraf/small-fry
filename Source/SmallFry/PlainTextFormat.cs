@@ -13,15 +13,26 @@ namespace SmallFry
     /// <summary>
     /// Implements <see cref="IFormat"/> to read and write plain text content.
     /// </summary>
-    public sealed class PlainTextFormat : IFormat
+    public class PlainTextFormat : IFormat
     {
+        private static readonly string[] Accept = new string[] { "*/*" };
+
         /// <summary>
-        /// Gets a content type value to send when this format is chosen
-        /// from the given accept values.
+        /// Gets a collection of content-type values this instance can deserialize.
+        /// </summary>
+        public virtual IEnumerable<string> AcceptableFormats
+        {
+            get { return PlainTextFormat.Accept; }
+        }
+
+        /// <summary>
+        /// Gets a content-type from the given collection of acceptable types
+        /// this instance can serialize. If none of the given types can be serialized by
+        /// this instance, returns null.
         /// </summary>
         /// <param name="accept">A collection of accept values.</param>
-        /// <returns>A content type value.</returns>
-        public string ContentType(IEnumerable<string> accept)
+        /// <returns>A content type value, or null if none of the acceptable types can be serialized..</returns>
+        public virtual string ContentType(IEnumerable<string> accept)
         {
             return "text/plain";
         }
@@ -61,7 +72,7 @@ namespace SmallFry
         /// </summary>
         /// <param name="other">An object to compare with this object.</param>
         /// <returns>True if the current object is equal to the other parameter, otherwise false.</returns>
-        public bool Equals(IFormat other)
+        public virtual bool Equals(IFormat other)
         {
             if ((object)other != null)
             {

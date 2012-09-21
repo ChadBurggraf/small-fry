@@ -23,7 +23,7 @@ namespace SmallFry
             this.RouteValueBinder = new RouteValueBinder();
 
             this.Pipeline.Encodings.Add(new GzipDeflateEncoding());
-            this.Pipeline.Formats.Add(new FormatFilter("application/json", new JsonFormat()));
+            this.Pipeline.Formats.Add(new JsonFormat());
         }
         
         public int Count
@@ -195,9 +195,9 @@ namespace SmallFry
             return this;
         }
 
-        public IServiceCollection WithHostFormat(string mediaTypes, IFormat format)
+        public IServiceCollection WithHostFormat(IFormat format)
         {
-            this.Pipeline.Formats.Add(new FormatFilter(mediaTypes, format));
+            this.Pipeline.Formats.Add(format);
             return this;
         }
 
@@ -218,14 +218,14 @@ namespace SmallFry
             return this.CurrentService.Endpoints;
         }
 
-        public IEndpointCollection WithoutServiceFormat(string mediaTypes, IFormat format)
+        public IEndpointCollection WithoutServiceFormat(IFormat format)
         {
             if (this.CurrentService == null)
             {
                 throw new InvalidOperationException(ServiceCollection.CurrentServiceNotSetMessage);
             }
 
-            this.CurrentService.Pipeline.ExcludeFormats.Add(new FormatFilter(mediaTypes, format));
+            this.CurrentService.Pipeline.ExcludeFormats.Add(format);
             return this.CurrentService.Endpoints;
         }
 
@@ -248,14 +248,14 @@ namespace SmallFry
             return this.CurrentService.Endpoints;
         }
 
-        public IEndpointCollection WithServiceFormat(string mediaTypes, IFormat format)
+        public IEndpointCollection WithServiceFormat(IFormat format)
         {
             if (this.CurrentService == null)
             {
                 throw new InvalidOperationException(ServiceCollection.CurrentServiceNotSetMessage);
             }
 
-            this.CurrentService.Pipeline.Formats.Add(new FormatFilter(mediaTypes, format));
+            this.CurrentService.Pipeline.Formats.Add(format);
             return this.CurrentService.Endpoints;
         }
 

@@ -79,7 +79,7 @@
         {
             ServiceCollection services = new ServiceCollection();
             int count = services.Pipeline.Formats.Count;
-            services.WithHostFormat("application/json", new JsonFormat());
+            services.WithHostFormat(new PlainTextFormat());
             Assert.AreEqual(count + 1, services.Pipeline.Formats.Count);
         }
 
@@ -106,7 +106,7 @@
         {
             ServiceCollection services = new ServiceCollection();
             services.WithService("Test", "/");
-            services.WithoutServiceFormat("application/json", new JsonFormat());
+            services.WithoutServiceFormat(new PlainTextFormat());
             Assert.AreEqual(1, services.First().Pipeline.ExcludeFormats.Count);
         }
 
@@ -132,7 +132,7 @@
         {
             ServiceCollection services = new ServiceCollection();
             services.WithService("Test", "/");
-            services.WithServiceFormat("application/json", new JsonFormat());
+            services.WithServiceFormat(new PlainTextFormat());
             Assert.AreEqual(1, services.First().Pipeline.Formats.Count);
         }
     }

@@ -182,9 +182,9 @@ namespace SmallFry
                 methodPipeline.ErrorActions);
         }
 
-        private static IEnumerable<FormatFilter> ResolveFormats(Pipeline hostPipeline, Pipeline servicePipeline, Pipeline endpointPipeline, Pipeline methodPipeline)
+        private static IEnumerable<IFormat> ResolveFormats(Pipeline hostPipeline, Pipeline servicePipeline, Pipeline endpointPipeline, Pipeline methodPipeline)
         {
-            List<FormatFilter> formats = new List<FormatFilter>(hostPipeline.Formats);
+            List<IFormat> formats = new List<IFormat>(hostPipeline.Formats);
 
             formats.RemoveAll(f => servicePipeline.ExcludeFormats.Any(ef => f.Equals(ef)));
             formats.RemoveAll(f => servicePipeline.Formats.Any(sf => f.Equals(sf)));

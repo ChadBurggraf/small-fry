@@ -82,8 +82,7 @@
         private static void DefinePassbook(IServiceCollection services)
         {
             IEndpointCollection endpoints = services.WithService("Passbook", "/v1");
-            endpoints = endpoints.WithServiceFormat("*/*", new JsonFormat());
-
+            
             IMethodCollection methods = endpoints.WithEndpoint("passes/{passTypeIdentifier}/{serialNumber}");
             methods = methods.Get(() => { });
 

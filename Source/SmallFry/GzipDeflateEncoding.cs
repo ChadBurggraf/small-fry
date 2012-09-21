@@ -34,7 +34,7 @@ namespace SmallFry
         /// this instance, returns null.
         /// </summary>
         /// <param name="acceptEncodings">A collection of acceptable encoding values.</param>
-        /// <returns>A content encoding value, or none if none of the acceble encodings can be encoded.</returns>
+        /// <returns>A content encoding value, or null if none of the acceptable encodings can be encoded.</returns>
         public virtual string ContentEncoding(IEnumerable<string> acceptEncodings)
         {
             string result = null;

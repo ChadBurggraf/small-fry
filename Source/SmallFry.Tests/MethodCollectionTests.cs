@@ -314,7 +314,7 @@
             EndpointCollection endpoints = services.WithService("Test", "/") as EndpointCollection;
             MethodCollection methods = endpoints.WithEndpoint("endpoint/route") as MethodCollection;
             int count = services.Pipeline.Formats.Count;
-            methods.WithHostFormat("application/json", new JsonFormat());
+            methods.WithHostFormat(new PlainTextFormat());
             Assert.AreEqual(count + 1, services.Pipeline.Formats.Count);
         }
 
@@ -441,7 +441,7 @@
             ServiceCollection services = new ServiceCollection();
             EndpointCollection endpoints = services.WithService("Test", "/") as EndpointCollection;
             MethodCollection methods = endpoints.WithEndpoint("endpoint/route") as MethodCollection;
-            methods.WithoutServiceFormat("application/json", new JsonFormat());
+            methods.WithoutServiceFormat(new PlainTextFormat());
             Assert.AreEqual(1, services.First().Pipeline.ExcludeFormats.Count);
         }
 
@@ -471,7 +471,7 @@
             ServiceCollection services = new ServiceCollection();
             EndpointCollection endpoints = services.WithService("Test", "/") as EndpointCollection;
             MethodCollection methods = endpoints.WithEndpoint("endpoint/route") as MethodCollection;
-            methods.WithServiceFormat("application/json", new JsonFormat());
+            methods.WithServiceFormat(new PlainTextFormat());
             Assert.AreEqual(1, services.First().Pipeline.Formats.Count);
         }
     }

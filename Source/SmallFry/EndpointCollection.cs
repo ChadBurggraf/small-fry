@@ -137,9 +137,9 @@ namespace SmallFry
             return this.Service.ServiceCollection.WithoutServiceEncoding(encoding);
         }
 
-        public IEndpointCollection WithoutServiceFormat(string mediaTypes, IFormat format)
+        public IEndpointCollection WithoutServiceFormat(IFormat format)
         {
-            return this.Service.ServiceCollection.WithoutServiceFormat(mediaTypes, format);
+            return this.Service.ServiceCollection.WithoutServiceFormat(format);
         }
 
         public IEndpointCollection WithService(string name, string baseUrl)
@@ -152,9 +152,9 @@ namespace SmallFry
             return this.Service.ServiceCollection.WithServiceEncoding(encoding);
         }
 
-        public IEndpointCollection WithServiceFormat(string mediaTypes, IFormat format)
+        public IEndpointCollection WithServiceFormat(IFormat format)
         {
-            return this.Service.ServiceCollection.WithServiceFormat(mediaTypes, format);
+            return this.Service.ServiceCollection.WithServiceFormat(format);
         }
 
         IEnumerator<Endpoint> IEnumerable<Endpoint>.GetEnumerator()
@@ -271,9 +271,9 @@ namespace SmallFry
             return this.Service.ServiceCollection.WithHostEncoding(encoding);
         }
 
-        public IServiceCollection WithHostFormat(string mediaTypes, IFormat format)
+        public IServiceCollection WithHostFormat(IFormat format)
         {
-            return this.Service.ServiceCollection.WithHostFormat(mediaTypes, format);
+            return this.Service.ServiceCollection.WithHostFormat(format);
         }
 
         public IServiceCollection WithHostParameterParser(IRouteParameterParser parser)

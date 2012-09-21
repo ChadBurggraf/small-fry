@@ -21,8 +21,8 @@ namespace SmallFry
             this.ExcludeBeforeActions = new List<FilterAction>();
             this.ExcludeEncodings = new List<IEncoding>();
             this.ExcludeErrorActions = new List<FilterAction>();
-            this.ExcludeFormats = new List<FormatFilter>();
-            this.Formats = new List<FormatFilter>();
+            this.ExcludeFormats = new List<IFormat>();
+            this.Formats = new List<IFormat>();
         }
 
         public IList<FilterAction> AfterActions { get; private set; }
@@ -41,8 +41,8 @@ namespace SmallFry
 
         public IList<FilterAction> ExcludeErrorActions { get; private set; }
 
-        public IList<FormatFilter> ExcludeFormats { get; private set; }
+        public IList<IFormat> ExcludeFormats { get; private set; }
 
-        public IList<FormatFilter> Formats { get; private set; }
+        public IList<IFormat> Formats { get; private set; }
     }
 }

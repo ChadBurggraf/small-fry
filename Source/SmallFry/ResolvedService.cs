@@ -17,7 +17,7 @@ namespace SmallFry
             IEnumerable<FilterAction> beforeActions,
             IEnumerable<IEncoding> encodings,
             IEnumerable<FilterAction> errorActions,
-            IEnumerable<FormatFilter> formats)
+            IEnumerable<IFormat> formats)
         {
             if (method == null)
             {
@@ -69,7 +69,7 @@ namespace SmallFry
             this.BeforeActions = new List<FilterAction>(service.BeforeActions);
             this.Encodings = new List<IEncoding>(service.Encodings);
             this.ErrorActions = new List<FilterAction>(service.ErrorActions);
-            this.Formats = new List<FormatFilter>(service.Formats);
+            this.Formats = new List<IFormat>(service.Formats);
             this.Method = service.Method;
             this.RouteValues = routeValues ?? new Dictionary<string, object>();
         }
@@ -82,7 +82,7 @@ namespace SmallFry
 
         public IEnumerable<FilterAction> ErrorActions { get; private set; }
 
-        public IEnumerable<FormatFilter> Formats { get; private set; }
+        public IEnumerable<IFormat> Formats { get; private set; }
 
         public Method Method { get; private set; }
 

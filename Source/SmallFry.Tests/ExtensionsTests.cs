@@ -10,20 +10,20 @@
     public sealed class ExtensionsTests
     {
         [Test]
-        public void ExtensionsAsContentEncodings()
+        public void ExtensionsAsEncodingTypes()
         {
-            IEnumerable<EncodingType> acceptTypes = Extensions.AsContentEncodings(null);
+            IEnumerable<EncodingType> acceptTypes = Extensions.AsEncodingTypes(null);
             Assert.IsNotNull(acceptTypes);
             Assert.AreEqual(1, acceptTypes.Count());
             Assert.AreEqual(EncodingType.Parse("*"), acceptTypes.First());
 
-            acceptTypes = "compress, gzip".AsContentEncodings();
+            acceptTypes = "compress, gzip".AsEncodingTypes();
             Assert.IsNotNull(acceptTypes);
             Assert.AreEqual(2, acceptTypes.Count());
             Assert.AreEqual(EncodingType.Parse("compress"), acceptTypes.First());
             Assert.AreEqual(EncodingType.Parse("gzip"), acceptTypes.Last());
 
-            acceptTypes = "gzip;q=1.0, identity; q=0.5, *;q=0".AsContentEncodings();
+            acceptTypes = "gzip;q=1.0, identity; q=0.5, *;q=0".AsEncodingTypes();
             Assert.IsNotNull(acceptTypes);
             Assert.AreEqual(3, acceptTypes.Count());
             Assert.AreEqual(EncodingType.Parse("gzip;q=1.0"), acceptTypes.First());
