@@ -129,7 +129,7 @@ namespace SmallFry
             this.list.CopyTo(array, arrayIndex);
         }
 
-        public IEndpointCollection ErrorService(Func<Exception, bool> action)
+        public IEndpointCollection ErrorService(Func<IEnumerable<Exception>, bool> action)
         {
             if (this.CurrentService == null)
             {
@@ -140,7 +140,7 @@ namespace SmallFry
             return this.CurrentService.Endpoints;
         }
 
-        public IEndpointCollection ErrorService(Func<Exception, IRequestMessage, IResponseMessage, bool> action)
+        public IEndpointCollection ErrorService(Func<IEnumerable<Exception>, IRequestMessage, IResponseMessage, bool> action)
         {
             if (this.CurrentService == null)
             {
@@ -151,7 +151,7 @@ namespace SmallFry
             return this.CurrentService.Endpoints;
         }
 
-        public IEndpointCollection ErrorService<T>(Func<Exception, IRequestMessage<T>, IResponseMessage, bool> action)
+        public IEndpointCollection ErrorService<T>(Func<IEnumerable<Exception>, IRequestMessage<T>, IResponseMessage, bool> action)
         {
             if (this.CurrentService == null)
             {

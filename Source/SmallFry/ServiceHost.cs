@@ -8,6 +8,7 @@ namespace SmallFry
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
 
     /// <summary>
@@ -51,16 +52,6 @@ namespace SmallFry
         internal ServiceResolver ServiceResolver
         {
             get { return this.serviceResolver ?? (this.serviceResolver = new ServiceResolver(this.services)); }
-        }
-
-        internal static IEncoding GetEncoding(ResolvedService service, string acceptEncoding)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal static IFormat GetFormat(ResolvedService service, string accept)
-        {
-            throw new NotImplementedException();
         }
     }
 }

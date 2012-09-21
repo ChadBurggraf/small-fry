@@ -13,6 +13,7 @@ namespace SmallFry
     internal sealed class HttpResponseMessage : IResponseMessage
     {
         private HttpResponseBase httpResponse;
+        private bool disposed;
 
         public HttpResponseMessage(HttpResponseBase httpResponse)
         {
@@ -22,6 +23,11 @@ namespace SmallFry
             }
 
             this.httpResponse = httpResponse;
+        }
+
+        ~HttpResponseMessage()
+        {
+            this.Dispose(false);
         }
 
         public HttpCookieCollection Cookies
@@ -34,7 +40,7 @@ namespace SmallFry
             get { return this.httpResponse.Headers; }
         }
 
-        public object Response { get; set; }
+        public object ResponseObject { get; set; }
 
         public int StatusCode
         {
@@ -46,6 +52,32 @@ namespace SmallFry
         {
             get { return this.httpResponse.StatusDescription; }
             set { this.httpResponse.StatusDescription = value; }
+        }
+
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (!this.disposed)
+            {
+                if (disposing)
+                {
+                    IDisposable d = this.ResponseObject as IDisposable;
+
+                    if (d != null)
+                    {
+                        d.Dispose();
+                    }
+
+                    this.ResponseObject = null;
+                }
+
+                this.disposed = true;
+            }
         }
     }
 }

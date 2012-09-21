@@ -63,13 +63,19 @@ namespace SmallFry
                     {
                         foreach (Method method in endpoint.Methods as MethodCollection)
                         {
+                            IEnumerable<FilterAction> beforeActions = ServiceResolver.ResolveBeforeActions(serviceCollection.Pipeline, service.Pipeline, endpoint.Pipeline, method.Pipeline);
+                            IEnumerable<FilterAction> afterActions = ServiceResolver.ResolveAfterActions(serviceCollection.Pipeline, service.Pipeline, endpoint.Pipeline, method.Pipeline);
+                            IEnumerable<FilterAction> errorActions = ServiceResolver.ResolveErrorActions(serviceCollection.Pipeline, service.Pipeline, endpoint.Pipeline, method.Pipeline);
+
                             ResolvedService resolvedService = new ResolvedService(
+                                service.Name,
                                 method,
-                                ServiceResolver.ResolveAfterActions(serviceCollection.Pipeline, service.Pipeline, endpoint.Pipeline, method.Pipeline),
-                                ServiceResolver.ResolveBeforeActions(serviceCollection.Pipeline, service.Pipeline, endpoint.Pipeline, method.Pipeline),
+                                afterActions,
+                                beforeActions,
                                 ServiceResolver.ResolveEncodings(serviceCollection.Pipeline, service.Pipeline, endpoint.Pipeline, method.Pipeline),
-                                ServiceResolver.ResolveErrorActions(serviceCollection.Pipeline, service.Pipeline, endpoint.Pipeline, method.Pipeline),
-                                ServiceResolver.ResolveFormats(serviceCollection.Pipeline, service.Pipeline, endpoint.Pipeline, method.Pipeline));
+                                errorActions,
+                                ServiceResolver.ResolveFormats(serviceCollection.Pipeline, service.Pipeline, endpoint.Pipeline, method.Pipeline),
+                                ServiceResolver.ResolveRequestType(method, beforeActions, afterActions, errorActions));
 
                             switch (method.MethodType)
                             {
@@ -108,7 +114,8 @@ namespace SmallFry
             IEnumerable<FilterAction> endpointExcludeActions,
             IEnumerable<FilterAction> endpointActions,
             IEnumerable<FilterAction> methodExcludeActions,
-            IEnumerable<FilterAction> methodActions)
+            IEnumerable<FilterAction> methodActions,
+            bool reverse)
         {
             List<FilterAction> actions = new List<FilterAction>(hostActions);
 
@@ -124,6 +131,11 @@ namespace SmallFry
             actions.RemoveAll(a => methodActions.Any(ma => a.Equals(ma)));
             actions.AddRange(methodActions);
 
+            if (reverse)
+            {
+                actions.Reverse();
+            }
+
             return actions;
         }
 
@@ -136,7 +148,8 @@ namespace SmallFry
                 endpointPipeline.ExcludeAfterActions,
                 endpointPipeline.AfterActions,
                 methodPipeline.ExcludeAfterActions,
-                methodPipeline.AfterActions);
+                methodPipeline.AfterActions,
+                true);
         }
 
         private static IEnumerable<FilterAction> ResolveBeforeActions(Pipeline hostPipeline, Pipeline servicePipeline, Pipeline endpointPipeline, Pipeline methodPipeline)
@@ -148,7 +161,8 @@ namespace SmallFry
                 endpointPipeline.ExcludeBeforeActions,
                 endpointPipeline.BeforeActions,
                 methodPipeline.ExcludeBeforeActions,
-                methodPipeline.BeforeActions);
+                methodPipeline.BeforeActions,
+                false);
         }
 
         private static IEnumerable<IEncoding> ResolveEncodings(Pipeline hostPipeline, Pipeline servicePipeline, Pipeline endpointPipeline, Pipeline methodPipeline)
@@ -179,7 +193,8 @@ namespace SmallFry
                 endpointPipeline.ExcludeErrorActions,
                 endpointPipeline.ErrorActions,
                 methodPipeline.ExcludeErrorActions,
-                methodPipeline.ErrorActions);
+                methodPipeline.ErrorActions,
+                false);
         }
 
         private static IEnumerable<IFormat> ResolveFormats(Pipeline hostPipeline, Pipeline servicePipeline, Pipeline endpointPipeline, Pipeline methodPipeline)
@@ -199,6 +214,52 @@ namespace SmallFry
             formats.AddRange(methodPipeline.Formats);
 
             return formats;
+        }
+
+        private static Type ResolveRequestType(Method method, IEnumerable<FilterAction> beforeActions, IEnumerable<FilterAction> afterActions, IEnumerable<FilterAction> errorActions)
+        {
+            Type type = method.TypeArguments.FirstOrDefault();
+
+            if (type == null)
+            {
+                foreach (FilterAction filter in beforeActions)
+                {
+                    type = filter.TypeArguments.FirstOrDefault();
+
+                    if (type != null)
+                    {
+                        break;
+                    }
+                }
+
+                if (type == null)
+                {
+                    foreach (FilterAction filter in afterActions)
+                    {
+                        type = filter.TypeArguments.FirstOrDefault();
+
+                        if (type != null)
+                        {
+                            break;
+                        }
+                    }
+
+                    if (type == null)
+                    {
+                        foreach (FilterAction filter in errorActions)
+                        {
+                            type = filter.TypeArguments.FirstOrDefault();
+
+                            if (type != null)
+                            {
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return type;
         }
     }
 }

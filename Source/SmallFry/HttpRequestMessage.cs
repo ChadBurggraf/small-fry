@@ -52,6 +52,22 @@ namespace SmallFry
 
         public string ServiceName { get; private set; }
 
+        public static HttpRequestMessage Create(string serviceName, HttpRequestBase httpRequest, Type requestType, object requestObject)
+        {
+            if (requestType != null)
+            {
+                return (HttpRequestMessage)Activator.CreateInstance(
+                    typeof(HttpRequestMessage<>).MakeGenericType(requestType), 
+                    serviceName, 
+                    httpRequest, 
+                    requestObject);
+            }
+            else
+            {
+                return new HttpRequestMessage(serviceName, httpRequest);
+            }
+        }
+
         public void Dispose()
         {
             this.Dispose(true);

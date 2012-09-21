@@ -42,6 +42,7 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+    <Compile Include="EncodingLookupResult.cs" />
     <Compile Include="EncodingType.cs" />
     <Compile Include="Endpoint.cs" />
     <Compile Include="EndpointCollection.cs" />
@@ -50,6 +51,7 @@
     <Compile Include="FilterActionResult.cs" />
     <Compile Include="FilterAction{T}.cs" />
     <Compile Include="ActionApply.cs" />
+    <Compile Include="FormatLookupResult.cs" />
     <Compile Include="FuncApply.cs" />
     <Compile Include="GzipDeflateEncoding.cs" />
     <Compile Include="HttpRequestMessage.cs" />

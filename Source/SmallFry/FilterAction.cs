@@ -11,10 +11,11 @@ namespace SmallFry
 
     internal class FilterAction : IEquatable<FilterAction>
     {
+        private static readonly Type[] Types = new Type[0];
         private Func<bool> simpleAction;
-        private Func<Exception, bool> simpleExceptionAction;
+        private Func<IEnumerable<Exception>, bool> simpleExceptionAction;
         private Func<IRequestMessage, IResponseMessage, bool> requestResponseAction;
-        private Func<Exception, IRequestMessage, IResponseMessage, bool> requestResponseExceptionAction;
+        private Func<IEnumerable<Exception>, IRequestMessage, IResponseMessage, bool> requestResponseExceptionAction;
 
         public FilterAction(Func<bool> action)
         {
@@ -26,7 +27,7 @@ namespace SmallFry
             this.simpleAction = action;
         }
 
-        public FilterAction(Func<Exception, bool> action)
+        public FilterAction(Func<IEnumerable<Exception>, bool> action)
         {
             if (action == null)
             {
@@ -46,7 +47,7 @@ namespace SmallFry
             this.requestResponseAction = action;
         }
 
-        public FilterAction(Func<Exception, IRequestMessage, IResponseMessage, bool> action)
+        public FilterAction(Func<IEnumerable<Exception>, IRequestMessage, IResponseMessage, bool> action)
         {
             if (action == null)
             {
@@ -58,6 +59,11 @@ namespace SmallFry
 
         protected FilterAction()
         {
+        }
+
+        public virtual IEnumerable<Type> TypeArguments
+        {
+            get { return FilterAction.Types; }
         }
 
         public static bool operator ==(FilterAction left, FilterAction right)
@@ -133,7 +139,7 @@ namespace SmallFry
             }
         }
 
-        public FilterActionResult Invoke(IRequestMessage request, IResponseMessage response, Exception exception)
+        public FilterActionResult Invoke(IRequestMessage request, IResponseMessage response, IEnumerable<Exception> exceptions)
         {
             if (request == null)
             {
@@ -177,16 +183,11 @@ namespace SmallFry
             }
             else
             {
-                if (exception == null)
-                {
-                    throw new ArgumentNullException("exception", "exception cannot be null when invoking an error action.");
-                }
-
                 if (this.requestResponseExceptionAction != null)
                 {
                     try
                     {
-                        result.Continue = this.requestResponseExceptionAction(exception, request, response);
+                        result.Continue = this.requestResponseExceptionAction(exceptions, request, response);
                         result.Success = true;
                         actionFound = true;
                     }
@@ -199,7 +200,7 @@ namespace SmallFry
                 {
                     try
                     {
-                        result.Continue = this.simpleExceptionAction(exception);
+                        result.Continue = this.simpleExceptionAction(exceptions);
                         result.Success = true;
                         actionFound = true;
                     }

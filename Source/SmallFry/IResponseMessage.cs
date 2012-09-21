@@ -13,7 +13,7 @@ namespace SmallFry
     /// <summary>
     /// Defines the interface for response messages sent by a service endpoint.
     /// </summary>
-    public interface IResponseMessage
+    public interface IResponseMessage : IDisposable
     {
         /// <summary>
         /// Gets the collection of cookies to send with the response.
@@ -28,7 +28,7 @@ namespace SmallFry
         /// <summary>
         /// Gets or sets the object to serialize to the content body of the response.
         /// </summary>
-        object Response { get; set; }
+        object ResponseObject { get; set; }
 
         /// <summary>
         /// Gets or sets the status code to send with the response.

@@ -1,6 +1,7 @@
 ﻿namespace SmallFry.Tests
 {
     using System;
+    using System.Collections.Generic;
     using NUnit.Framework;
 
     [TestFixture]
@@ -83,12 +84,12 @@
             return true;
         }
 
-        private static bool RequestResponseExceptionAction(Exception ex, IRequestMessage request, IResponseMessage response)
+        private static bool RequestResponseExceptionAction(IEnumerable<Exception> exceptions, IRequestMessage request, IResponseMessage response)
         {
             return true;
         }
 
-        private static bool RequestResponseExceptionAction<T>(Exception ex, IRequestMessage<T> request, IResponseMessage response)
+        private static bool RequestResponseExceptionAction<T>(IEnumerable<Exception> exceptions, IRequestMessage<T> request, IResponseMessage response)
         {
             return true;
         }
@@ -98,7 +99,7 @@
             return true;
         }
 
-        private static bool SimpleExceptionAction(Exception ex)
+        private static bool SimpleExceptionAction(IEnumerable<Exception> exceptions)
         {
             return true;
         }

@@ -17,34 +17,34 @@ namespace SmallFry
     public interface IFormat : IEquatable<IFormat>
     {
         /// <summary>
-        /// Gets a collection of content-type values this instance can deserialize.
+        /// Gets a value indicating whether this instance can deserialize the given <see cref="MediaType"/>.
         /// </summary>
-        IEnumerable<string> AcceptableFormats { get; }
+        /// <param name="mediaType">The <see cref="MediaType"/> to decode.</param>
+        /// <returns>True if this instance can deserialize the <see cref="MediaType"/>, false otherwise.</returns>
+        bool CanDeserialize(MediaType mediaType);
 
         /// <summary>
-        /// Gets a content-type from the given collection of acceptable types
-        /// this instance can serialize. If none of the given types can be serialized by
-        /// this instance, returns null.
+        /// Gets a value indicating whether this instance can serialize the given <see cref="MediaType"/>.
         /// </summary>
-        /// <param name="accept">A collection of accept values.</param>
-        /// <returns>A content type value, or null if none of the acceptable types can be serialized..</returns>
-        string ContentType(IEnumerable<string> accept);
+        /// <param name="encodingType">The <see cref="MediaType"/> to encode.</param>
+        /// <returns>True if this instance can serialize the <see cref="MediaType"/>, false otherwise.</returns>
+        bool CanSerialize(MediaType mediaType);
 
         /// <summary>
         /// Deserializes an object of the given type from the given input stream.
         /// </summary>
-        /// <param name="accept">The collection of accept values used to choose this format.</param>
+        /// <param name="mediaType">The <see cref="MediaType"/> to deserialize.</param>
         /// <param name="type">The type of the object to deserialize.</param>
         /// <param name="stream">The stream to deserialize the object from.</param>
         /// <returns>A deserialized object of the specified type.</returns>
-        object Deserialize(IEnumerable<string> accept, Type type, Stream stream);
+        object Deserialize(MediaType mediaType, Type type, Stream stream);
 
         /// <summary>
         /// Serializes an object to the given output stream.
         /// </summary>
-        /// <param name="accept">The collection of accept values used to choose this format.</param>
+        /// <param name="mediaType">The <see cref="MediaType"/> to serialize.</param>
         /// <param name="value">The object to serialize.</param>
         /// <param name="stream">The stream to write the serialized object to.</param>
-        void Serialize(IEnumerable<string> accept, object value, Stream stream);
+        void Serialize(MediaType mediaType, object value, Stream stream);
     }
 }

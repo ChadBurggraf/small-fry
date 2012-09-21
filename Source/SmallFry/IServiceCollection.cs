@@ -71,7 +71,7 @@ namespace SmallFry
         /// </summary>
         /// <param name="action">The action to perform.</param>
         /// <returns>The current service's <see cref="IEndpointCollection"/>.</returns>
-        IEndpointCollection ErrorService(Func<Exception, bool> action);
+        IEndpointCollection ErrorService(Func<IEnumerable<Exception>, bool> action);
 
         /// <summary>
         /// Adds an error handler to the current service and returns the service's
@@ -79,7 +79,7 @@ namespace SmallFry
         /// </summary>
         /// <param name="action">The action to perform.</param>
         /// <returns>The current service's <see cref="IEndpointCollection"/>.</returns>
-        IEndpointCollection ErrorService(Func<Exception, IRequestMessage, IResponseMessage, bool> action);
+        IEndpointCollection ErrorService(Func<IEnumerable<Exception>, IRequestMessage, IResponseMessage, bool> action);
 
         /// <summary>
         /// Adds an error handler to the current service and returns the service's
@@ -88,7 +88,7 @@ namespace SmallFry
         /// <typeparam name="T">The expected type of the incoming request content.</typeparam>
         /// <param name="action">The action to perform.</param>
         /// <returns>The current service's <see cref="IEndpointCollection"/>.</returns>
-        IEndpointCollection ErrorService<T>(Func<Exception, IRequestMessage<T>, IResponseMessage, bool> action);
+        IEndpointCollection ErrorService<T>(Func<IEnumerable<Exception>, IRequestMessage<T>, IResponseMessage, bool> action);
 
         /// <summary>
         /// Adds an endpoint to the current service and returns the new endpoint's

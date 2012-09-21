@@ -11,6 +11,7 @@ namespace SmallFry
 
     internal class Method
     {
+        private static readonly Type[] Types = new Type[0];
         private Action action;
         private Action<IRequestMessage> requestAction;
         private Action<IRequestMessage, IResponseMessage> requestResponseAction;
@@ -59,6 +60,11 @@ namespace SmallFry
         public MethodType MethodType { get; protected set; }
 
         public Pipeline Pipeline { get; protected set; }
+
+        public virtual IEnumerable<Type> TypeArguments
+        {
+            get { return Method.Types; }
+        }
 
         public MethodResult Invoke(IRequestMessage request, IResponseMessage response)
         {

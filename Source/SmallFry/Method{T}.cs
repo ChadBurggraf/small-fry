@@ -7,12 +7,14 @@
 namespace SmallFry
 {
     using System;
+    using System.Collections.Generic;
 
     internal sealed class Method<T> : Method
     {
         private Action<T> action;
         private Action<IRequestMessage<T>> requestAction;
         private Action<IRequestMessage<T>, IResponseMessage> requestResponseAction;
+        private IEnumerable<Type> typeArguments = new Type[] { typeof(T) };
 
         public Method(MethodType methodType, Endpoint endpoint, IMethodCollection methodCollection, Action<T> action)
         {
@@ -45,6 +47,11 @@ namespace SmallFry
 
             this.Initialize(methodType, endpoint, methodCollection);
             this.requestResponseAction = action;
+        }
+
+        public override IEnumerable<Type> TypeArguments
+        {
+            get { return this.typeArguments; }
         }
 
         public MethodResult Invoke(IRequestMessage<T> request, IResponseMessage response)

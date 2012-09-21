@@ -12,62 +12,6 @@ namespace SmallFry
 
     internal static class Extensions
     {
-        public static bool Accept(this IEnumerable<EncodingType> encodingTypes, EncodingType contentEncoding)
-        {
-            return encodingTypes == null
-                || !encodingTypes.Any()
-                || encodingTypes.Any(e => e.Accepts(contentEncoding));
-        }
-
-        public static bool Accept(this IEnumerable<EncodingType> encodingTypes, string contentEncoding)
-        {
-            bool result = true;
-
-            if (!string.IsNullOrEmpty(contentEncoding))
-            {
-                EncodingType contentEncodingType;
-
-                if (EncodingType.TryParse(contentEncoding, out contentEncodingType))
-                {
-                    result = encodingTypes.Accept(contentEncoding);
-                }
-                else
-                {
-                    result = false;
-                }
-            }
-
-            return result;
-        }
-
-        public static bool Accept(this IEnumerable<MediaType> mediaTypes, MediaType contentType)
-        {
-            return mediaTypes == null
-                || !mediaTypes.Any()
-                || mediaTypes.Any(m => m.Accepts(contentType));
-        }
-
-        public static bool Accept(this IEnumerable<MediaType> mediaTypes, string contentType)
-        {
-            bool result = true;
-
-            if (!string.IsNullOrEmpty(contentType))
-            {
-                MediaType contentMediaType;
-
-                if (MediaType.TryParse(contentType, out contentMediaType))
-                {
-                    result = mediaTypes.Accept(contentMediaType);
-                }
-                else
-                {
-                    result = false;
-                }
-            }
-
-            return result;
-        }
-
         public static void AddDynamic(this IDictionary<string, object> dictionary, object values)
         {
             dictionary.AddDynamic<object>(values);

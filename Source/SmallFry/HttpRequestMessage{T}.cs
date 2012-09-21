@@ -18,6 +18,12 @@ namespace SmallFry
         {
         }
 
+        public HttpRequestMessage(string serviceName, HttpRequestBase httpRequest, T requestObject)
+            : base(serviceName, httpRequest)
+        {
+            this.RequestObject = requestObject;
+        }
+
         ~HttpRequestMessage()
         {
             this.Dispose(false);
@@ -31,11 +37,11 @@ namespace SmallFry
             {
                 if (disposing)
                 {
-                    IDisposable requestObjectDisposable = this.RequestObject as IDisposable;
+                    IDisposable d = this.RequestObject as IDisposable;
 
-                    if (requestObjectDisposable != null)
+                    if (d != null)
                     {
-                        requestObjectDisposable.Dispose();
+                        d.Dispose();
                     }
 
                     this.RequestObject = default(T);

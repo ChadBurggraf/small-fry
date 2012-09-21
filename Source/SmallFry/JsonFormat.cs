@@ -9,7 +9,6 @@ namespace SmallFry
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
     using ServiceStack.Text;
 
     /// <summary>
@@ -17,7 +16,7 @@ namespace SmallFry
     /// </summary>
     public class JsonFormat : IFormat
     {
-        private static readonly string[] Accept = new string[] { "application/json" };
+        private static readonly MediaType ApplicationJson = MediaType.Parse("application/json");
 
         static JsonFormat()
         {
@@ -26,43 +25,43 @@ namespace SmallFry
         }
 
         /// <summary>
-        /// Gets a collection of content-type values this instance can deserialize.
+        /// Gets a value indicating whether this instance can deserialize the given <see cref="MediaType"/>.
         /// </summary>
-        public virtual IEnumerable<string> AcceptableFormats
+        /// <param name="mediaType">The <see cref="MediaType"/> to decode.</param>
+        /// <returns>True if this instance can deserialize the <see cref="MediaType"/>, false otherwise.</returns>
+        public virtual bool CanDeserialize(MediaType mediaType)
         {
-            get { return JsonFormat.Accept; }
+            if (mediaType == null)
+            {
+                throw new ArgumentNullException("mediaType", "mediaType cannot be null.");
+            }
+
+            return JsonFormat.ApplicationJson.Accepts(mediaType);
         }
 
         /// <summary>
-        /// Gets a content-type from the given collection of acceptable types
-        /// this instance can serialize. If none of the given types can be serialized by
-        /// this instance, returns null.
+        /// Gets a value indicating whether this instance can serialize the given <see cref="MediaType"/>.
         /// </summary>
-        /// <param name="accept">A collection of accept values.</param>
-        /// <returns>A content type value, or null if none of the acceptable types can be serialized..</returns>
-        public virtual string ContentType(IEnumerable<string> accept)
+        /// <param name="encodingType">The <see cref="MediaType"/> to encode.</param>
+        /// <returns>True if this instance can serialize the <see cref="MediaType"/>, false otherwise.</returns>
+        public virtual bool CanSerialize(MediaType mediaType)
         {
-            string result = null;
-
-            if (accept != null)
+            if (mediaType == null)
             {
-                if (accept.Any(c => "application/json".Equals(c, StringComparison.OrdinalIgnoreCase)))
-                {
-                    result = "application/json";
-                }
+                throw new ArgumentNullException("mediaType", "mediaType cannot be null.");
             }
 
-            return result;
+            return mediaType.Accepts(JsonFormat.ApplicationJson);
         }
 
         /// <summary>
         /// Deserializes an object of the given type from the given input stream.
         /// </summary>
-        /// <param name="accept">The collection of accept values used to choose this format.</param>
+        /// <param name="mediaType">The <see cref="MediaType"/> to deserialize.</param>
         /// <param name="type">The type of the object to deserialize.</param>
         /// <param name="stream">The stream to deserialize the object from.</param>
         /// <returns>A deserialized object of the specified type.</returns>
-        public object Deserialize(IEnumerable<string> accept, Type type, Stream stream)
+        public object Deserialize(MediaType mediaType, Type type, Stream stream)
         {
             if (type == null)
             {
@@ -114,10 +113,10 @@ namespace SmallFry
         /// <summary>
         /// Serializes an object to the given output stream.
         /// </summary>
-        /// <param name="accept">The collection of accept values used to choose this format.</param>
+        /// <param name="mediaType">The <see cref="MediaType"/> to serialize.</param>
         /// <param name="value">The object to serialize.</param>
         /// <param name="stream">The stream to write the serialized object to.</param>
-        public void Serialize(IEnumerable<string> accept, object value, Stream stream)
+        public void Serialize(MediaType mediaType, object value, Stream stream)
         {
             if (stream == null)
             {

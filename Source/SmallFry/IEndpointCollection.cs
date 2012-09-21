@@ -70,7 +70,7 @@ namespace SmallFry
         /// </summary>
         /// <param name="action">The action to perform.</param>
         /// <returns>The current endpoint's <see cref="IMethodCollection"/>.</returns>
-        IMethodCollection ErrorEndpoint(Func<Exception, bool> action);
+        IMethodCollection ErrorEndpoint(Func<IEnumerable<Exception>, bool> action);
 
         /// <summary>
         /// Adds an error handler to the current endpoint and returns the endpoint's
@@ -78,7 +78,7 @@ namespace SmallFry
         /// </summary>
         /// <param name="action">The action to perform.</param>
         /// <returns>The current endpoint's <see cref="IMethodCollection"/>.</returns>
-        IMethodCollection ErrorEndpoint(Func<Exception, IRequestMessage, IResponseMessage, bool> action);
+        IMethodCollection ErrorEndpoint(Func<IEnumerable<Exception>, IRequestMessage, IResponseMessage, bool> action);
 
         /// <summary>
         /// Adds an error handler to the current endpoint and returns the endpoint's
@@ -87,7 +87,7 @@ namespace SmallFry
         /// <typeparam name="T">The expected type of the incoming request content.</typeparam>
         /// <param name="action">The action to perform.</param>
         /// <returns>The current endpoint's <see cref="IMethodCollection"/>.</returns>
-        IMethodCollection ErrorEndpoint<T>(Func<Exception, IRequestMessage<T>, IResponseMessage, bool> action);
+        IMethodCollection ErrorEndpoint<T>(Func<IEnumerable<Exception>, IRequestMessage<T>, IResponseMessage, bool> action);
 
         /// <summary>
         /// Removes an action to perform after one of the current endpoint's methods and returns the
@@ -151,7 +151,7 @@ namespace SmallFry
         /// </summary>
         /// <param name="action">The action to perform.</param>
         /// <returns>The current endpoint's <see cref="IMethodCollection"/>.</returns>
-        IMethodCollection WithoutErrorEndpoint(Func<Exception, bool> action);
+        IMethodCollection WithoutErrorEndpoint(Func<IEnumerable<Exception>, bool> action);
 
         /// <summary>
         /// Removes an error handler from the current endpoint and returns the endpoint's 
@@ -160,7 +160,7 @@ namespace SmallFry
         /// </summary>
         /// <param name="action">The action to perform.</param>
         /// <returns>The current endpoint's <see cref="IMethodCollection"/>.</returns>
-        IMethodCollection WithoutErrorEndpoint(Func<Exception, IRequestMessage, IResponseMessage, bool> action);
+        IMethodCollection WithoutErrorEndpoint(Func<IEnumerable<Exception>, IRequestMessage, IResponseMessage, bool> action);
 
         /// <summary>
         /// Removes an error handler from the current endpoint and returns the endpoint's 
@@ -170,6 +170,6 @@ namespace SmallFry
         /// <typeparam name="T">The expected type of the incoming request content.</typeparam>
         /// <param name="action">The action to perform.</param>
         /// <returns>The current endpoint's <see cref="IMethodCollection"/>.</returns>
-        IMethodCollection WithoutErrorEndpoint<T>(Func<Exception, IRequestMessage<T>, IResponseMessage, bool> action);
+        IMethodCollection WithoutErrorEndpoint<T>(Func<IEnumerable<Exception>, IRequestMessage<T>, IResponseMessage, bool> action);
     }
 }

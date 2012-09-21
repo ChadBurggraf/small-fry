@@ -91,17 +91,17 @@ namespace SmallFry
             this.list.CopyTo(array, arrayIndex);
         }
 
-        public IEndpointCollection ErrorService(Func<Exception, bool> action)
+        public IEndpointCollection ErrorService(Func<IEnumerable<Exception>, bool> action)
         {
             return this.Service.ServiceCollection.ErrorService(action);
         }
 
-        public IEndpointCollection ErrorService(Func<Exception, IRequestMessage, IResponseMessage, bool> action)
+        public IEndpointCollection ErrorService(Func<IEnumerable<Exception>, IRequestMessage, IResponseMessage, bool> action)
         {
             return this.Service.ServiceCollection.ErrorService(action);
         }
 
-        public IEndpointCollection ErrorService<T>(Func<Exception, IRequestMessage<T>, IResponseMessage, bool> action)
+        public IEndpointCollection ErrorService<T>(Func<IEnumerable<Exception>, IRequestMessage<T>, IResponseMessage, bool> action)
         {
             return this.Service.ServiceCollection.ErrorService(action);
         }
@@ -233,7 +233,7 @@ namespace SmallFry
             return this.CurrentEndpoint.Methods;
         }
 
-        public IMethodCollection ErrorEndpoint(Func<Exception, bool> action)
+        public IMethodCollection ErrorEndpoint(Func<IEnumerable<Exception>, bool> action)
         {
             if (this.CurrentEndpoint == null)
             {
@@ -244,7 +244,7 @@ namespace SmallFry
             return this.CurrentEndpoint.Methods;
         }
 
-        public IMethodCollection ErrorEndpoint(Func<Exception, IRequestMessage, IResponseMessage, bool> action)
+        public IMethodCollection ErrorEndpoint(Func<IEnumerable<Exception>, IRequestMessage, IResponseMessage, bool> action)
         {
             if (this.CurrentEndpoint == null)
             {
@@ -255,7 +255,7 @@ namespace SmallFry
             return this.CurrentEndpoint.Methods;
         }
 
-        public IMethodCollection ErrorEndpoint<T>(Func<Exception, IRequestMessage<T>, IResponseMessage, bool> action)
+        public IMethodCollection ErrorEndpoint<T>(Func<IEnumerable<Exception>, IRequestMessage<T>, IResponseMessage, bool> action)
         {
             if (this.CurrentEndpoint == null)
             {
@@ -347,7 +347,7 @@ namespace SmallFry
             return this.CurrentEndpoint.Methods;
         }
 
-        public IMethodCollection WithoutErrorEndpoint(Func<Exception, bool> action)
+        public IMethodCollection WithoutErrorEndpoint(Func<IEnumerable<Exception>, bool> action)
         {
             if (this.CurrentEndpoint == null)
             {
@@ -358,7 +358,7 @@ namespace SmallFry
             return this.CurrentEndpoint.Methods;
         }
 
-        public IMethodCollection WithoutErrorEndpoint(Func<Exception, IRequestMessage, IResponseMessage, bool> action)
+        public IMethodCollection WithoutErrorEndpoint(Func<IEnumerable<Exception>, IRequestMessage, IResponseMessage, bool> action)
         {
             if (this.CurrentEndpoint == null)
             {
@@ -369,7 +369,7 @@ namespace SmallFry
             return this.CurrentEndpoint.Methods;
         }
 
-        public IMethodCollection WithoutErrorEndpoint<T>(Func<Exception, IRequestMessage<T>, IResponseMessage, bool> action)
+        public IMethodCollection WithoutErrorEndpoint<T>(Func<IEnumerable<Exception>, IRequestMessage<T>, IResponseMessage, bool> action)
         {
             if (this.CurrentEndpoint == null)
             {

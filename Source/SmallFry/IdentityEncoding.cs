@@ -45,6 +45,7 @@ namespace SmallFry
         /// <param name="outputStream">The stream to write decoded content to.</param>
         public void Decode(EncodingType encodingType, Stream inputStream, Stream outputStream)
         {
+            inputStream.CopyTo(outputStream);
         }
 
         /// <summary>
@@ -56,6 +57,7 @@ namespace SmallFry
         /// <param name="outputStream">The output stream to write encoded content to.</param>
         public void Encode(EncodingType encodingType, Stream inputStream, Stream outputStream)
         {
+            inputStream.CopyTo(outputStream);
         }
 
         /// <summary>

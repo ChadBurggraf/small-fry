@@ -12,7 +12,8 @@ namespace SmallFry
     internal sealed class FilterAction<T> : FilterAction, IEquatable<FilterAction<T>>
     {
         private Func<IRequestMessage<T>, IResponseMessage, bool> action;
-        private Func<Exception, IRequestMessage<T>, IResponseMessage, bool> exceptionAction;
+        private Func<IEnumerable<Exception>, IRequestMessage<T>, IResponseMessage, bool> exceptionAction;
+        private IEnumerable<Type> typeArguments = new Type[] { typeof(T) };
 
         public FilterAction(Func<IRequestMessage<T>, IResponseMessage, bool> action)
         {
@@ -24,7 +25,7 @@ namespace SmallFry
             this.action = action;
         }
 
-        public FilterAction(Func<Exception, IRequestMessage<T>, IResponseMessage, bool> action)
+        public FilterAction(Func<IEnumerable<Exception>, IRequestMessage<T>, IResponseMessage, bool> action)
         {
             if (action == null)
             {
@@ -32,6 +33,11 @@ namespace SmallFry
             }
 
             this.exceptionAction = action;
+        }
+
+        public override IEnumerable<Type> TypeArguments
+        {
+            get { return this.typeArguments; }
         }
 
         public static bool operator ==(FilterAction<T> left, FilterAction<T> right)
@@ -96,7 +102,7 @@ namespace SmallFry
             }
         }
 
-        public FilterActionResult Invoke(IRequestMessage<T> request, IResponseMessage response, Exception exception)
+        public FilterActionResult Invoke(IRequestMessage<T> request, IResponseMessage response, IEnumerable<Exception> exceptions)
         {
             if (request == null)
             {
@@ -124,14 +130,9 @@ namespace SmallFry
             }
             else if (this.exceptionAction != null)
             {
-                if (exception == null)
-                {
-                    throw new ArgumentNullException("exception", "exception cannot be null when invoking an error action.");
-                }
-
                 try
                 {
-                    result.Continue = this.exceptionAction(exception, request, response);
+                    result.Continue = this.exceptionAction(exceptions, request, response);
                     result.Success = true;
                 }
                 catch (Exception ex)
