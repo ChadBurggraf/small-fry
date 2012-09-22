@@ -26,6 +26,23 @@ namespace SmallFry
             this.serviceLookup = ServiceResolver.ResolveAllServices(serviceCollection);
         }
 
+        public bool ExistsForAnyMethodType(string url)
+        {
+            IDictionary<string, object> routeValues;
+
+            foreach (ResolvedService service in this.serviceLookup.Values.SelectMany(c => c))
+            {
+                routeValues = service.Method.Endpoint.Route.Match(url);
+
+                if (routeValues != null)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public ResolvedService Find(MethodType methodType, string url)
         {
             IDictionary<string, object> routeValues;
@@ -181,6 +198,7 @@ namespace SmallFry
             encodings.RemoveAll(e => methodPipeline.Encodings.Any(me => e.Equals(me)));
             encodings.AddRange(methodPipeline.Encodings);
 
+            encodings.Reverse();
             return encodings;
         }
 
@@ -194,7 +212,7 @@ namespace SmallFry
                 endpointPipeline.ErrorActions,
                 methodPipeline.ExcludeErrorActions,
                 methodPipeline.ErrorActions,
-                false);
+                true);
         }
 
         private static IEnumerable<IFormat> ResolveFormats(Pipeline hostPipeline, Pipeline servicePipeline, Pipeline endpointPipeline, Pipeline methodPipeline)
@@ -213,6 +231,7 @@ namespace SmallFry
             formats.RemoveAll(f => methodPipeline.Formats.Any(mf => f.Equals(mf)));
             formats.AddRange(methodPipeline.Formats);
 
+            formats.Reverse();
             return formats;
         }
 

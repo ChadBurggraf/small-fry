@@ -8,14 +8,29 @@ namespace SmallFry
 {
     using System;
 
-    internal enum MethodType
+    /// <summary>
+    /// Defines the possible service endpoint method types.
+    /// </summary>
+    public enum MethodType
     {
+        /// <summary>
+        /// Identifies a DELETE method.
+        /// </summary>
         Delete,
 
+        /// <summary>
+        /// Identifies a GET method.
+        /// </summary>
         Get,
 
+        /// <summary>
+        /// Identifies a POST method.
+        /// </summary>
         Post,
 
+        /// <summary>
+        /// Identifies a PUT method.
+        /// </summary>
         Put
     }
 }

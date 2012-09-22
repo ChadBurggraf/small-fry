@@ -11,11 +11,12 @@ namespace SmallFry
     using System.IO;
     using System.Linq;
     using System.Web;
+    using System.Web.SessionState;
 
     /// <summary>
     /// Handles service I/O over HTTP.
     /// </summary>
-    public sealed class HttpServiceHandler : IHttpHandler
+    public sealed class HttpServiceHandler : IHttpHandler, IRequiresSessionState
     {
         /// <summary>
         /// Gets a value indicating whether another request can use the <see cref="IHttpHandler"/> instance.
@@ -47,135 +48,139 @@ namespace SmallFry
                 throw new ArgumentNullException("httpContext", "httpContext cannot be null.");
             }
 
-            string url = httpContext.Request.AppRelativeCurrentExecutionFilePath.Substring(1);
-            MethodType methodType = httpContext.Request.HttpMethod.AsMethodType();
-            ResolvedService service = ServiceHost.Instance.ServiceResolver.Find(methodType, url);
-
-            if (service != null)
+            try
             {
-                object requestObject = null;
-                ICollection<FilterActionResult> actionResults = null;
-                List<Exception> exceptions = new List<Exception>();
-                bool success = true, cont = true;
+                string url = httpContext.Request.AppRelativeCurrentExecutionFilePath.Substring(1);
+                MethodType methodType = httpContext.Request.HttpMethod.AsMethodType();
+                ResolvedService service = ServiceHost.Instance.ServiceResolver.Find(methodType, url);
 
-                try
+                if (service != null)
                 {
-                    // Read the incoming request.
-                    if ((methodType == MethodType.Post
-                        || methodType == MethodType.Put)
-                        && service.RequestType != null
-                        && httpContext.Request.ContentLength > 0)
+                    ReadRequestResult readResult = service.ReadRequest(
+                        httpContext.Request.ContentLength,
+                        httpContext.Request.Headers["Content-Encoding"],
+                        httpContext.Request.ContentType,
+                        httpContext.Request.InputStream);
+
+                    using (IRequestMessage request = HttpRequestMessage.Create(service.Name, httpContext.Request, service.RequestType, readResult.RequestObject))
                     {
-                        Exception ex;
-
-                        if (!service.TryReadRequestObject(
-                            httpContext.Request.Headers["Content-Encoding"], 
-                            httpContext.Request.ContentType, 
-                            httpContext.Request.InputStream, 
-                            out requestObject,
-                            out ex))
-                        {
-                            if (ex != null)
-                            {
-                                exceptions.Add(ex);
-                            }
-
-                            success = false;
-                        }
-                    }
-
-                    // Instantiate the request and response objects.
-                    using (IRequestMessage request = HttpRequestMessage.Create(service.Name, httpContext.Request, service.RequestType, requestObject))
-                    {
-                        requestObject = null;
-
                         using (IResponseMessage response = new HttpResponseMessage(httpContext.Response))
                         {
-                            // If we failed to read the request, don't even bother with the main pipeline.
+                            List<Exception> exceptions = new List<Exception>();
+                            InvokeActionsResult invokeResult;
+                            bool success = readResult.Success, cont = true;
+
                             if (success)
                             {
-                                // Invoke the before actions.
-                                actionResults = service.InvokeBeforeActions(request, response);
-                                exceptions.AddRange(actionResults.Where(r => !r.Success && r.Exception != null).Select(r => r.Exception));
-                                success = success && actionResults.Any(r => !r.Success);
-                                cont = cont && !actionResults.Any(r => !r.Continue);
+                                invokeResult = service.InvokeBeforeActions(request, response);
+                                success = success && invokeResult.Success;
+                                cont = cont && invokeResult.Continue;
 
-                                // If we didn't bail out.
+                                if (!invokeResult.Success)
+                                {
+                                    exceptions.AddRange(invokeResult.Results.Where(r => !r.Success && r.Exception != null).Select(r => r.Exception));
+                                }
+
                                 if (cont)
                                 {
-                                    // Invoke the endpoint method.
-                                    MethodResult result = service.Method.Invoke(request, response);
-                                    success = success && result.Success;
+                                    MethodResult methodResult = service.Method.Invoke(request, response);
+                                    success = success && methodResult.Success;
 
-                                    if (!result.Success && result.Exception != null)
+                                    if (!methodResult.Success && methodResult.Exception != null)
                                     {
-                                        exceptions.Add(result.Exception);
+                                        exceptions.Add(methodResult.Exception);
                                     }
 
-                                    // Invoke the after actions.
-                                    actionResults = service.InvokeAfterActions(request, response);
-                                    exceptions.AddRange(actionResults.Where(r => !r.Success && r.Exception != null).Select(r => r.Exception));
-                                    success = success && actionResults.Any(r => !r.Success);
-                                    cont = cont && !actionResults.Any(r => !r.Continue);
+                                    invokeResult = service.InvokeAfterActions(request, response);
+                                    success = success && invokeResult.Success;
+                                    cont = cont && invokeResult.Continue;
+
+                                    if (!invokeResult.Success)
+                                    {
+                                        exceptions.AddRange(invokeResult.Results.Where(r => !r.Success && r.Exception != null).Select(r => r.Exception));
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (readResult.Exception != null)
+                                {
+                                    exceptions.Add(readResult.Exception);
+                                }
+
+                                if (readResult.StatusCode != StatusCode.None)
+                                {
+                                    response.SetStatus(readResult.StatusCode);
                                 }
                             }
 
-                            // If we hit an error and didn't bail out, invoke the error actions.
-                            if (!success && cont)
+                            if (!success)
                             {
-                                actionResults = service.InvokeErrors(request, response, exceptions);
+                                invokeResult = service.InvokeErrors(request, response, exceptions);
+
+                                if (!invokeResult.Success)
+                                {
+                                    throw new PipelineException(
+                                        PipelineErrorType.ErrorHandlerThrewException,
+                                        service.Name,
+                                        service.Method.Endpoint.Route.ToString(),
+                                        request.RequestUri,
+                                        methodType,
+                                        invokeResult.Results.Where(r => !r.Success && r.Exception != null).Select(r => r.Exception).FirstOrDefault());
+                                }
                             }
 
-                            // Write the outgoing response.
-                            if (response.ResponseObject != null)
+                            if (!success && response.StatusCode < 300)
                             {
-                                Exception ex;
+                                response.SetStatus(StatusCode.InternalServerError);
+                            }
 
-                                if (!service.TryWriteResponseObject(
+                            if (cont)
+                            {
+                                WriteResponseResult writeResult = service.WriteResponse(
                                     httpContext.Request.Headers["Accept-Encoding"],
                                     string.Join(",", httpContext.Request.AcceptTypes),
                                     response.ResponseObject,
-                                    httpContext.Response.OutputStream,
-                                    out ex))
+                                    httpContext.Response.OutputStream);
+
+                                if (!writeResult.Success)
                                 {
-                                    if (ex != null)
+                                    if (writeResult.StatusCode != StatusCode.None)
                                     {
-                                        throw ex;
+                                        response.SetStatus(writeResult.StatusCode);
                                     }
 
-                                    success = false;
+                                    if (writeResult.Exception != null)
+                                    {
+                                        throw new PipelineException(
+                                            PipelineErrorType.WriteResponseOutputThrewException,
+                                            service.Name,
+                                            service.Method.Endpoint.Route.ToString(),
+                                            request.RequestUri,
+                                            methodType,
+                                            writeResult.Exception);
+                                    }
                                 }
                             }
-                        } 
-                    }
-
-                    // If there was an error, but no actions updated the response
-                    // status code, just send a 500.
-                    if (!success && httpContext.Response.StatusCode < 400)
-                    {
-                        httpContext.Response.StatusCode = 500;
-                        httpContext.Response.StatusDescription = "Internal Server Error";
+                        }
                     }
                 }
-                finally
+                else
                 {
-                    // Ensure the request object is disposed, if it is disposable
-                    // and something went wront.
-                    IDisposable d = requestObject as IDisposable;
-
-                    if (d != null)
+                    if (ServiceHost.Instance.ServiceResolver.ExistsForAnyMethodType(url))
                     {
-                        d.Dispose();
+                        httpContext.Response.SetStatus(StatusCode.MethodNotAllowed);
+                    }
+                    else
+                    {
+                        httpContext.Response.SetStatus(StatusCode.NotFound);
                     }
                 }
             }
-            else
+            finally
             {
-                httpContext.Response.StatusCode = 404;
-                httpContext.Response.StatusDescription = "Not Found";
+                httpContext.Response.End();
             }
-
-            httpContext.Response.End();
         }
     }
 }

@@ -21,9 +21,6 @@ namespace SmallFry
             this.list = new List<Service>();
             this.Pipeline = new Pipeline();
             this.RouteValueBinder = new RouteValueBinder();
-
-            this.Pipeline.Encodings.Add(new GzipDeflateEncoding());
-            this.Pipeline.Formats.Add(new JsonFormat());
         }
         
         public int Count

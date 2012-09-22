@@ -63,6 +63,7 @@
     <Compile Include="IEndpointCollection.cs" />
     <Compile Include="IFormat.cs" />
     <Compile Include="IMethodCollection.cs" />
+    <Compile Include="InvokeActionsResult.cs" />
     <Compile Include="IRequestMessage.cs" />
     <Compile Include="IRequestMessage{T}.cs" />
     <Compile Include="IResponseMessage.cs" />
@@ -78,9 +79,12 @@
     <Compile Include="Method{T}.cs" />
     <Compile Include="ParameterType.cs" />
     <Compile Include="Pipeline.cs" />
+    <Compile Include="PipelineErrorType.cs" />
+    <Compile Include="PipelineException.cs" />
     <Compile Include="PlainTextFormat.cs" />
     <Compile Include="PrimitiveRouteParameterParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReadRequestResult.cs" />
     <Compile Include="ResolvedService.cs" />
     <Compile Include="RoutePattern.cs" />
     <Compile Include="RouteSegment.cs" />
@@ -91,6 +95,8 @@
     <Compile Include="ServiceCollection.cs" />
     <Compile Include="ServiceHost.cs" />
     <Compile Include="ServiceResolver.cs" />
+    <Compile Include="StatusCode.cs" />
+    <Compile Include="WriteResponseResult.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

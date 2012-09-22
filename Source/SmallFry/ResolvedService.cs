@@ -13,6 +13,9 @@ namespace SmallFry
 
     internal sealed class ResolvedService
     {
+        private static readonly FormatLookupResult DefaultFormatLookupResult = new FormatLookupResult() { Format = new PlainTextFormat(), MediaType = MediaType.Empty };
+        private static readonly EncodingLookupResult DefaultEncodingLookupResult = new EncodingLookupResult() { Encoding = new IdentityEncoding(), EncodingType = EncodingType.Empty };
+
         public ResolvedService(
             string name,
             Method method,
@@ -103,56 +106,53 @@ namespace SmallFry
         public EncodingLookupResult GetRequestDecoder(string contentEncoding)
         {
             EncodingLookupResult result = null;
+            EncodingType encodingType = EncodingType.Parse(contentEncoding);
 
-            foreach (EncodingType encodingType in contentEncoding.AsEncodingTypes())
+            foreach (IEncoding encoding in this.Encodings)
             {
-                foreach (IEncoding encoding in this.Encodings)
+                if (encoding.CanDecode(encodingType))
                 {
-                    if (encoding.CanDecode(encodingType))
+                    result = new EncodingLookupResult()
                     {
-                        result = new EncodingLookupResult()
-                        {
-                            Encoding = encoding,
-                            EncodingType = encodingType
-                        };
+                        Encoding = encoding,
+                        EncodingType = encodingType
+                    };
 
-                        break;
-                    }
+                    break;
                 }
             }
 
-            return result ?? new EncodingLookupResult() { Encoding = new IdentityEncoding(), EncodingType = EncodingType.Empty };
+            return result;
         }
 
         public FormatLookupResult GetRequestDeserializer(string contentType)
         {
             FormatLookupResult result = null;
+            MediaType mediaType = MediaType.Parse(contentType);
 
-            foreach (MediaType mediaType in contentType.AsMediaTypes())
+            foreach (IFormat format in this.Formats)
             {
-                foreach (IFormat format in this.Formats)
+                if (format.CanDeserialize(mediaType))
                 {
-                    if (format.CanDeserialize(mediaType))
+                    result = new FormatLookupResult()
                     {
-                        result = new FormatLookupResult()
-                        {
-                            Format = format,
-                            MediaType = mediaType
-                        };
+                        Format = format,
+                        MediaType = mediaType
+                    };
 
-                        break;
-                    }
+                    break;
                 }
             }
 
-            return result ?? new FormatLookupResult() { Format = new PlainTextFormat(), MediaType = MediaType.Empty };
+            return result;
         }
 
         public EncodingLookupResult GetResponseEncoder(string acceptEncoding)
         {
             EncodingLookupResult result = null;
+            IEnumerable<EncodingType> encodingTypes = acceptEncoding.AsEncodingTypes();
 
-            foreach (EncodingType encodingType in acceptEncoding.AsEncodingTypes())
+            foreach (EncodingType encodingType in encodingTypes)
             {
                 foreach (IEncoding encoding in this.Encodings)
                 {
@@ -169,14 +169,20 @@ namespace SmallFry
                 }
             }
 
-            return result ?? new EncodingLookupResult() { Encoding = new IdentityEncoding(), EncodingType = EncodingType.Empty };
+            if (result == null && encodingTypes.Any(e => e == EncodingType.Empty))
+            {
+                result = ResolvedService.DefaultEncodingLookupResult;
+            }
+
+            return result;
         }
 
         public FormatLookupResult GetResponseSerializer(string accept)
         {
             FormatLookupResult result = null;
+            IEnumerable<MediaType> mediaTypes = accept.AsMediaTypes();
 
-            foreach (MediaType mediaType in accept.AsMediaTypes())
+            foreach (MediaType mediaType in mediaTypes)
             {
                 foreach (IFormat format in this.Formats)
                 {
@@ -193,102 +199,195 @@ namespace SmallFry
                 }
             }
 
-            return result ?? new FormatLookupResult() { Format = new PlainTextFormat(), MediaType = MediaType.Empty };
+            if (result == null && mediaTypes.Any(m => m == MediaType.Empty))
+            {
+                result = ResolvedService.DefaultFormatLookupResult;
+            }
+
+            return result;
         }
 
-        public ICollection<FilterActionResult> InvokeAfterActions(IRequestMessage request, IResponseMessage response)
+        public InvokeActionsResult InvokeAfterActions(IRequestMessage request, IResponseMessage response)
         {
             return ResolvedService.InvokeActions(this.AfterActions, request, response, null);
         }
 
-        public ICollection<FilterActionResult> InvokeBeforeActions(IRequestMessage request, IResponseMessage response)
+        public InvokeActionsResult InvokeBeforeActions(IRequestMessage request, IResponseMessage response)
         {
             return ResolvedService.InvokeActions(this.BeforeActions, request, response, null);
         }
 
-        public ICollection<FilterActionResult> InvokeErrors(IRequestMessage request, IResponseMessage response, IEnumerable<Exception> exceptions)
+        public InvokeActionsResult InvokeErrors(IRequestMessage request, IResponseMessage response, IEnumerable<Exception> exceptions)
         {
             return ResolvedService.InvokeActions(this.ErrorActions, request, response, exceptions);
         }
 
-        public bool TryReadRequestObject(string contentEncoding, string contentType, Stream inputStream, out object requestObject, out Exception exception)
+        public ReadRequestResult ReadRequest(int contentLength, string contentEncoding, string contentType, Stream inputStream)
         {
-            bool success = true;
-            requestObject = null;
-            exception = null;
+            ReadRequestResult result = new ReadRequestResult() { Success = true };
 
-            try
+            if ((this.Method.MethodType == MethodType.Post
+                || this.Method.MethodType == MethodType.Put)
+                && this.RequestType != null)
             {
-                EncodingLookupResult encoding = this.GetRequestDecoder(contentEncoding);
-                FormatLookupResult format = this.GetRequestDeserializer(contentType);
-
-                using (MemoryStream stream = new MemoryStream())
+                if (contentLength > 0)
                 {
-                    encoding.Encoding.Decode(encoding.EncodingType, inputStream, stream);
-                    stream.Position = 0;
-                    requestObject = format.Format.Deserialize(format.MediaType, this.RequestType, stream);
+                    EncodingLookupResult encodingResult = null;
+                    FormatLookupResult formatResult = null;
+
+                    if (!string.IsNullOrEmpty(contentEncoding))
+                    {
+                        try
+                        {
+                            encodingResult = this.GetRequestDecoder(contentEncoding);
+
+                            if (encodingResult == null)
+                            {
+                                result.StatusCode = StatusCode.UnsupportedMediaType;
+                                result.Success = false;
+                            }
+                        }
+                        catch (FormatException ex)
+                        {
+                            result.Exception = ex;
+                            result.StatusCode = StatusCode.BadRequest;
+                            result.Success = false;
+                        }
+                    }
+                    else
+                    {
+                        encodingResult = ResolvedService.DefaultEncodingLookupResult;
+                    }
+
+                    if (result.Success)
+                    {
+                        if (!string.IsNullOrEmpty(contentType))
+                        {
+                            try
+                            {
+                                formatResult = this.GetRequestDeserializer(contentType);
+
+                                if (formatResult == null)
+                                {
+                                    result.StatusCode = StatusCode.UnsupportedMediaType;
+                                    result.Success = false;
+                                }
+                            }
+                            catch (FormatException ex)
+                            {
+                                result.Exception = ex;
+                                result.StatusCode = StatusCode.BadRequest;
+                                result.Success = false;
+                            }
+                        }
+                        else
+                        {
+                            formatResult = ResolvedService.DefaultFormatLookupResult;
+                        }
+                    }
+
+                    if (result.Success)
+                    {
+                        object obj = null;
+
+                        try
+                        {
+                            using (MemoryStream stream = new MemoryStream())
+                            {
+                                encodingResult.Encoding.Decode(encodingResult.EncodingType, inputStream, stream);
+                                stream.Position = 0;
+                                obj = formatResult.Format.Deserialize(formatResult.MediaType, this.RequestType, stream);
+                            }
+
+                            result.RequestObject = obj;
+                            obj = null;
+                        }
+                        catch (Exception ex)
+                        {
+                            result.Exception = ex;
+                            result.RequestObject = null;
+                            result.StatusCode = StatusCode.BadRequest;
+                            result.Success = false;
+                            obj.DisposeIfPossible();
+                            obj = null;
+                        }
+                    }
+                }
+                else
+                {
+                    result.StatusCode = StatusCode.LengthRequired;
+                    result.Success = false;
                 }
             }
-            catch (Exception ex)
-            {
-                success = false;
-                exception = ex;
 
-                IDisposable d = requestObject as IDisposable;
-
-                if (d != null)
-                {
-                    d.Dispose();
-                }
-
-                requestObject = null;
-            }
-
-            return success;
+            return result;
         }
 
-        public bool TryWriteResponseObject(string acceptEncoding, string accept, object responseObject, Stream outputStream, out Exception exception)
+        public WriteResponseResult WriteResponse(string acceptEncoding, string accept, object responseObject, Stream outputStream)
         {
-            bool success = true;
-            exception = null;
+            WriteResponseResult result = new WriteResponseResult() { Success = true };
 
-            try
+            if (responseObject != null)
             {
-                EncodingLookupResult encoding = this.GetResponseEncoder(acceptEncoding);
-                FormatLookupResult format = this.GetResponseSerializer(accept);
+                EncodingLookupResult encodingResult = this.GetResponseEncoder(acceptEncoding);
 
-                using (MemoryStream stream = new MemoryStream())
+                if (encodingResult != null)
                 {
-                    format.Format.Serialize(format.MediaType, responseObject, stream);
-                    stream.Position = 0;
-                    encoding.Encoding.Encode(encoding.EncodingType, stream, outputStream);
+                    FormatLookupResult formatResult = this.GetResponseSerializer(accept);
+
+                    if (formatResult != null)
+                    {
+                        try
+                        {
+                            using (MemoryStream stream = new MemoryStream())
+                            {
+                                formatResult.Format.Serialize(formatResult.MediaType, responseObject, stream);
+                                stream.Position = 0;
+                                encodingResult.Encoding.Encode(encodingResult.EncodingType, stream, outputStream);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            result.Exception = ex;
+                            result.StatusCode = StatusCode.InternalServerError;
+                            result.Success = false;
+                        }
+                    }
+                    else
+                    {
+                        result.StatusCode = StatusCode.NotAcceptable;
+                        result.Success = false;
+                    }
+                }
+                else
+                {
+                    result.StatusCode = StatusCode.NotAcceptable;
+                    result.Success = false;
                 }
             }
-            catch (Exception ex)
-            {
-                success = false;
-                exception = ex;
-            }
 
-            return success;
+            return result;
         }
 
-        private static ICollection<FilterActionResult> InvokeActions(IEnumerable<FilterAction> actions, IRequestMessage request, IResponseMessage response, IEnumerable<Exception> exceptions)
+        private static InvokeActionsResult InvokeActions(IEnumerable<FilterAction> actions, IRequestMessage request, IResponseMessage response, IEnumerable<Exception> exceptions)
         {
             List<FilterActionResult> results = new List<FilterActionResult>();
+            bool success = true, cont = true;
 
             foreach (FilterAction action in actions)
             {
                 FilterActionResult result = action.Invoke(request, response, exceptions);
                 results.Add(result);
+                success = success && result.Success;
+                cont = cont && result.Continue;
 
-                if (!result.Continue)
+                if (!cont)
                 {
                     break;
                 }
             }
 
-            return results;
+            return new InvokeActionsResult(success, cont, results);
         }
     }
 }

@@ -8,7 +8,10 @@ namespace SmallFry
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel;
     using System.Linq;
+    using System.Reflection;
+    using System.Web;
 
     internal static class Extensions
     {
@@ -201,6 +204,40 @@ namespace SmallFry
             return type.IsValueType ? Activator.CreateInstance(type) : null;
         }
 
+        public static string Description(this Enum value)
+        {
+            if (value == null)
+            {
+                throw new ArgumentNullException("value", "value cannot be null.");
+            }
+
+            string text = value.ToString();
+            string result = text;
+            MemberInfo info = value.GetType().GetMember(text).FirstOrDefault();
+
+            if (info != null)
+            {
+                DescriptionAttribute da = info.GetCustomAttributes(typeof(DescriptionAttribute), false).FirstOrDefault() as DescriptionAttribute;
+
+                if (da != null)
+                {
+                    result = da.Description;
+                }
+            }
+
+            return result;
+        }
+
+        public static void DisposeIfPossible(this object obj)
+        {
+            IDisposable d = obj as IDisposable;
+
+            if (d != null)
+            {
+                d.Dispose();
+            }
+        }
+
         public static bool EqualsFloat(this float left, float right, float margin)
         {
             float l = Math.Abs(left);
@@ -240,6 +277,28 @@ namespace SmallFry
             {
                 return left.Equals(right);
             }
+        }
+
+        public static void SetStatus(this HttpResponseBase httpResponse, StatusCode statusCode)
+        {
+            if (httpResponse == null)
+            {
+                throw new ArgumentNullException("httpResponse", "httpResponse cannot be null.");
+            }
+
+            httpResponse.StatusCode = (int)statusCode;
+            httpResponse.StatusDescription = statusCode.Description();
+        }
+
+        public static void SetStatus(this IResponseMessage response, StatusCode statusCode)
+        {
+            if (response == null)
+            {
+                throw new ArgumentNullException("response", "response cannot be null.");
+            }
+
+            response.StatusCode = (int)statusCode;
+            response.StatusDescription = statusCode.Description();
         }
 
         public static IEnumerable<string> ToAcceptEncodings(this IEnumerable<EncodingType> encodingTypes)
