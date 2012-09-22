@@ -105,11 +105,11 @@ namespace SmallFry
             }
 
             return value.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(s => s.Trim())
                 .Where(s => !string.IsNullOrEmpty(s))
                 .Select(s => EncodingType.Parse(s))
                 .Distinct()
-                .OrderByDescending(e => e.QValue)
-                .ThenBy(e => e.Name, StringComparer.OrdinalIgnoreCase)
+                .OrderByDescending(e => e)
                 .ToArray();
         }
 
@@ -121,12 +121,11 @@ namespace SmallFry
             }
 
             return value.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(s => s.Trim())
                 .Where(s => !string.IsNullOrEmpty(s))
                 .Select(s => MediaType.Parse(s))
                 .Distinct()
-                .OrderByDescending(m => m.AcceptParams.Value)
-                .ThenBy(m => m.RootType)
-                .ThenBy(m => m.SubType)
+                .OrderByDescending(m => m)
                 .ToArray();
         }
 

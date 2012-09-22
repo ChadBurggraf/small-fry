@@ -56,9 +56,11 @@
     <Compile Include="FilterActionTests.cs" />
     <Compile Include="FunctionTests.cs" />
     <Compile Include="GzipDeflateEncodingTests.cs" />
+    <Compile Include="HttpServiceHandlerTests.cs" />
     <Compile Include="MediaTypeTests.cs" />
     <Compile Include="MethodCollectionTests.cs" />
     <Compile Include="NoOpRouteParameterParser.cs" />
+    <Compile Include="ResolvedServiceTests.cs" />
     <Compile Include="RouteParameterParserTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RoutePatternTests.cs" />

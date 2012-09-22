@@ -108,18 +108,25 @@ namespace SmallFry
             EncodingLookupResult result = null;
             EncodingType encodingType = EncodingType.Parse(contentEncoding);
 
-            foreach (IEncoding encoding in this.Encodings)
+            if (encodingType != EncodingType.Empty)
             {
-                if (encoding.CanDecode(encodingType))
+                foreach (IEncoding encoding in this.Encodings)
                 {
-                    result = new EncodingLookupResult()
+                    if (encoding.CanDecode(encodingType))
                     {
-                        Encoding = encoding,
-                        EncodingType = encodingType
-                    };
+                        result = new EncodingLookupResult()
+                        {
+                            Encoding = encoding,
+                            EncodingType = encodingType
+                        };
 
-                    break;
+                        break;
+                    }
                 }
+            }
+            else
+            {
+                result = ResolvedService.DefaultEncodingLookupResult;
             }
 
             return result;
@@ -130,18 +137,25 @@ namespace SmallFry
             FormatLookupResult result = null;
             MediaType mediaType = MediaType.Parse(contentType);
 
-            foreach (IFormat format in this.Formats)
+            if (mediaType != MediaType.Empty)
             {
-                if (format.CanDeserialize(mediaType))
+                foreach (IFormat format in this.Formats)
                 {
-                    result = new FormatLookupResult()
+                    if (format.CanDeserialize(mediaType))
                     {
-                        Format = format,
-                        MediaType = mediaType
-                    };
+                        result = new FormatLookupResult()
+                        {
+                            Format = format,
+                            MediaType = mediaType
+                        };
 
-                    break;
+                        break;
+                    }
                 }
+            }
+            else
+            {
+                result = ResolvedService.DefaultFormatLookupResult;
             }
 
             return result;
@@ -154,6 +168,8 @@ namespace SmallFry
 
             foreach (EncodingType encodingType in encodingTypes)
             {
+                bool found = false;
+
                 foreach (IEncoding encoding in this.Encodings)
                 {
                     if (encoding.CanEncode(encodingType))
@@ -164,8 +180,14 @@ namespace SmallFry
                             EncodingType = encodingType
                         };
 
+                        found = true;
                         break;
                     }
+                }
+
+                if (found)
+                {
+                    break;
                 }
             }
 
@@ -184,6 +206,8 @@ namespace SmallFry
 
             foreach (MediaType mediaType in mediaTypes)
             {
+                bool found = false;
+
                 foreach (IFormat format in this.Formats)
                 {
                     if (format.CanSerialize(mediaType))
@@ -194,8 +218,14 @@ namespace SmallFry
                             MediaType = mediaType
                         };
 
+                        found = true;
                         break;
                     }
+                }
+
+                if (found)
+                {
+                    break;
                 }
             }
 
