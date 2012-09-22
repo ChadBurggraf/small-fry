@@ -75,6 +75,7 @@ namespace SmallFry
         /// <param name="info">The SerializationInfo that holds the serialized object data about the exception being thrown.</param>
         /// <param name="context">The StreamingContext that contains contextual information about the source or destination.</param>
         private PipelineException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
             if (info != null)
             {

@@ -42,7 +42,7 @@ namespace SmallFry
         /// <summary>
         /// Gets a value indicating whether this instance can serialize the given <see cref="MediaType"/>.
         /// </summary>
-        /// <param name="encodingType">The <see cref="MediaType"/> to encode.</param>
+        /// <param name="mediaType">The <see cref="MediaType"/> to encode.</param>
         /// <returns>True if this instance can serialize the <see cref="MediaType"/>, false otherwise.</returns>
         public virtual bool CanSerialize(MediaType mediaType)
         {
