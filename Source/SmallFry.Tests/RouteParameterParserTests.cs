@@ -26,6 +26,12 @@
             Assert.AreEqual((ushort)5, parser.Parse(typeof(ushort), "test", "5"));
             Assert.AreEqual((uint)42, parser.Parse(typeof(uint), "test", "42"));
             Assert.AreEqual((ulong)9999999, parser.Parse(typeof(ulong), "test", "9999999"));
+            Assert.AreEqual(StatusCode.NotAcceptable, parser.Parse(typeof(StatusCode), "test", "NotAcceptable"));
+            Assert.AreEqual(new Guid("67EBC5D6-A11D-4531-924D-4CBE85BB484E"), parser.Parse(typeof(Guid), "test", "67EBC5D6-A11D-4531-924D-4CBE85BB484E"));
+
+            // Nullable?
+            Assert.AreEqual(42, parser.Parse(typeof(int?), "test", "42"));
+            Assert.AreEqual(null, parser.Parse(typeof(int?), "test", string.Empty));
         }
     }
 }

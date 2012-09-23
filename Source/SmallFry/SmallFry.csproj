@@ -99,6 +99,7 @@
     <Compile Include="ServiceHost.cs" />
     <Compile Include="ServiceResolver.cs" />
     <Compile Include="StatusCode.cs" />
+    <Compile Include="UriQueryString.cs" />
     <Compile Include="WriteResponseResult.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

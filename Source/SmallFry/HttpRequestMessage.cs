@@ -14,16 +14,23 @@ namespace SmallFry
     internal class HttpRequestMessage : IRequestMessage
     {
         private HttpRequestBase httpRequest;
+        private IDictionary<string, object> routeValues;
         private bool disposed;
 
-        public HttpRequestMessage(string serviceName, HttpRequestBase httpRequest)
+        public HttpRequestMessage(string serviceName, IDictionary<string, object> routeValues, HttpRequestBase httpRequest)
         {
             if (httpRequest == null)
             {
                 throw new ArgumentNullException("httpRequest", "httpRequest cannot be null.");
             }
 
+            if (routeValues == null)
+            {
+                throw new ArgumentNullException("routeValues", "routeValues cannot be null.");
+            }
+
             this.ServiceName = serviceName ?? string.Empty;
+            this.routeValues = routeValues;
             this.httpRequest = httpRequest;
             this.Properties = new Dictionary<string, object>();
         }
@@ -52,20 +59,26 @@ namespace SmallFry
 
         public string ServiceName { get; private set; }
 
-        public static HttpRequestMessage Create(string serviceName, HttpRequestBase httpRequest, Type requestType, object requestObject)
+        public static HttpRequestMessage Create(string serviceName, IDictionary<string, object> routeValues, HttpRequestBase httpRequest, Type requestType, object requestObject)
         {
             if (requestType != null)
             {
                 return (HttpRequestMessage)Activator.CreateInstance(
                     typeof(HttpRequestMessage<>).MakeGenericType(requestType), 
                     serviceName, 
+                    routeValues,
                     httpRequest, 
                     requestObject);
             }
             else
             {
-                return new HttpRequestMessage(serviceName, httpRequest);
+                return new HttpRequestMessage(serviceName, routeValues, httpRequest);
             }
+        }
+
+        public T RouteValue<T>(string name)
+        {
+            return (T)this.routeValues[name];
         }
 
         public void Dispose()

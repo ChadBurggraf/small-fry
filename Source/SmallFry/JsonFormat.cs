@@ -20,6 +20,7 @@ namespace SmallFry
 
         static JsonFormat()
         {
+            JsConfig.DateHandler = JsonDateHandler.ISO8601;
             JsConfig.EmitCamelCaseNames = true;
             JsConfig.IncludeNullValues = false;
         }

@@ -41,5 +41,14 @@ namespace SmallFry
         /// Gets the name of the service hosting the request.
         /// </summary>
         string ServiceName { get; }
+
+        /// <summary>
+        /// Gets the route value parsed when matching the route of the specified name.
+        /// To ensure that the value is property parsed, add type constraints to the route.
+        /// </summary>
+        /// <typeparam name="T">The type of the route value to get.</typeparam>
+        /// <param name="name">The name of the route value to get.</param>
+        /// <returns>The route value for the specified name.</returns>
+        T RouteValue<T>(string name);
     }
 }

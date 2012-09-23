@@ -7,18 +7,19 @@
 namespace SmallFry
 {
     using System;
+    using System.Collections.Generic;
 
     internal sealed class RequestMessage<T> : RequestMessage, IRequestMessage<T>
     {
         private bool disposed;
 
-        public RequestMessage(string serviceName, Uri requestUri)
-            : base(serviceName, requestUri)
+        public RequestMessage(string serviceName, IDictionary<string, object> routeValues, Uri requestUri)
+            : base(serviceName, routeValues, requestUri)
         {
         }
 
-        public RequestMessage(string serviceName, Uri requestUri, T requestObject)
-            : base(serviceName, requestUri)
+        public RequestMessage(string serviceName, IDictionary<string, object> routeValues, Uri requestUri, T requestObject)
+            : base(serviceName, routeValues, requestUri)
         {
             this.RequestObject = requestObject;
         }

@@ -1,6 +1,7 @@
 ﻿namespace SmallFry.Tests
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using System.Text;
@@ -131,7 +132,10 @@
 
             ResolvedService service = new ServiceResolver(services).Find(MethodType.Post, "foo");
 
-            using (IRequestMessage request = new RequestMessage<Payload>("Test", new Uri("http://example.com/foo"), payload))
+            IDictionary<string, object> routeValues = new Dictionary<string, object>();
+            routeValues["action"] = "foo";
+
+            using (IRequestMessage request = new RequestMessage<Payload>("Test", routeValues, new Uri("http://example.com/foo"), payload))
             {
                 using (IResponseMessage response = new ResponseMessage())
                 {
@@ -191,7 +195,10 @@
                         return true;
                     });
 
-            using (IRequestMessage request = new RequestMessage<Payload>("Test", new Uri("http://example.com/foo"), payload))
+            IDictionary<string, object> routeValues = new Dictionary<string, object>();
+            routeValues["action"] = "foo";
+
+            using (IRequestMessage request = new RequestMessage<Payload>("Test", routeValues, new Uri("http://example.com/foo"), payload))
             {
                 using (IResponseMessage response = new ResponseMessage())
                 {
@@ -232,7 +239,10 @@
                         return true;
                     });
 
-            using (IRequestMessage request = new RequestMessage<Payload>("Test", new Uri("http://example.com/foo"), payload))
+            IDictionary<string, object> routeValues = new Dictionary<string, object>();
+            routeValues["action"] = "foo";
+
+            using (IRequestMessage request = new RequestMessage<Payload>("Test", routeValues, new Uri("http://example.com/foo"), payload))
             {
                 using (IResponseMessage response = new ResponseMessage())
                 {
@@ -264,7 +274,10 @@
 
             ResolvedService service = new ServiceResolver(services).Find(MethodType.Post, "foo");
 
-            using (IRequestMessage request = new RequestMessage<Payload>("Test", new Uri("http://example.com/foo"), payload))
+            IDictionary<string, object> routeValues = new Dictionary<string, object>();
+            routeValues["action"] = "foo";
+
+            using (IRequestMessage request = new RequestMessage<Payload>("Test", routeValues, new Uri("http://example.com/foo"), payload))
             {
                 using (IResponseMessage response = new ResponseMessage())
                 {
@@ -324,7 +337,10 @@
                         return true;
                     });
 
-            using (IRequestMessage request = new RequestMessage<Payload>("Test", new Uri("http://example.com/foo"), payload))
+            IDictionary<string, object> routeValues = new Dictionary<string, object>();
+            routeValues["action"] = "foo";
+
+            using (IRequestMessage request = new RequestMessage<Payload>("Test", routeValues, new Uri("http://example.com/foo"), payload))
             {
                 using (IResponseMessage response = new ResponseMessage())
                 {
@@ -365,7 +381,10 @@
                         return true;
                     });
 
-            using (IRequestMessage request = new RequestMessage<Payload>("Test", new Uri("http://example.com/foo"), payload))
+            IDictionary<string, object> routeValues = new Dictionary<string, object>();
+            routeValues["action"] = "foo";
+
+            using (IRequestMessage request = new RequestMessage<Payload>("Test", routeValues, new Uri("http://example.com/foo"), payload))
             {
                 using (IResponseMessage response = new ResponseMessage())
                 {
@@ -397,7 +416,10 @@
 
             ResolvedService service = new ServiceResolver(services).Find(MethodType.Post, "foo");
 
-            using (IRequestMessage request = new RequestMessage<Payload>("Test", new Uri("http://example.com/foo"), payload))
+            IDictionary<string, object> routeValues = new Dictionary<string, object>();
+            routeValues["action"] = "foo";
+
+            using (IRequestMessage request = new RequestMessage<Payload>("Test", routeValues, new Uri("http://example.com/foo"), payload))
             {
                 using (IResponseMessage response = new ResponseMessage())
                 {
@@ -457,7 +479,10 @@
                         return true;
                     });
 
-            using (IRequestMessage request = new RequestMessage<Payload>("Test", new Uri("http://example.com/foo"), payload))
+            IDictionary<string, object> routeValues = new Dictionary<string, object>();
+            routeValues["action"] = "foo";
+
+            using (IRequestMessage request = new RequestMessage<Payload>("Test", routeValues, new Uri("http://example.com/foo"), payload))
             {
                 using (IResponseMessage response = new ResponseMessage())
                 {
@@ -498,7 +523,10 @@
                         return true;
                     });
 
-            using (IRequestMessage request = new RequestMessage<Payload>("Test", new Uri("http://example.com/foo"), payload))
+            IDictionary<string, object> routeValues = new Dictionary<string, object>();
+            routeValues["action"] = "foo";
+
+            using (IRequestMessage request = new RequestMessage<Payload>("Test", routeValues, new Uri("http://example.com/foo"), payload))
             {
                 using (IResponseMessage response = new ResponseMessage())
                 {
@@ -546,6 +574,147 @@
                 Assert.AreEqual(new DateTime(2012, 9, 22, 18, 46, 0, DateTimeKind.Utc), payload.Date);
                 Assert.AreEqual(42L, payload.Number);
                 Assert.AreEqual("Hello, world!", payload.Text);
+            }
+        }
+
+        [Test]
+        public void ResolvedServiceReadRequestEncoded()
+        {
+            ServiceCollection services = new ServiceCollection();
+            services
+                .WithHostEncoding(new GzipDeflateEncoding())
+                .WithHostFormat(new JsonFormat())
+                .WithService("Test", "/")
+                    .WithEndpoint("{action}")
+                        .Post<Payload>((Payload p) => { });
+
+            using (MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes("{\"date\":\"2012-09-22T18:46:00Z\",\"number\":42,\"text\":\"Hello, world!\"}")))
+            {
+                using (MemoryStream compressedStream = new MemoryStream())
+                {
+                    new GzipDeflateEncoding().Encode(EncodingType.Parse("gzip"), stream, compressedStream);
+                    compressedStream.Position = 0;
+
+                    ResolvedService service = new ServiceResolver(services).Find(MethodType.Post, "foo");
+                    ReadRequestResult result = service.ReadRequest((int)stream.Length, "gzip", "application/json", compressedStream);
+                    Assert.IsNotNull(result);
+                    Assert.IsTrue(result.Success);
+                    Assert.IsNull(result.Exception);
+                    Assert.AreEqual(StatusCode.None, result.StatusCode);
+                    Assert.IsNotNull(result.RequestObject);
+
+                    Payload payload = result.RequestObject as Payload;
+                    Assert.IsNotNull(payload);
+                    Assert.AreEqual(new DateTime(2012, 9, 22, 18, 46, 0, DateTimeKind.Utc), payload.Date);
+                    Assert.AreEqual(42L, payload.Number);
+                    Assert.AreEqual("Hello, world!", payload.Text);
+                }
+            }
+        }
+
+        [Test]
+        public void ResolvedServiceReadRequestInvalidJson()
+        {
+            ServiceCollection services = new ServiceCollection();
+            services
+                .WithHostFormat(new JsonFormat())
+                .WithService("Test", "/")
+                    .WithEndpoint("{action}")
+                        .Post<Payload>((Payload p) => { });
+
+            using (MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes("this is not JSON")))
+            {
+                ResolvedService service = new ServiceResolver(services).Find(MethodType.Post, "foo");
+                ReadRequestResult result = service.ReadRequest((int)stream.Length, null, "application/json", stream);
+                Assert.IsNotNull(result);
+                Assert.IsFalse(result.Success);
+                Assert.IsNotNull(result.Exception);
+                Assert.AreEqual(StatusCode.BadRequest, result.StatusCode);
+                Assert.IsNull(result.RequestObject);
+            }
+        }
+
+        [Test]
+        public void ResolvedServiceReadRequestMissingEncoding()
+        {
+            ServiceCollection services = new ServiceCollection();
+            services
+                .WithHostFormat(new JsonFormat())
+                .WithService("Test", "/")
+                    .WithEndpoint("{action}")
+                        .Post<Payload>((Payload p) => { });
+
+            using (MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes("{\"date\":\"2012-09-22T18:46:00Z\",\"number\":42,\"text\":\"Hello, world!\"}")))
+            {
+                using (MemoryStream compressedStream = new MemoryStream())
+                {
+                    new GzipDeflateEncoding().Encode(EncodingType.Parse("gzip"), stream, compressedStream);
+                    compressedStream.Position = 0;
+
+                    ResolvedService service = new ServiceResolver(services).Find(MethodType.Post, "foo");
+                    ReadRequestResult result = service.ReadRequest((int)stream.Length, "gzip", "application/json", compressedStream);
+                    Assert.IsNotNull(result);
+                    Assert.IsFalse(result.Success);
+                    Assert.IsNull(result.Exception);
+                    Assert.AreEqual(StatusCode.UnsupportedMediaType, result.StatusCode);
+                    Assert.IsNull(result.RequestObject);
+                }
+            }
+        }
+
+        [Test]
+        public void ResolvedServiceReadRequestMissingFormat()
+        {
+            ServiceCollection services = new ServiceCollection();
+            services
+                .WithService("Test", "/")
+                    .WithEndpoint("{action}")
+                        .Post<Payload>((Payload p) => { });
+
+            using (MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes("{\"date\":\"2012-09-22T18:46:00Z\",\"number\":42,\"text\":\"Hello, world!\"}")))
+            {
+                ResolvedService service = new ServiceResolver(services).Find(MethodType.Post, "foo");
+                ReadRequestResult result = service.ReadRequest((int)stream.Length, null, "application/json", stream);
+                Assert.IsNotNull(result);
+                Assert.IsFalse(result.Success);
+                Assert.IsNull(result.Exception);
+                Assert.AreEqual(StatusCode.UnsupportedMediaType, result.StatusCode);
+                Assert.IsNull(result.RequestObject);
+            }
+        }
+
+        [Test]
+        public void ResolvedServiceWriteResponse()
+        {
+            Payload payload = new Payload()
+            {
+                Date = new DateTime(2012, 9, 22, 18, 46, 0, DateTimeKind.Utc),
+                Number = 42,
+                Text = "Hello, world!"
+            };
+
+            ServiceCollection services = new ServiceCollection();
+            services
+                .WithHostFormat(new JsonFormat())
+                .WithService("Test", "/")
+                    .WithEndpoint("{action}")
+                        .Post<Payload>((Payload p) => { });
+
+            using (MemoryStream stream = new MemoryStream())
+            {
+                ResolvedService service = new ServiceResolver(services).Find(MethodType.Post, "foo");
+                WriteResponseResult result = service.WriteResponse("gzip, *", "application/json, */*", payload, stream);
+                Assert.IsNotNull(result);
+                Assert.IsNull(result.Exception);
+                Assert.AreEqual(StatusCode.None, result.StatusCode);
+                Assert.IsTrue(result.Success);
+
+                stream.Position = 0;
+
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    Assert.AreEqual("{\"date\":\"2012-09-22T18:46:00.0000000Z\",\"number\":42,\"text\":\"Hello, world!\"}", reader.ReadToEnd());
+                }
             }
         }
 

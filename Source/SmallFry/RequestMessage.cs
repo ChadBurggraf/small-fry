@@ -13,16 +13,23 @@ namespace SmallFry
 
     internal class RequestMessage : IRequestMessage
     {
+        private IDictionary<string, object> routeValues;
         private bool disposed;
 
-        public RequestMessage(string serviceName, Uri requestUri)
+        public RequestMessage(string serviceName, IDictionary<string, object> routeValues, Uri requestUri)
         {
+            if (routeValues == null)
+            {
+                throw new ArgumentNullException("routeValues", "routeValues cannot be null.");
+            }
+
             if (requestUri == null)
             {
                 throw new ArgumentNullException("requestUri", "requestUri cannot be null.");
             }
 
             this.ServiceName = serviceName ?? string.Empty;
+            this.routeValues = routeValues;
             this.RequestUri = requestUri;
             this.Cookies = new HttpCookieCollection();
             this.Headers = new NameValueCollection();
@@ -44,20 +51,26 @@ namespace SmallFry
 
         public string ServiceName { get; private set; }
 
-        public static RequestMessage Create(string serviceName, Uri requestUri, Type requestType, object requestObject)
+        public static RequestMessage Create(string serviceName, IDictionary<string, object> routeValues, Uri requestUri, Type requestType, object requestObject)
         {
             if (requestType != null)
             {
                 return (RequestMessage)Activator.CreateInstance(
                     typeof(RequestMessage<>).MakeGenericType(requestType),
                     serviceName,
+                    routeValues,
                     requestUri,
                     requestObject);
             }
             else
             {
-                return new RequestMessage(serviceName, requestUri);
+                return new RequestMessage(serviceName, routeValues, requestUri);
             }
+        }
+
+        public T RouteValue<T>(string name)
+        {
+            return (T)this.routeValues[name];
         }
 
         public void Dispose()

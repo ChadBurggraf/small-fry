@@ -62,7 +62,7 @@ namespace SmallFry
                         httpContext.Request.ContentType,
                         httpContext.Request.InputStream);
 
-                    using (IRequestMessage request = HttpRequestMessage.Create(service.Name, httpContext.Request, service.RequestType, readResult.RequestObject))
+                    using (IRequestMessage request = HttpRequestMessage.Create(service.Name, service.RouteValues, httpContext.Request, service.RequestType, readResult.RequestObject))
                     {
                         using (IResponseMessage response = new HttpResponseMessage(httpContext.Response))
                         {

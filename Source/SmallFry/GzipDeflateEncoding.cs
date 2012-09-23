@@ -148,10 +148,10 @@ namespace SmallFry
         /// Gets one of <see cref="GZipStream"/> or <see cref="DeflateStream"/> for the given <see cref="EncodingType"/>.
         /// </summary>
         /// <param name="encodingType">The <see cref="EncodingType"/> to get the compression stream for..</param>
-        /// <param name="inputStream">The input stream to read from.</param>
+        /// <param name="stream">The stream to compress.</param>
         /// <param name="mode">The compression mode to use.</param>
         /// <returns>A stream to use for compression.</returns>
-        protected virtual Stream GetCompressionStream(EncodingType encodingType, Stream inputStream, CompressionMode mode)
+        protected virtual Stream GetCompressionStream(EncodingType encodingType, Stream stream, CompressionMode mode)
         {
             if (encodingType == null)
             {
@@ -159,8 +159,8 @@ namespace SmallFry
             }
 
             return "deflate".Equals(encodingType.Name, StringComparison.OrdinalIgnoreCase)
-                ? new DeflateStream(inputStream, mode) as Stream
-                : new GZipStream(inputStream, mode) as Stream;
+                ? new DeflateStream(stream, mode, true) as Stream
+                : new GZipStream(stream, mode, true) as Stream;
         }
     }
 }

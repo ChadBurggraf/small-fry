@@ -11,6 +11,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		SolutionInfo.cs = SolutionInfo.cs
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Passbook", "Examples\Passbook\Passbook.csproj", "{99C046D4-5D11-4E67-947C-1C62EE72EAC6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{A1837D35-249C-480D-9254-53808A2CEDD8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,8 +29,15 @@ Global
 		{06948595-0E0D-4268-907E-AA7F68501C94}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{06948595-0E0D-4268-907E-AA7F68501C94}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{06948595-0E0D-4268-907E-AA7F68501C94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99C046D4-5D11-4E67-947C-1C62EE72EAC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99C046D4-5D11-4E67-947C-1C62EE72EAC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99C046D4-5D11-4E67-947C-1C62EE72EAC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99C046D4-5D11-4E67-947C-1C62EE72EAC6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{99C046D4-5D11-4E67-947C-1C62EE72EAC6} = {A1837D35-249C-480D-9254-53808A2CEDD8}
 	EndGlobalSection
 EndGlobal

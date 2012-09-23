@@ -7,19 +7,20 @@
 namespace SmallFry
 {
     using System;
+    using System.Collections.Generic;
     using System.Web;
 
     internal sealed class HttpRequestMessage<T> : HttpRequestMessage, IRequestMessage<T>
     {
         private bool disposed;
 
-        public HttpRequestMessage(string serviceName, HttpRequestBase httpRequest)
-            : base(serviceName, httpRequest)
+        public HttpRequestMessage(string serviceName, IDictionary<string, object> routeValues, HttpRequestBase httpRequest)
+            : base(serviceName, routeValues, httpRequest)
         {
         }
 
-        public HttpRequestMessage(string serviceName, HttpRequestBase httpRequest, T requestObject)
-            : base(serviceName, httpRequest)
+        public HttpRequestMessage(string serviceName, IDictionary<string, object> routeValues, HttpRequestBase httpRequest, T requestObject)
+            : base(serviceName, routeValues, httpRequest)
         {
             this.RequestObject = requestObject;
         }

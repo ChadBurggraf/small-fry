@@ -19,21 +19,35 @@ namespace SmallFry
         private static readonly Type[] PrimitiveTypes = new Type[]
         {
             typeof(bool),
+            typeof(bool?),
             typeof(byte),
+            typeof(byte?),
             typeof(char),
+            typeof(char?),
             typeof(DateTime),
+            typeof(DateTime?),
             typeof(DBNull),
             typeof(decimal),
+            typeof(decimal?),
             typeof(double),
+            typeof(double?),
             typeof(short),
+            typeof(short?),
             typeof(int),
+            typeof(int?),
             typeof(long),
+            typeof(long?),
             typeof(sbyte),
+            typeof(sbyte?),
             typeof(float),
+            typeof(float?),
             typeof(string),
             typeof(ushort),
+            typeof(ushort?),
             typeof(uint),
-            typeof(ulong)
+            typeof(uint?),
+            typeof(ulong),
+            typeof(ulong?)
         };
 
         /// <summary>
@@ -59,68 +73,76 @@ namespace SmallFry
                 throw new ArgumentNullException("type", "type cannot be null.");
             }
 
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new ArgumentNullException("name", "name must contain a value.");
-            }
-
             object result = type.Default();
             value = (value ?? string.Empty).Trim();
 
             if (!string.IsNullOrEmpty(value))
             {
-                switch (Type.GetTypeCode(type))
+                Type underlyingType = Nullable.GetUnderlyingType(type) ?? type;
+                
+                if (underlyingType.IsEnum)
                 {
-                    case TypeCode.Boolean:
-                        result = Convert.ToBoolean(value, CultureInfo.InvariantCulture);
-                        break;
-                    case TypeCode.Byte:
-                        result = Convert.ToByte(value, CultureInfo.InvariantCulture);
-                        break;
-                    case TypeCode.Char:
-                        result = Convert.ToChar(value, CultureInfo.InvariantCulture);
-                        break;
-                    case TypeCode.DateTime:
-                        result = DateTime.Parse(value, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
-                        break;
-                    case TypeCode.DBNull:
-                    case TypeCode.Empty:
-                        break;
-                    case TypeCode.Decimal:
-                        result = Convert.ToDecimal(value, CultureInfo.InvariantCulture);
-                        break;
-                    case TypeCode.Double:
-                        result = Convert.ToDouble(value, CultureInfo.InvariantCulture);
-                        break;
-                    case TypeCode.Int16:
-                        result = Convert.ToInt16(value, CultureInfo.InvariantCulture);
-                        break;
-                    case TypeCode.Int32:
-                        result = Convert.ToInt32(value, CultureInfo.InvariantCulture);
-                        break;
-                    case TypeCode.Int64:
-                        result = Convert.ToInt64(value, CultureInfo.InvariantCulture);
-                        break;
-                    case TypeCode.SByte:
-                        result = Convert.ToSByte(value, CultureInfo.InvariantCulture);
-                        break;
-                    case TypeCode.Single:
-                        result = Convert.ToSingle(value, CultureInfo.InvariantCulture);
-                        break;
-                    case TypeCode.String:
-                        result = Convert.ToString(value, CultureInfo.InvariantCulture);
-                        break;
-                    case TypeCode.UInt16:
-                        result = Convert.ToUInt16(value, CultureInfo.InvariantCulture);
-                        break;
-                    case TypeCode.UInt32:
-                        result = Convert.ToUInt32(value, CultureInfo.InvariantCulture);
-                        break;
-                    case TypeCode.UInt64:
-                        result = Convert.ToUInt64(value, CultureInfo.InvariantCulture);
-                        break;
-                    default:
-                        throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, "Cannot parse values of type {0} with this instance.", type), "type");
+                    result = Enum.Parse(underlyingType, value);
+                }
+                else if (typeof(Guid).IsAssignableFrom(underlyingType))
+                {
+                    result = new Guid(value);
+                }
+                else
+                {
+                    switch (Type.GetTypeCode(underlyingType))
+                    {
+                        case TypeCode.Boolean:
+                            result = Convert.ToBoolean(value, CultureInfo.InvariantCulture);
+                            break;
+                        case TypeCode.Byte:
+                            result = Convert.ToByte(value, CultureInfo.InvariantCulture);
+                            break;
+                        case TypeCode.Char:
+                            result = Convert.ToChar(value, CultureInfo.InvariantCulture);
+                            break;
+                        case TypeCode.DateTime:
+                            result = DateTime.Parse(value, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
+                            break;
+                        case TypeCode.DBNull:
+                        case TypeCode.Empty:
+                            break;
+                        case TypeCode.Decimal:
+                            result = Convert.ToDecimal(value, CultureInfo.InvariantCulture);
+                            break;
+                        case TypeCode.Double:
+                            result = Convert.ToDouble(value, CultureInfo.InvariantCulture);
+                            break;
+                        case TypeCode.Int16:
+                            result = Convert.ToInt16(value, CultureInfo.InvariantCulture);
+                            break;
+                        case TypeCode.Int32:
+                            result = Convert.ToInt32(value, CultureInfo.InvariantCulture);
+                            break;
+                        case TypeCode.Int64:
+                            result = Convert.ToInt64(value, CultureInfo.InvariantCulture);
+                            break;
+                        case TypeCode.SByte:
+                            result = Convert.ToSByte(value, CultureInfo.InvariantCulture);
+                            break;
+                        case TypeCode.Single:
+                            result = Convert.ToSingle(value, CultureInfo.InvariantCulture);
+                            break;
+                        case TypeCode.String:
+                            result = Convert.ToString(value, CultureInfo.InvariantCulture);
+                            break;
+                        case TypeCode.UInt16:
+                            result = Convert.ToUInt16(value, CultureInfo.InvariantCulture);
+                            break;
+                        case TypeCode.UInt32:
+                            result = Convert.ToUInt32(value, CultureInfo.InvariantCulture);
+                            break;
+                        case TypeCode.UInt64:
+                            result = Convert.ToUInt64(value, CultureInfo.InvariantCulture);
+                            break;
+                        default:
+                            throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, "Cannot parse values of type {0} with this instance.", type), "type");
+                    }
                 }
             }
 
