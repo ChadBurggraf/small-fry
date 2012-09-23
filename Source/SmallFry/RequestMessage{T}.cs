@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------------
-// <copyright file="HttpRequestMessage{T}.cs" company="Tasty Codes">
+// <copyright file="RequestMessage{T}.cs" company="Tasty Codes">
 //     Copyright (c) 2012 Chad Burggraf.
 // </copyright>
 //-----------------------------------------------------------------------------
@@ -7,24 +7,23 @@
 namespace SmallFry
 {
     using System;
-    using System.Web;
 
-    internal sealed class HttpRequestMessage<T> : HttpRequestMessage, IRequestMessage<T>
+    internal sealed class RequestMessage<T> : RequestMessage, IRequestMessage<T>
     {
         private bool disposed;
 
-        public HttpRequestMessage(string serviceName, HttpRequestBase httpRequest)
-            : base(serviceName, httpRequest)
+        public RequestMessage(string serviceName, Uri requestUri)
+            : base(serviceName, requestUri)
         {
         }
 
-        public HttpRequestMessage(string serviceName, HttpRequestBase httpRequest, T requestObject)
-            : base(serviceName, httpRequest)
+        public RequestMessage(string serviceName, Uri requestUri, T requestObject)
+            : base(serviceName, requestUri)
         {
             this.RequestObject = requestObject;
         }
 
-        ~HttpRequestMessage()
+        ~RequestMessage()
         {
             this.Dispose(false);
         }

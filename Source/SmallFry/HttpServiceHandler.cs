@@ -116,7 +116,7 @@ namespace SmallFry
 
                             if (!success)
                             {
-                                invokeResult = service.InvokeErrors(request, response, exceptions);
+                                invokeResult = service.InvokeErrorActions(request, response, exceptions);
 
                                 if (!invokeResult.Success)
                                 {

@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------------
-// <copyright file="HttpRequestMessage.cs" company="Tasty Codes">
+// <copyright file="RequestMessage.cs" company="Tasty Codes">
 //     Copyright (c) 2012 Chad Burggraf.
 // </copyright>
 //-----------------------------------------------------------------------------
@@ -11,60 +11,52 @@ namespace SmallFry
     using System.Collections.Specialized;
     using System.Web;
 
-    internal class HttpRequestMessage : IRequestMessage
+    internal class RequestMessage : IRequestMessage
     {
-        private HttpRequestBase httpRequest;
         private bool disposed;
 
-        public HttpRequestMessage(string serviceName, HttpRequestBase httpRequest)
+        public RequestMessage(string serviceName, Uri requestUri)
         {
-            if (httpRequest == null)
+            if (requestUri == null)
             {
-                throw new ArgumentNullException("httpRequest", "httpRequest cannot be null.");
+                throw new ArgumentNullException("requestUri", "requestUri cannot be null.");
             }
 
             this.ServiceName = serviceName ?? string.Empty;
-            this.httpRequest = httpRequest;
+            this.RequestUri = requestUri;
+            this.Cookies = new HttpCookieCollection();
+            this.Headers = new NameValueCollection();
             this.Properties = new Dictionary<string, object>();
         }
 
-        ~HttpRequestMessage()
+        ~RequestMessage()
         {
             this.Dispose(false);
         }
 
-        public HttpCookieCollection Cookies
-        {
-            get { return this.httpRequest.Cookies; }
-        }
+        public HttpCookieCollection Cookies { get; private set; }
 
-        public NameValueCollection Headers
-        {
-            get { return this.httpRequest.Headers; }
-        }
+        public NameValueCollection Headers { get; private set; }
 
         public IDictionary<string, object> Properties { get; private set; }
 
-        public Uri RequestUri
-        {
-            get { return this.httpRequest.Url; }
-        }
+        public Uri RequestUri { get; private set; }
 
         public string ServiceName { get; private set; }
 
-        public static HttpRequestMessage Create(string serviceName, HttpRequestBase httpRequest, Type requestType, object requestObject)
+        public static RequestMessage Create(string serviceName, Uri requestUri, Type requestType, object requestObject)
         {
             if (requestType != null)
             {
-                return (HttpRequestMessage)Activator.CreateInstance(
-                    typeof(HttpRequestMessage<>).MakeGenericType(requestType), 
-                    serviceName, 
-                    httpRequest, 
+                return (RequestMessage)Activator.CreateInstance(
+                    typeof(RequestMessage<>).MakeGenericType(requestType),
+                    serviceName,
+                    requestUri,
                     requestObject);
             }
             else
             {
-                return new HttpRequestMessage(serviceName, httpRequest);
+                return new RequestMessage(serviceName, requestUri);
             }
         }
 

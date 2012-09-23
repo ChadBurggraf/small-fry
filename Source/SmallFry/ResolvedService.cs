@@ -247,7 +247,7 @@ namespace SmallFry
             return ResolvedService.InvokeActions(this.BeforeActions, request, response, null);
         }
 
-        public InvokeActionsResult InvokeErrors(IRequestMessage request, IResponseMessage response, IEnumerable<Exception> exceptions)
+        public InvokeActionsResult InvokeErrorActions(IRequestMessage request, IResponseMessage response, IEnumerable<Exception> exceptions)
         {
             return ResolvedService.InvokeActions(this.ErrorActions, request, response, exceptions);
         }

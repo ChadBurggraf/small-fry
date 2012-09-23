@@ -131,8 +131,7 @@ namespace SmallFry
             IEnumerable<FilterAction> endpointExcludeActions,
             IEnumerable<FilterAction> endpointActions,
             IEnumerable<FilterAction> methodExcludeActions,
-            IEnumerable<FilterAction> methodActions,
-            bool reverse)
+            IEnumerable<FilterAction> methodActions)
         {
             List<FilterAction> actions = new List<FilterAction>(hostActions);
 
@@ -148,11 +147,6 @@ namespace SmallFry
             actions.RemoveAll(a => methodActions.Any(ma => a.Equals(ma)));
             actions.AddRange(methodActions);
 
-            if (reverse)
-            {
-                actions.Reverse();
-            }
-
             return actions;
         }
 
@@ -165,8 +159,7 @@ namespace SmallFry
                 endpointPipeline.ExcludeAfterActions,
                 endpointPipeline.AfterActions,
                 methodPipeline.ExcludeAfterActions,
-                methodPipeline.AfterActions,
-                true);
+                methodPipeline.AfterActions);
         }
 
         private static IEnumerable<FilterAction> ResolveBeforeActions(Pipeline hostPipeline, Pipeline servicePipeline, Pipeline endpointPipeline, Pipeline methodPipeline)
@@ -178,8 +171,7 @@ namespace SmallFry
                 endpointPipeline.ExcludeBeforeActions,
                 endpointPipeline.BeforeActions,
                 methodPipeline.ExcludeBeforeActions,
-                methodPipeline.BeforeActions,
-                false);
+                methodPipeline.BeforeActions);
         }
 
         private static IEnumerable<IEncoding> ResolveEncodings(Pipeline hostPipeline, Pipeline servicePipeline, Pipeline endpointPipeline, Pipeline methodPipeline)
@@ -211,8 +203,7 @@ namespace SmallFry
                 endpointPipeline.ExcludeErrorActions,
                 endpointPipeline.ErrorActions,
                 methodPipeline.ExcludeErrorActions,
-                methodPipeline.ErrorActions,
-                true);
+                methodPipeline.ErrorActions);
         }
 
         private static IEnumerable<IFormat> ResolveFormats(Pipeline hostPipeline, Pipeline servicePipeline, Pipeline endpointPipeline, Pipeline methodPipeline)

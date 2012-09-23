@@ -102,6 +102,11 @@ namespace SmallFry
             }
         }
 
+        public override FilterActionResult Invoke(IRequestMessage request, IResponseMessage response, IEnumerable<Exception> exceptions)
+        {
+            return this.Invoke(request as IRequestMessage<T>, response, exceptions);
+        }
+
         public FilterActionResult Invoke(IRequestMessage<T> request, IResponseMessage response, IEnumerable<Exception> exceptions)
         {
             if (request == null)
@@ -114,7 +119,7 @@ namespace SmallFry
                 throw new ArgumentNullException("response", "response cannot be null.");
             }
 
-            FilterActionResult result = new FilterActionResult();
+            FilterActionResult result = new FilterActionResult() { Continue = true };
 
             if (this.action != null)
             {

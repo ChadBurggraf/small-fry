@@ -54,6 +54,11 @@ namespace SmallFry
             get { return this.typeArguments; }
         }
 
+        public override MethodResult Invoke(IRequestMessage request, IResponseMessage response)
+        {
+            return this.Invoke(request as IRequestMessage<T>, response);
+        }
+
         public MethodResult Invoke(IRequestMessage<T> request, IResponseMessage response)
         {
             if (request == null)

@@ -66,13 +66,7 @@ namespace SmallFry
             {
                 if (disposing)
                 {
-                    IDisposable d = this.ResponseObject as IDisposable;
-
-                    if (d != null)
-                    {
-                        d.Dispose();
-                    }
-
+                    this.ResponseObject.DisposeIfPossible();
                     this.ResponseObject = null;
                 }
 

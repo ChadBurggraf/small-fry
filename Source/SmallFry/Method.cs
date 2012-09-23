@@ -66,7 +66,7 @@ namespace SmallFry
             get { return Method.Types; }
         }
 
-        public MethodResult Invoke(IRequestMessage request, IResponseMessage response)
+        public virtual MethodResult Invoke(IRequestMessage request, IResponseMessage response)
         {
             if (request == null)
             {
