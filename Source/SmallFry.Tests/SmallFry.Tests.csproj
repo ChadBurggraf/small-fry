@@ -56,7 +56,7 @@
     <Compile Include="FilterActionTests.cs" />
     <Compile Include="FunctionTests.cs" />
     <Compile Include="GzipDeflateEncodingTests.cs" />
-    <Compile Include="HttpServiceHandlerTests.cs" />
+    <Compile Include="JsonFormatTests.cs" />
     <Compile Include="MediaTypeTests.cs" />
     <Compile Include="MethodCollectionTests.cs" />
     <Compile Include="NoOpRouteParameterParser.cs" />

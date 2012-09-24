@@ -76,6 +76,21 @@ namespace SmallFry
             }
         }
 
+        public T HeaderValue<T>(string name)
+        {
+            return this.Headers.Get<T>(name);
+        }
+
+        public string MapPath(string path)
+        {
+            return this.httpRequest.MapPath(path);
+        }
+
+        public T QueryValue<T>(string name)
+        {
+            return this.RequestUri.GetQueryValue<T>(name);
+        }
+
         public T RouteValue<T>(string name)
         {
             return (T)this.routeValues[name];

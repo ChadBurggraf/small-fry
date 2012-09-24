@@ -9,6 +9,8 @@ namespace SmallFry
     using System;
     using System.Collections.Generic;
     using System.Collections.Specialized;
+    using System.IO;
+    using System.Security;
     using System.Web;
 
     internal class RequestMessage : IRequestMessage
@@ -66,6 +68,43 @@ namespace SmallFry
             {
                 return new RequestMessage(serviceName, routeValues, requestUri);
             }
+        }
+
+        public T HeaderValue<T>(string name)
+        {
+            return this.Headers.Get<T>(name);
+        }
+
+        public string MapPath(string path)
+        {
+            path = path ?? string.Empty;
+
+            if (path.StartsWith("~", StringComparison.Ordinal))
+            {
+                path = path.Substring(1);
+            }
+
+            if (path.StartsWith("/"))
+            {
+                path = path.Substring(1);
+            }
+
+            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+            path = path.Replace('/', Path.DirectorySeparatorChar);
+            path = Path.Combine(baseDir, path);
+            path = Path.GetFullPath(path);
+
+            if (!path.StartsWith(baseDir, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new SecurityException("path identifies a path outside of the current application directory.");
+            }
+
+            return path;
+        }
+
+        public T QueryValue<T>(string name)
+        {
+            return this.RequestUri.GetQueryValue<T>(name);
         }
 
         public T RouteValue<T>(string name)

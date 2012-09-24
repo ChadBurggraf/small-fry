@@ -15,6 +15,8 @@ namespace SmallFry
     /// </summary>
     public class PlainTextFormat : IFormat
     {
+        private static readonly MediaType TextPlain = MediaType.Parse("text/plain");
+
         /// <summary>
         /// Gets a value indicating whether this instance can deserialize the given <see cref="MediaType"/>.
         /// </summary>
@@ -22,7 +24,12 @@ namespace SmallFry
         /// <returns>True if this instance can deserialize the <see cref="MediaType"/>, false otherwise.</returns>
         public virtual bool CanDeserialize(MediaType mediaType)
         {
-            return true;
+            if (mediaType == null)
+            {
+                throw new ArgumentNullException("mediaType", "mediaType cannot be null.");
+            }
+
+            return PlainTextFormat.TextPlain.Accepts(mediaType);
         }
 
         /// <summary>
@@ -32,7 +39,12 @@ namespace SmallFry
         /// <returns>True if this instance can serialize the <see cref="MediaType"/>, false otherwise.</returns>
         public virtual bool CanSerialize(MediaType mediaType)
         {
-            return true;
+            if (mediaType == null)
+            {
+                throw new ArgumentNullException("mediaType", "mediaType cannot be null.");
+            }
+
+            return mediaType.Accepts(PlainTextFormat.TextPlain);
         }
 
         /// <summary>

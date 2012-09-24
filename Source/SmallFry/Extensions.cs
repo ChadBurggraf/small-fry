@@ -250,17 +250,13 @@ namespace SmallFry
         /// <typeparam name="T">The type to conver the value into.</typeparam>
         /// <param name="uri">The <see cref="Uri"/> to get the query string value from.</param>
         /// <param name="key">The key to get the value of.</param>
+        /// <param name="throwOnError">A value indicating whether to re-throw an exception encountered
+        /// durint parsing. If false, the default value for the specified type will be returned
+        /// in case of an error.</param>
         /// <returns>The query string value for the given key.</returns>
-        public static T GetQueryValue<T>(this Uri uri, string key)
+        public static T GetQueryValue<T>(this Uri uri, string key, bool throwOnError = false)
         {
-            string value = uri.GetQueryValue(key);
-
-            if (!string.IsNullOrEmpty(value))
-            {
-                return value.ConvertTo<T>();
-            }
-
-            return default(T);
+            return uri.QueryString().Get<T>(key, throwOnError);
         }
 
         /// <summary>
@@ -403,28 +399,7 @@ namespace SmallFry
         /// <returns>True if the operation was successful, false otherwise.</returns>
         public static bool TryGetQueryValue<T>(this Uri uri, string key, out T result)
         {
-            bool success = false;
-            result = default(T);
-
-            try
-            {
-                result = uri.GetQueryValue<T>(key);
-                success = true;
-            }
-            catch (InvalidCastException)
-            {
-            }
-            catch (FormatException)
-            {
-            }
-            catch (OverflowException)
-            {
-            }
-            catch (ArgumentException)
-            {
-            }
-
-            return success;
+            return uri.QueryString().TryGet<T>(key, out result);
         }
 
         /// <summary>

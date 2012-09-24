@@ -43,6 +43,38 @@ namespace SmallFry
         string ServiceName { get; }
 
         /// <summary>
+        /// Gets the header value identified by the given name
+        /// form this instance's <see cref="Headers"/> collection. Returns the specified
+        /// type's default value if parsing fails for any reason. For more control over
+        /// parsing behavior, use <see cref="NameValueCollection"/> extensions such as
+        /// <see cref="Extensions.Get{T}(NameValueCollection,string,name)"/> instead.
+        /// </summary>
+        /// <typeparam name="T">The type of the header value to get.</typeparam>
+        /// <param name="name">The name of the header value to get.</param>
+        /// <returns>The header value for the specified name.</returns>
+        T HeaderValue<T>(string name);
+
+        /// <summary>
+        /// Returns the physical path that corresponds to the given virtual path
+        /// relative to the current service host.
+        /// </summary>
+        /// <param name="path">The virtual path to get the physical path for.</param>
+        /// <returns>The physical path that corresponds to the given virtual path.</returns>
+        string MapPath(string path);
+
+        /// <summary>
+        /// Gets the query string value identified by the given name
+        /// from this instance's <see cref="RequestUri"/>. Returns the specified type's default value
+        /// if parsing fails for any reason. For more control over parsing behavior,
+        /// use <see cref="Uri"/> extensions such as <see cref="Extensions.GetQueryValue{T}(Uri,string,bool)"/>
+        /// instead.
+        /// </summary>
+        /// <typeparam name="T">The type of the query value to get.</typeparam>
+        /// <param name="name">The name of the query value to get.</param>
+        /// <returns>The query value for the specified name.</returns>
+        T QueryValue<T>(string name);
+
+        /// <summary>
         /// Gets the route value parsed when matching the route of the specified name.
         /// To ensure that the value is property parsed, add type constraints to the route.
         /// </summary>

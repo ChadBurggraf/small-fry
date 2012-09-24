@@ -50,7 +50,7 @@ namespace SmallFry
 
             try
             {
-                string url = httpContext.Request.AppRelativeCurrentExecutionFilePath.Substring(1);
+                string url = httpContext.Request.AppRelativeCurrentExecutionFilePath.Substring(1) + httpContext.Request.PathInfo;
                 MethodType methodType = httpContext.Request.HttpMethod.AsMethodType();
                 ResolvedService service = ServiceHost.Instance.ServiceResolver.Find(methodType, url);
 

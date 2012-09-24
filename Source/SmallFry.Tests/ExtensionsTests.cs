@@ -20,8 +20,8 @@
             acceptTypes = "compress, gzip".AsEncodingTypes();
             Assert.IsNotNull(acceptTypes);
             Assert.AreEqual(2, acceptTypes.Count());
-            Assert.AreEqual(EncodingType.Parse("compress"), acceptTypes.First());
-            Assert.AreEqual(EncodingType.Parse("gzip"), acceptTypes.Last());
+            Assert.AreEqual(EncodingType.Parse("gzip"), acceptTypes.First());
+            Assert.AreEqual(EncodingType.Parse("compress"), acceptTypes.Last());
 
             acceptTypes = "gzip;q=1.0, identity; q=0.5, *;q=0".AsEncodingTypes();
             Assert.IsNotNull(acceptTypes);

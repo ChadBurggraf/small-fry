@@ -9,6 +9,7 @@ namespace SmallFry
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Text;
     using ServiceStack.Text;
 
     /// <summary>
@@ -74,7 +75,14 @@ namespace SmallFry
                 throw new ArgumentNullException("stream", "stream cannot be null.");
             }
 
-            return JsonSerializer.DeserializeFromStream(type, stream);
+            try
+            {
+                return JsonSerializer.DeserializeFromStream(type, stream);
+            }
+            catch (IndexOutOfRangeException)
+            {
+                return type.Default();
+            }
         }
 
         /// <summary>
@@ -124,9 +132,21 @@ namespace SmallFry
                 throw new ArgumentNullException("stream", "stream cannot be null.");
             }
 
-            if (value != null)
+            if (value == null)
             {
-                JsonSerializer.SerializeToStream(value, value.GetType(), stream);
+                value = new object();
+            }
+
+            Type type = value.GetType();
+
+            if (!typeof(string).IsAssignableFrom(type))
+            {
+                JsonSerializer.SerializeToStream(value, type, stream);
+            }
+            else
+            {
+                byte[] buffer = Encoding.UTF8.GetBytes((string)value);
+                stream.Write(buffer, 0, buffer.Length);
             }
         }
     }
