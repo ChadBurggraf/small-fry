@@ -39,5 +39,12 @@ namespace SmallFry
         /// Gets or sets the status description to send with the response.
         /// </summary>
         string StatusDescription { get; set; }
+
+        /// <summary>
+        /// Sets the status code and status description of this instance
+        /// from the given <see cref="SmallFry.StatusCode"/> value.
+        /// </summary>
+        /// <param name="statusCode">The <see cref="SmallFry.StatusCode"/> to set.</param>
+        void SetStatus(StatusCode statusCode);
     }
 }

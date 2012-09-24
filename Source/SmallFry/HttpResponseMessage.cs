@@ -60,6 +60,12 @@ namespace SmallFry
             GC.SuppressFinalize(this);
         }
 
+        public void SetStatus(StatusCode statusCode)
+        {
+            this.StatusCode = (int)statusCode;
+            this.StatusDescription = statusCode.Description();
+        }
+
         private void Dispose(bool disposing)
         {
             if (!this.disposed)

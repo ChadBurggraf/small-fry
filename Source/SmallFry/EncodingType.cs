@@ -49,7 +49,7 @@ namespace SmallFry
         /// <returns>True if the <see cref="EncodingType"/>s are equal, false otherwise.</returns>
         public static bool operator ==(EncodingType left, EncodingType right)
         {
-            return Extensions.EqualsOperator(left, right);
+            return InternalExtensions.EqualsOperator(left, right);
         }
 
         /// <summary>

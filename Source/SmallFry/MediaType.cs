@@ -62,7 +62,7 @@ namespace SmallFry
         /// <returns>True if the <see cref="MediaType"/>s are equal, false otherwise.</returns>
         public static bool operator ==(MediaType left, MediaType right)
         {
-            return Extensions.EqualsOperator(left, right);
+            return InternalExtensions.EqualsOperator(left, right);
         }
 
         /// <summary>
@@ -400,7 +400,7 @@ namespace SmallFry
             /// <returns>True if the <see cref="Extension"/>s are equal, false otherwise.</returns>
             public static bool operator ==(Extension left, Extension right)
             {
-                return Extensions.EqualsOperator(left, right);
+                return InternalExtensions.EqualsOperator(left, right);
             }
 
             /// <summary>
@@ -568,7 +568,7 @@ namespace SmallFry
             /// <returns>True if the <see cref="AcceptParameters"/>s are equal, false otherwise.</returns>
             public static bool operator ==(AcceptParameters left, AcceptParameters right)
             {
-                return SmallFry.Extensions.EqualsOperator(left, right);
+                return SmallFry.InternalExtensions.EqualsOperator(left, right);
             }
 
             /// <summary>

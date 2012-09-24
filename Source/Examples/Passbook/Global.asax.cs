@@ -32,26 +32,64 @@
         {
             using (Repository repo = new Repository())
             {
-                Pass pass = repo.GetPass(
-                    request.RouteValue<Guid>("passTypeIdentifier"),
-                    request.RouteValue<Guid>("serialNumber"));
+                Pass pass = repo.GetPasses(
+                    request.RouteValue<string>("passTypeIdentifier"), 
+                    request.RouteValue<string>("serialNumber")).FirstOrDefault();
 
                 if (pass != null)
                 {
-                    response.ResponseObject = pass.Data;
+                    if (request.Headers.Get<DateTime>("Last-Modified") > pass.LastUpdateDate)
+                    {
+                        response.SetStatus(StatusCode.NotModified);
+                    }
+                    else
+                    {
+                        response.ResponseObject = pass.Data;
+                    }
                 }
                 else
                 {
-                    
+                    response.SetStatus(StatusCode.NotFound);
                 }
             }
         }
 
         public static void GetSerialNumbers(IRequestMessage request, IResponseMessage response)
         {
+            using (Repository repo = new Repository())
+            {
+                Pass pass = repo.GetPasses(request.RouteValue<string>("passTypeIdentifier")).FirstOrDefault();
+
+                if (pass != null)
+                {
+                    IEnumerable<Registration> registrations = repo.GetRegistrations(
+                        pass.Id,
+                        request.RouteValue<string>("deviceLibraryIdentifier"),
+                        request.RequestUri.GetQueryValue<DateTime?>("passesUpdatedSince"));
+
+                    if (registrations.Any())
+                    {
+                        response.ResponseObject = new
+                        {
+                            SerialNumbers = registrations.Select(r => r.Ser
+                        };
+                    }
+                    else
+                    {
+                        response.SetStatus(StatusCode.NoContent);
+                    }
+                }
+                else
+                {
+                    response.SetStatus(StatusCode.NotFound);
+                }
+            }
+
             Guid deviceLibraryIdentifier = request.RouteValue<Guid>("deviceLibraryIdentifier");
             Guid passTypeIdentifier = request.RouteValue<Guid>("passTypeIdentifier");
             DateTime? passesUpdatedSince = request.RequestUri.GetQueryValue<DateTime?>("passesUpdatedSince");
+
+
         }
 
         public static void RegisterDevice(IRequestMessage<Registration> request, IResponseMessage response)
@@ -74,7 +112,7 @@
 
             public Pass()
             {
-                this.Registrations = new List<Registration>();
+                this.Data = null;
             }
 
             public DateTime CreateDate { get; set; }
@@ -89,17 +127,17 @@
                 set
                 {
                     this.data = value;
-                    this.DataString = value != null ? data.ToJson() : null;
+                    this.DataString = value != null ? data.ToJson() : "{}";
                 }
             }
 
             public string DataString { get; private set; }
 
+            public long Id { get; set; }
+
             public DateTime LastUpdateDate { get; set; }
 
             public string PassTypeIdentifier { get; set; }
-
-            public IList<Registration> Registrations { get; private set; }
 
             public string SerialNumber { get; set; }
         }
@@ -111,21 +149,17 @@
 
         public sealed class Registration
         {
+            public DateTime CreateDate { get; set; }
+
             public string DeviceLibraryIdentifier { get; set; }
 
+            public long Id { get; set; }
+
+            public long PassId { get; set; }
+
             public string PushToken { get; set; }
-        }
 
-        public sealed class SerialNumbersResult
-        {
-            private List<Guid> serialNumbers = new List<Guid>();
-
-            public DateTime LastUpdated { get; set; }
-
-            public IList<Guid> SerialNumbers
-            {
-                get { return this.serialNumbers; }
-            }
+            public DateTime LastUpdateDate { get; set; }
         }
 
         public sealed class Repository : IDisposable
@@ -153,11 +187,51 @@
                 GC.SuppressFinalize(this);
             }
 
-            public Pass GetPass(Guid passTypeIdentifier, Guid serialNumber)
+            public IEnumerable<Pass> GetPasses(string passTypeIdentifier, string serialNumber = null)
             {
+                const string Sql =
+@"SELECT * 
+FROM [Pass] 
+WHERE 
+    [PassTypeIdentifier] = @PassTypeIdentifier";
+
+                string sql = Sql;
+
+                if (!string.IsNullOrEmpty(serialNumber))
+                {
+                    sql += @"
+    AND [SerialNumber] = @SerialNumber";
+                }
+
+                sql += @"
+ORDER BY [LastUpdateDate] DESC;";
+
                 return this.connection.Query<Pass>(
-                    "SELECT * FROM [Pass] WHERE [PassTypeIdentifier] = @PassTypeIdentifier AND [SerialNumber] = @SerialNumber;",
-                    new { PassTypeIdentifier = passTypeIdentifier, SerialNumber = serialNumber }).FirstOrDefault();
+                    sql,
+                    new { PassTypeIdentifier = passTypeIdentifier, SerialNumber = serialNumber });
+            }
+
+            public IEnumerable<Registration> GetRegistrations(long passId, string deviceLibraryIdentifier, DateTime? updatedSince)
+            {
+                const string Sql =
+@"SELECT *
+FROM [Registration]
+WHERE
+    [PassId] = @PassId
+    AND [DeviceLibraryIdentifier] = @DeviceLibraryIdentifier";
+
+                string sql = Sql;
+
+                if (updatedSince != null)
+                {
+                    sql += @"
+    AND [LastUpdateDate] = @UpdatedSince";
+                }
+
+                sql += @"
+ORDER BY [LastUpdateDate] DESC;";
+
+                return this.connection.Query<Registration>(sql, new { PassId = passId, DeviceLibraryIdentifier = deviceLibraryIdentifier, UpdatedSince = updatedSince });
             }
 
             private static void EnsureDatabase(string path)
@@ -167,18 +241,22 @@
 (
     [CreateDate] DATETIME NOT NULL,
     [Data] TEXT,
+    [Id] INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     [LastUpdateDate] DATETIME NOT NULL,
-    [PassTypeIdentifier] CHAR(32) NOT NULL PRIMARY KEY,
-    [SerialNumber] CHAR(32) NOT NULL,
+    [PassTypeIdentifier] VARCHAR(64) NOT NULL,
+    [SerialNumber] VARCHAR(64) NOT NULL,
     CONSTRAINT [UC_PassTypeIdentifier_SerialNumber] UNIQUE([PassTypeIdentifier], [SerialNumber])
 );
 
 CREATE TABLE IF NOT EXISTS [Registration]
 (
-    [DeviceLibraryIdentifier] CHAR(32) NOT NULL,
-    [PassId] CHAR(32) NOT NULL,
-    [PushToken] CHAR(32) NOT NULL,
-    CONSTRAINT [PK_Registration] PRIMARY KEY([PassId], [DeviceLibraryIdentifier])
+    [CreateDate] DATETIME NOT NULL,
+    [DeviceLibraryIdentifier] VARCHAR(64) NOT NULL,
+    [Id] INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    [LastUpdateDate] DATETIME NOT NULL,
+    [PassId] INTEGER NOT NULL,
+    [PushToken] VARCHAR(64) NOT NULL,
+    CONSTRAINT [UC_PassId_DeviceLibraryIdentifier] UNIQUE([PassId], [DeviceLibraryIdentifier])
 );";
 
                 if (!File.Exists(path))

@@ -47,6 +47,7 @@
     <Compile Include="Endpoint.cs" />
     <Compile Include="EndpointCollection.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="InternalExtensions.cs" />
     <Compile Include="FilterAction.cs" />
     <Compile Include="FilterActionResult.cs" />
     <Compile Include="FilterAction{T}.cs" />
@@ -99,7 +100,6 @@
     <Compile Include="ServiceHost.cs" />
     <Compile Include="ServiceResolver.cs" />
     <Compile Include="StatusCode.cs" />
-    <Compile Include="UriQueryString.cs" />
     <Compile Include="WriteResponseResult.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

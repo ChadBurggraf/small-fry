@@ -12,7 +12,7 @@
         [Test]
         public void ExtensionsAsEncodingTypes()
         {
-            IEnumerable<EncodingType> acceptTypes = Extensions.AsEncodingTypes(null);
+            IEnumerable<EncodingType> acceptTypes = InternalExtensions.AsEncodingTypes(null);
             Assert.IsNotNull(acceptTypes);
             Assert.AreEqual(1, acceptTypes.Count());
             Assert.AreEqual(EncodingType.Parse("*"), acceptTypes.First());

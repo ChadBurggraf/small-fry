@@ -42,7 +42,7 @@ namespace SmallFry
 
         public static bool operator ==(FilterAction<T> left, FilterAction<T> right)
         {
-            return Extensions.EqualsOperator(left, right);
+            return InternalExtensions.EqualsOperator(left, right);
         }
 
         public static bool operator !=(FilterAction<T> left, FilterAction<T> right)
