@@ -46,11 +46,11 @@ namespace SmallFry
             GC.SuppressFinalize(this);
         }
 
-        public void SetEncodingFilter(Stream encodingFilter)
+        public void SetEncodingFilter(EncodingType encodingType, IEncoding encoding)
         {
-            if (encodingFilter != null)
+            if (encodingType != null && encoding != null)
             {
-                this.OutputStream = encodingFilter;
+                this.OutputStream = encoding.Encode(encodingType, this.OutputStream);
             }
         }
 

@@ -121,11 +121,11 @@ namespace SmallFry
             return (T)this.routeValues[name];
         }
 
-        public void SetEncodingFilter(Stream encodingFilter)
+        public void SetEncodingFilter(EncodingType encodingType, IEncoding encoding)
         {
-            if (encodingFilter != null)
+            if (encodingType != null && encoding != null)
             {
-                this.InputStream = encodingFilter;
+                this.InputStream = encoding.Decode(encodingType, this.InputStream);
             }
         }
 

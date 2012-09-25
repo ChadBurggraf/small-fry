@@ -61,9 +61,12 @@ namespace SmallFry
             GC.SuppressFinalize(this);
         }
 
-        public void SetEncodingFilter(Stream encodingFilter)
+        public void SetEncodingFilter(EncodingType encodingType, IEncoding encoding)
         {
-            this.httpResponse.Filter = encodingFilter;
+            if (encodingType != null && encoding != null)
+            {
+                this.httpResponse.Filter = encoding.Encode(encodingType, this.httpResponse.Filter);
+            }
         }
 
         public void SetStatus(StatusCode statusCode)

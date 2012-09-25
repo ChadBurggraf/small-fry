@@ -618,7 +618,7 @@
             {
                 request.InputStream.Write(encodedPayload, 0, encodedPayload.Length);
                 request.InputStream.Position = 0;
-                request.SetEncodingFilter(new GzipDeflateEncoding().Decode(EncodingType.Parse("gzip"), request.InputStream));
+                request.SetEncodingFilter(EncodingType.Parse("gzip"), new GzipDeflateEncoding());
 
                 using (ResponseMessage response = new ResponseMessage())
                 {
@@ -695,7 +695,7 @@
             {
                 request.InputStream.Write(encodedPayload, 0, encodedPayload.Length);
                 request.InputStream.Position = 0;
-                request.SetEncodingFilter(new GzipDeflateEncoding().Decode(EncodingType.Parse("gzip"), request.InputStream));
+                request.SetEncodingFilter(EncodingType.Parse("gzip"), new GzipDeflateEncoding());
 
                 ReadRequestResult result = service.ReadRequest(request, encodedPayload.Length, "gzip", "application/json", request.InputStream);
                 Assert.IsNotNull(result);

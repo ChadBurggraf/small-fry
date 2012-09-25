@@ -102,9 +102,12 @@ namespace SmallFry
             return (T)this.routeValues[name];
         }
 
-        public void SetEncodingFilter(Stream encodingFilter)
+        public void SetEncodingFilter(EncodingType encodingType, IEncoding encoding)
         {
-            this.httpRequest.Filter = encodingFilter;
+            if (encodingType != null && encoding != null)
+            {
+                this.httpRequest.Filter = encoding.Decode(encodingType, this.httpRequest.Filter);
+            }
         }
 
         internal virtual void SetRequestObject(object requestObject)

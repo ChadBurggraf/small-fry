@@ -45,8 +45,9 @@ namespace SmallFry
         /// Sets an encoding filter on the response's output to provide
         /// encoding services.
         /// </summary>
-        /// <param name="encodingFilter">The encoding filter to set.</param>
-        void SetEncodingFilter(Stream encodingFilter);
+        /// <param name="encodingType">The <see cref="EncodingType"/> the encoding is being set for.</param>
+        /// <param name="encoding">The encoding to set.</param>
+        void SetEncodingFilter(EncodingType encodingType, IEncoding encoding);
 
         /// <summary>
         /// Sets the status code and status description of this instance

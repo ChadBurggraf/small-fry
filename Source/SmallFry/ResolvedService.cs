@@ -327,7 +327,7 @@ namespace SmallFry
 
                         try
                         {
-                            request.SetEncodingFilter(encodingResult.Encoding.Decode(encodingResult.EncodingType, inputStream));
+                            request.SetEncodingFilter(encodingResult.EncodingType, encodingResult.Encoding);
                             obj = formatResult.Format.Deserialize(formatResult.MediaType, this.RequestType, inputStream);
                             result.RequestObject = obj;
                             obj = null;
@@ -365,7 +365,7 @@ namespace SmallFry
             if (responseObject != null)
             {
                 EncodingLookupResult encodingResult = this.GetResponseEncoder(acceptEncoding);
-
+                
                 if (encodingResult != null)
                 {
                     FormatLookupResult formatResult = this.GetResponseSerializer(accept);
@@ -374,7 +374,7 @@ namespace SmallFry
                     {
                         try
                         {
-                            response.SetEncodingFilter(encodingResult.Encoding.Encode(encodingResult.EncodingType, outputStream));
+                            response.SetEncodingFilter(encodingResult.EncodingType, encodingResult.Encoding);
                             formatResult.Format.Serialize(formatResult.MediaType, responseObject, outputStream);
                         }
                         catch (Exception ex)
