@@ -102,9 +102,11 @@ namespace SmallFry
         /// <param name="typeConstraints">An object describing the type constraints of the route
         /// (e.g., new { id = typeof(int) }). Each type must be represented in the current host's
         /// <see cref="IRouteParameterParser"/> collection. All primitive .NET types are supported by default.</param>
+        /// <param name="patternConstraints">An object describing the pattern constraints of the route
+        /// (e.g., new { id = "^\d+$" }). Each value should be a valid, parse-able regular expression.</param>
         /// <returns>The new endpoint's <see cref="IMethodCollection"/>.</returns>
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed.")]
-        IMethodCollection WithEndpoint(string route, object typeConstraints = null);
+        IMethodCollection WithEndpoint(string route, object typeConstraints = null, object patternConstraints = null);
 
         /// <summary>
         /// Adds an encoding to the current <see cref="IServiceHost"/> and returns the

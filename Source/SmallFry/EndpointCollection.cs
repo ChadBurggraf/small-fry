@@ -123,10 +123,11 @@ namespace SmallFry
             return removed;
         }
 
-        public IMethodCollection WithEndpoint(string route, object typeConstraints = null)
+        public IMethodCollection WithEndpoint(string route, object typeConstraints = null, object patternConstraints = null)
         {
             Endpoint endpoint = new Endpoint(route, this.Service, this);
-            endpoint.ParameterTypes.AddDynamic(typeConstraints);
+            endpoint.SetParameterTypes(typeConstraints);
+            endpoint.SetParameterPatterns(patternConstraints);
             this.Add(endpoint);
             this.CurrentEndpoint = endpoint;
             return endpoint.Methods;

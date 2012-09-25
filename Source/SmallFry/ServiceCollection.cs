@@ -176,14 +176,14 @@ namespace SmallFry
             return removed;
         }
 
-        public IMethodCollection WithEndpoint(string route, object typeConstraints = null)
+        public IMethodCollection WithEndpoint(string route, object typeConstraints = null, object patternConstraints = null)
         {
             if (this.CurrentService == null)
             {
                 throw new InvalidOperationException(ServiceCollection.CurrentServiceNotSetMessage);
             }
 
-            return this.CurrentService.Endpoints.WithEndpoint(route, typeConstraints);
+            return this.CurrentService.Endpoints.WithEndpoint(route, typeConstraints, patternConstraints);
         }
 
         public IServiceCollection WithHostEncoding(IEncoding encoding)

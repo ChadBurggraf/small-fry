@@ -9,6 +9,7 @@ namespace SmallFry
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text.RegularExpressions;
 
     internal sealed class Endpoint
     {
@@ -28,6 +29,7 @@ namespace SmallFry
             this.Service = service;
             this.EndpointCollection = endpointCollection;
             this.Methods = new MethodCollection(this);
+            this.ParameterPatterns = new Dictionary<string, Regex>();
             this.ParameterTypes = new Dictionary<string, Type>();
             this.Pipeline = new Pipeline();
         }
@@ -36,6 +38,8 @@ namespace SmallFry
 
         public IMethodCollection Methods { get; private set; }
 
+        public IDictionary<string, Regex> ParameterPatterns { get; private set; }
+
         public IDictionary<string, Type> ParameterTypes { get; private set; }
 
         public Pipeline Pipeline { get; private set; }
@@ -43,5 +47,24 @@ namespace SmallFry
         public RoutePattern Route { get; private set; }
 
         public Service Service { get; private set; }
+
+        public void SetParameterPatterns(object patternConstraints)
+        {
+            this.ParameterPatterns.Clear();
+
+            IDictionary<string, string> dict = new Dictionary<string, string>();
+            dict.AddDynamic(patternConstraints);
+
+            foreach (KeyValuePair<string, string> pair in dict) 
+            {
+                this.ParameterPatterns[pair.Key] = new Regex(pair.Value, RegexOptions.Compiled);
+            }
+        }
+
+        public void SetParameterTypes(object typeConstraints)
+        {
+            this.ParameterTypes.Clear();
+            this.ParameterTypes.AddDynamic(typeConstraints);
+        }
     }
 }

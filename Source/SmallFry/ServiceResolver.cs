@@ -36,7 +36,7 @@ namespace SmallFry
 
                 if (routeValues != null)
                 {
-                    return true;
+                    return ServiceResolver.RoutePatternsMatch(service, routeValues);
                 }
             }
 
@@ -53,11 +53,14 @@ namespace SmallFry
 
                 if (routeValues != null)
                 {
-                    routeValues = this.serviceCollection.RouteValueBinder.Bind(routeValues, service.Method.Endpoint.ParameterTypes);
-
-                    if (routeValues != null)
+                    if (ServiceResolver.RoutePatternsMatch(service, routeValues))
                     {
-                        return new ResolvedService(service, routeValues);
+                        routeValues = this.serviceCollection.RouteValueBinder.Bind(routeValues, service.Method.Endpoint.ParameterTypes);
+
+                        if (routeValues != null)
+                        {
+                            return new ResolvedService(service, routeValues);
+                        }
                     }
                 }
             }
@@ -270,6 +273,25 @@ namespace SmallFry
             }
 
             return type;
+        }
+
+        private static bool RoutePatternsMatch(ResolvedService service, IDictionary<string, object> routeValues)
+        {
+            bool success = true;
+
+            foreach (KeyValuePair<string, object> pair in routeValues)
+            {
+                if (service.Method.Endpoint.ParameterPatterns.ContainsKey(pair.Key))
+                {
+                    if (!service.Method.Endpoint.ParameterPatterns[pair.Key].IsMatch(pair.Value as string ?? string.Empty))
+                    {
+                        success = false;
+                        break;
+                    }
+                }
+            }
+
+            return success;
         }
     }
 }

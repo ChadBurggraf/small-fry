@@ -357,9 +357,9 @@ namespace SmallFry
             return removed;
         }
 
-        public IMethodCollection WithEndpoint(string route, object typeConstraints = null)
+        public IMethodCollection WithEndpoint(string route, object typeConstraints = null, object patternConstraints = null)
         {
-            return this.Endpoint.EndpointCollection.WithEndpoint(route, typeConstraints);
+            return this.Endpoint.EndpointCollection.WithEndpoint(route, typeConstraints, patternConstraints);
         }
 
         public IServiceCollection WithHostEncoding(IEncoding encoding)
