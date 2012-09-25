@@ -2,18 +2,15 @@
 {
     using System;
     using System.Data;
-    using Passbook.Models;
     using SmallFry;
 
-    public static class PassbookV1
+    public static class PassbookService
     {
-        private const string RepositoryUrl = "~/App_Data/Passbook.sqlite";
-
         public static void GetLatestVersionOfPass(IRequestMessage request, IResponseMessage response)
         {
             Pass pass;
 
-            using (Repository repository = PassbookV1.CreateRepository(request))
+            using (Repository repository = new Repository())
             {
                 pass = repository.GetPass(
                     request.RouteValue<string>("passTypeIdentifier"),
@@ -41,7 +38,7 @@
         {
             DeviceSerialNumbers serialNumbers;
 
-            using (Repository repository = PassbookV1.CreateRepository(request))
+            using (Repository repository = new Repository())
             {
                 serialNumbers = repository.GetDeviceSerialNumbers(
                     request.RouteValue<string>("deviceLibraryIdentifier"),
@@ -63,7 +60,7 @@
         {
             if (!string.IsNullOrEmpty(request.RequestObject.PushToken))
             {
-                using (Repository repository = PassbookV1.CreateRepository(request))
+                using (Repository repository = new Repository())
                 {
                     using (IDbTransaction transaction = repository.Connection.BeginTransaction())
                     {
@@ -113,18 +110,13 @@
 
         public static void UnregisterDevice(IRequestMessage request, IResponseMessage response)
         {
-            using (Repository repository = PassbookV1.CreateRepository(request))
+            using (Repository repository = new Repository())
             {
                 repository.DeleteRegistration(
                     request.RouteValue<string>("deviceLibraryIdentifier"),
                     request.RouteValue<string>("passTypeIdentifier"),
                     request.RouteValue<string>("serialNumber"));
             }
-        }
-
-        private static Repository CreateRepository(IRequestMessage request)
-        {
-            return new Repository(request.MapPath(PassbookV1.RepositoryUrl));
         }
     }
 }

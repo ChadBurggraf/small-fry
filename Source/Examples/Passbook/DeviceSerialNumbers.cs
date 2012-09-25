@@ -1,4 +1,4 @@
-﻿namespace Passbook.Models
+﻿namespace Passbook
 {
     using System;
     using System.Collections.Generic;

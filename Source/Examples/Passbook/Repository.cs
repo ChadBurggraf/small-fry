@@ -2,39 +2,45 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Configuration;
     using System.Data;
     using System.Data.SQLite;
     using System.IO;
     using System.Linq;
     using System.Text;
     using Dapper;
-    using Passbook.Models;
 
     public sealed class Repository : IDisposable
     {
+        private static readonly string ConnectionString = Repository.GetDefaultConnectionString();
         private SQLiteConnection connection;
         private bool disposed;
 
-        public Repository(string path)
+        public Repository()
+            : this(Repository.ConnectionString)
         {
-            if (string.IsNullOrEmpty(path))
+        }
+
+        public Repository(string connectionString)
+        {
+            if (string.IsNullOrEmpty(connectionString))
             {
-                throw new ArgumentNullException("path", "path must contain a value.");
+                connectionString = Repository.ConnectionString;
             }
 
-            if (!Path.IsPathRooted(path))
-            {
-                throw new ArgumentException("path must be fully qualified.", "path");
-            }
-
-            Repository.EnsureDatabase(path);
-            this.connection = new SQLiteConnection(Repository.GetConnectionString(path));
+            Repository.EnsureDatabase(connectionString);
+            this.connection = new SQLiteConnection(connectionString);
             this.connection.Open();
         }
 
         ~Repository()
         {
             this.Dispose(false);
+        }
+
+        public static string DefaultConnectionString
+        {
+            get { return Repository.ConnectionString; }
         }
 
         public IDbConnection Connection
@@ -147,7 +153,36 @@ WHERE
                 transaction);
         }
 
-        private static void EnsureDatabase(string path)
+        private static string GetDefaultConnectionString()
+        {
+            const string DataDirectory = "|DataDirectory|";
+            SQLiteConnectionStringBuilder builder = new SQLiteConnectionStringBuilder(ConfigurationManager.ConnectionStrings["PassbookSQLite"].ConnectionString);
+            string path = (builder.DataSource ?? string.Empty).Trim();
+
+            if (!string.IsNullOrEmpty(path))
+            {
+                int dataDirectoryIndex = path.IndexOf(DataDirectory, StringComparison.OrdinalIgnoreCase);
+
+                if (dataDirectoryIndex > -1)
+                {
+                    path = path.Substring(dataDirectoryIndex + DataDirectory.Length);
+                    path = Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data"), path);
+                }
+                else if (!Path.IsPathRooted(path))
+                {
+                    path = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, path));
+                }
+            }
+            else
+            {
+                path = AppDomain.CurrentDomain.BaseDirectory;
+            }
+
+            builder.DataSource = path;
+            return builder.ToString();
+        }
+
+        private static void EnsureDatabase(string connectionString)
         {
             const string Sql =
 @"CREATE TABLE IF NOT EXISTS [Pass]
@@ -173,24 +208,16 @@ CREATE TABLE IF NOT EXISTS [Registration]
     CONSTRAINT [UC_PassId_DeviceLibraryIdentifier] UNIQUE([PassId], [DeviceLibraryIdentifier])
 );";
 
-            if (!File.Exists(path))
+            SQLiteConnectionStringBuilder builder = new SQLiteConnectionStringBuilder(connectionString);
+
+            if (!File.Exists(builder.DataSource))
             {
-                using (SQLiteConnection connection = new SQLiteConnection(Repository.GetConnectionString(path)))
+                using (SQLiteConnection connection = new SQLiteConnection(connectionString))
                 {
                     connection.Open();
                     connection.Execute(Sql);
                 }
             }
-        }
-
-        private static string GetConnectionString(string path)
-        {
-            SQLiteConnectionStringBuilder builder = new SQLiteConnectionStringBuilder();
-            builder.DataSource = path;
-            builder.JournalMode = SQLiteJournalModeEnum.Off;
-            builder.SyncMode = SynchronizationModes.Off;
-            builder.Version = 3;
-            return builder.ToString();
         }
 
         private void Dispose(bool disposing)
