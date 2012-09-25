@@ -9,6 +9,7 @@ namespace SmallFry
     using System;
     using System.Collections.Generic;
     using System.Collections.Specialized;
+    using System.IO;
     using System.Web;
 
     /// <summary>
@@ -82,5 +83,12 @@ namespace SmallFry
         /// <param name="name">The name of the route value to get.</param>
         /// <returns>The route value for the specified name.</returns>
         T RouteValue<T>(string name);
+
+        /// <summary>
+        /// Sets an encoding filter on the request's input to provide
+        /// decoding services.
+        /// </summary>
+        /// <param name="encodingFilter">The encoding filter to set.</param>
+        void SetEncodingFilter(Stream encodingFilter);
     }
 }

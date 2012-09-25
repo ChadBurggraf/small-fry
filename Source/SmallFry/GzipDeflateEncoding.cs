@@ -51,33 +51,25 @@ namespace SmallFry
         }
 
         /// <summary>
-        /// Decodes an input stream and writes the decoded content to the
-        /// given output stream.
+        /// Creates a decoding stream around the given stream and returns
+        /// the wrapped stream to use for decoding.
         /// </summary>
         /// <param name="encodingType">The <see cref="EncodingType"/> to decode.</param>
-        /// <param name="inputStream">The stream to read encoded content from.</param>
-        /// <param name="outputStream">The stream to write decoded content to.</param>
-        public void Decode(EncodingType encodingType, Stream inputStream, Stream outputStream)
+        /// <param name="stream">The stream to apply the decoding to.</param>
+        /// <returns>A stream providing decoding services to the original stream.</returns>
+        public Stream Decode(EncodingType encodingType, Stream stream)
         {
             if (encodingType == null)
             {
                 throw new ArgumentNullException("encodingType", "encodingType cannot be null.");
             }
 
-            if (inputStream == null)
+            if (stream == null)
             {
-                throw new ArgumentNullException("inputStream", "inputStream cannot be null.");
+                throw new ArgumentNullException("stream", "stream cannot be null.");
             }
 
-            if (outputStream == null)
-            {
-                throw new ArgumentNullException("outputStream", "outputStream cannot be null.");
-            }
-
-            using (Stream compressionStream = this.GetCompressionStream(encodingType, inputStream, CompressionMode.Decompress))
-            {
-                compressionStream.CopyTo(outputStream);
-            }
+            return this.GetCompressionStream(encodingType, stream, CompressionMode.Decompress);
         }
 
         /// <summary>
@@ -159,8 +151,8 @@ namespace SmallFry
             }
 
             return "deflate".Equals(encodingType.Name, StringComparison.OrdinalIgnoreCase)
-                ? new DeflateStream(stream, mode, true) as Stream
-                : new GZipStream(stream, mode, true) as Stream;
+                ? new DeflateStream(stream, mode) as Stream
+                : new GZipStream(stream, mode) as Stream;
         }
     }
 }

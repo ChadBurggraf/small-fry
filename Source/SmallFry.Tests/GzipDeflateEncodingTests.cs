@@ -88,18 +88,20 @@ Aliquam erat volutpat. Cras magna est, aliquet sit amet vestibulum facilisis, ac
 
         private static void Decode(string encoding, string comparisonResourceName)
         {
-            byte[] decoded;
+            string decoded;
 
-            using (Stream inputStream = typeof(GzipDeflateEncodingTests).Assembly.GetManifestResourceStream(comparisonResourceName))
+            using (Stream stream = typeof(GzipDeflateEncodingTests).Assembly.GetManifestResourceStream(comparisonResourceName))
             {
-                using (MemoryStream outputStream = new MemoryStream())
+                using (Stream decodeStream = new GzipDeflateEncoding().Decode(EncodingType.Parse(encoding), stream))
                 {
-                    new GzipDeflateEncoding().Decode(EncodingType.Parse(encoding), inputStream, outputStream);
-                    decoded = outputStream.ToArray();
+                    using (StreamReader reader = new StreamReader(decodeStream, Encoding.Unicode))
+                    {
+                        decoded = reader.ReadToEnd();
+                    }
                 }
             }
 
-            Assert.IsTrue(Encoding.Unicode.GetBytes(GzipDeflateEncodingTests.Content).SequenceEqual(decoded));
+            Assert.AreEqual(GzipDeflateEncodingTests.Content, decoded);
         }
 
         private static void Encode(string encoding, string comparisonResourceName)

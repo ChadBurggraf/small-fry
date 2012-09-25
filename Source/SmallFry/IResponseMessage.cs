@@ -8,6 +8,7 @@ namespace SmallFry
 {
     using System;
     using System.Collections.Specialized;
+    using System.IO;
     using System.Web;
 
     /// <summary>
@@ -39,6 +40,13 @@ namespace SmallFry
         /// Gets or sets the status description to send with the response.
         /// </summary>
         string StatusDescription { get; set; }
+
+        /// <summary>
+        /// Sets an encoding filter on the response's output to provide
+        /// encoding services.
+        /// </summary>
+        /// <param name="encodingFilter">The encoding filter to set.</param>
+        void SetEncodingFilter(Stream encodingFilter);
 
         /// <summary>
         /// Sets the status code and status description of this instance

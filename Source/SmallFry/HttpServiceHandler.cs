@@ -56,16 +56,19 @@ namespace SmallFry
 
                 if (service != null)
                 {
-                    ReadRequestResult readResult = service.ReadRequest(
-                        httpContext.Request.ContentLength,
-                        httpContext.Request.Headers["Content-Encoding"],
-                        httpContext.Request.ContentType,
-                        httpContext.Request.InputStream);
-
-                    using (IRequestMessage request = HttpRequestMessage.Create(service.Name, service.RouteValues, httpContext.Request, service.RequestType, readResult.RequestObject))
+                    using (HttpRequestMessage request = HttpRequestMessage.Create(service.Name, service.RouteValues, httpContext.Request, service.RequestType))
                     {
-                        using (IResponseMessage response = new HttpResponseMessage(httpContext.Response))
+                        using (HttpResponseMessage response = new HttpResponseMessage(httpContext.Response))
                         {
+                            ReadRequestResult readResult = service.ReadRequest(
+                                request,
+                                httpContext.Request.ContentLength,
+                                httpContext.Request.Headers["Content-Encoding"],
+                                httpContext.Request.ContentType,
+                                httpContext.Request.InputStream);
+
+                            request.SetRequestObject(readResult.RequestObject);
+
                             List<Exception> exceptions = new List<Exception>();
                             InvokeActionsResult invokeResult;
                             bool success = readResult.Success, cont = true;

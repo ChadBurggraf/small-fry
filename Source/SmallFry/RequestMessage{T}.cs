@@ -31,6 +31,11 @@ namespace SmallFry
 
         public T RequestObject { get; private set; }
 
+        internal override void SetRequestObject(object requestObject)
+        {
+            this.RequestObject = (T)requestObject;
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (!this.disposed)

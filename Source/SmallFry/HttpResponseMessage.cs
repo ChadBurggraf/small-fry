@@ -8,6 +8,7 @@ namespace SmallFry
 {
     using System;
     using System.Collections.Specialized;
+    using System.IO;
     using System.Web;
 
     internal sealed class HttpResponseMessage : IResponseMessage
@@ -58,6 +59,11 @@ namespace SmallFry
         {
             this.Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        public void SetEncodingFilter(Stream encodingFilter)
+        {
+            this.httpResponse.Filter = encodingFilter;
         }
 
         public void SetStatus(StatusCode statusCode)

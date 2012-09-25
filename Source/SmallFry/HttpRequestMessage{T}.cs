@@ -30,7 +30,12 @@ namespace SmallFry
             this.Dispose(false);
         }
 
-        public T RequestObject { get; private set; }
+        public T RequestObject { get; internal set; }
+
+        internal override void SetRequestObject(object requestObject)
+        {
+            this.RequestObject = (T)requestObject;
+        }
 
         protected override void Dispose(bool disposing)
         {

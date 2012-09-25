@@ -252,8 +252,13 @@ namespace SmallFry
             return ResolvedService.InvokeActions(this.ErrorActions, request, response, exceptions);
         }
 
-        public ReadRequestResult ReadRequest(int contentLength, string contentEncoding, string contentType, Stream inputStream)
+        public ReadRequestResult ReadRequest(IRequestMessage request, int contentLength, string contentEncoding, string contentType, Stream inputStream)
         {
+            if (request == null)
+            {
+                throw new ArgumentNullException("request", "request cannot be null.");
+            }
+
             ReadRequestResult result = new ReadRequestResult() { Success = true };
 
             if ((this.Method.MethodType == MethodType.Post
@@ -316,19 +321,14 @@ namespace SmallFry
                         }
                     }
 
-                    if (result.Success)
+                    if (result.Success && inputStream != null)
                     {
                         object obj = null;
 
                         try
                         {
-                            using (MemoryStream stream = new MemoryStream())
-                            {
-                                encodingResult.Encoding.Decode(encodingResult.EncodingType, inputStream, stream);
-                                stream.Position = 0;
-                                obj = formatResult.Format.Deserialize(formatResult.MediaType, this.RequestType, stream);
-                            }
-
+                            request.SetEncodingFilter(encodingResult.Encoding.Decode(encodingResult.EncodingType, inputStream));
+                            obj = formatResult.Format.Deserialize(formatResult.MediaType, this.RequestType, inputStream);
                             result.RequestObject = obj;
                             obj = null;
                         }

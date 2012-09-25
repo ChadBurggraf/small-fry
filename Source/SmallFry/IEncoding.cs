@@ -31,13 +31,13 @@ namespace SmallFry
         bool CanEncode(EncodingType encodingType);
 
         /// <summary>
-        /// Decodes an input stream and writes the decoded content to the
-        /// given output stream.
+        /// Creates a decoding stream around the given stream and returns
+        /// the wrapped stream to use for decoding.
         /// </summary>
         /// <param name="encodingType">The <see cref="EncodingType"/> to decode.</param>
-        /// <param name="inputStream">The stream to read encoded content from.</param>
-        /// <param name="outputStream">The stream to write decoded content to.</param>
-        void Decode(EncodingType encodingType, Stream inputStream, Stream outputStream);
+        /// <param name="stream">The stream to apply the decoding to.</param>
+        /// <returns>A stream providing decoding services to the original stream.</returns>
+        Stream Decode(EncodingType encodingType, Stream stream);
 
         /// <summary>
         /// Encodes an input stream and writes the encoded content to the

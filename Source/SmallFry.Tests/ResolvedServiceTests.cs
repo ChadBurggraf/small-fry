@@ -552,51 +552,24 @@
                         .Post<Payload>((Payload p) => { });
 
             ResolvedService service = new ServiceResolver(services).Find(MethodType.Get, "foo");
-            ReadRequestResult result = service.ReadRequest(0, null, null, null);
-            Assert.IsNotNull(result);
-            Assert.IsTrue(result.Success);
-            Assert.IsNull(result.Exception);
-            Assert.AreEqual(StatusCode.None, result.StatusCode);
-            Assert.IsNull(result.RequestObject);
+            ReadRequestResult result;
 
-            using (MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes("{\"date\":\"2012-09-22T18:46:00Z\",\"number\":42,\"text\":\"Hello, world!\"}")))
+            using (RequestMessage request = new RequestMessage(service.Name, service.RouteValues, new Uri("http://example.com/foo")))
             {
-                service = new ServiceResolver(services).Find(MethodType.Post, "foo");
-                result = service.ReadRequest((int)stream.Length, null, "application/json", stream);
+                result = service.ReadRequest(request, 0, null, null, null);
                 Assert.IsNotNull(result);
                 Assert.IsTrue(result.Success);
                 Assert.IsNull(result.Exception);
                 Assert.AreEqual(StatusCode.None, result.StatusCode);
-                Assert.IsNotNull(result.RequestObject);
-
-                Payload payload = result.RequestObject as Payload;
-                Assert.IsNotNull(payload);
-                Assert.AreEqual(new DateTime(2012, 9, 22, 18, 46, 0, DateTimeKind.Utc), payload.Date);
-                Assert.AreEqual(42L, payload.Number);
-                Assert.AreEqual("Hello, world!", payload.Text);
+                Assert.IsNull(result.RequestObject);
             }
-        }
-
-        [Test]
-        public void ResolvedServiceReadRequestEncoded()
-        {
-            ServiceCollection services = new ServiceCollection();
-            services
-                .WithHostEncoding(new GzipDeflateEncoding())
-                .WithHostFormat(new JsonFormat())
-                .WithService("Test", "/")
-                    .WithEndpoint("{action}")
-                        .Post<Payload>((Payload p) => { });
 
             using (MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes("{\"date\":\"2012-09-22T18:46:00Z\",\"number\":42,\"text\":\"Hello, world!\"}")))
             {
-                using (MemoryStream compressedStream = new MemoryStream())
+                using (RequestMessage request = new RequestMessage<Payload>(service.Name, service.RouteValues, new Uri("http://example.com/foo")))
                 {
-                    new GzipDeflateEncoding().Encode(EncodingType.Parse("gzip"), stream, compressedStream);
-                    compressedStream.Position = 0;
-
-                    ResolvedService service = new ServiceResolver(services).Find(MethodType.Post, "foo");
-                    ReadRequestResult result = service.ReadRequest((int)stream.Length, "gzip", "application/json", compressedStream);
+                    service = new ServiceResolver(services).Find(MethodType.Post, "foo");
+                    result = service.ReadRequest(request, (int)stream.Length, null, "application/json", stream);
                     Assert.IsNotNull(result);
                     Assert.IsTrue(result.Success);
                     Assert.IsNull(result.Exception);
@@ -613,6 +586,45 @@
         }
 
         [Test]
+        public void ResolvedServiceReadRequestEncoded()
+        {
+            ServiceCollection services = new ServiceCollection();
+            services
+                .WithHostEncoding(new GzipDeflateEncoding())
+                .WithHostFormat(new JsonFormat())
+                .WithService("Test", "/")
+                    .WithEndpoint("{action}")
+                        .Post<Payload>((Payload p) => { });
+
+            ResolvedService service = new ServiceResolver(services).Find(MethodType.Post, "foo");
+
+            using (MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes("{\"date\":\"2012-09-22T18:46:00Z\",\"number\":42,\"text\":\"Hello, world!\"}")))
+            {
+                using (MemoryStream compressedStream = new MemoryStream())
+                {
+                    using (RequestMessage request = new RequestMessage<Payload>(service.Name, service.RouteValues, new Uri("http://example.com/foo")))
+                    {
+                        new GzipDeflateEncoding().Encode(EncodingType.Parse("gzip"), stream, compressedStream);
+                        compressedStream.Position = 0;
+
+                        ReadRequestResult result = service.ReadRequest(request, (int)stream.Length, "gzip", "application/json", compressedStream);
+                        Assert.IsNotNull(result);
+                        Assert.IsTrue(result.Success);
+                        Assert.IsNull(result.Exception);
+                        Assert.AreEqual(StatusCode.None, result.StatusCode);
+                        Assert.IsNotNull(result.RequestObject);
+
+                        Payload payload = result.RequestObject as Payload;
+                        Assert.IsNotNull(payload);
+                        Assert.AreEqual(new DateTime(2012, 9, 22, 18, 46, 0, DateTimeKind.Utc), payload.Date);
+                        Assert.AreEqual(42L, payload.Number);
+                        Assert.AreEqual("Hello, world!", payload.Text);
+                    }
+                }
+            }
+        }
+
+        [Test]
         public void ResolvedServiceReadRequestInvalidJson()
         {
             ServiceCollection services = new ServiceCollection();
@@ -622,15 +634,19 @@
                     .WithEndpoint("{action}")
                         .Post<Payload>((Payload p) => { });
 
+            ResolvedService service = new ServiceResolver(services).Find(MethodType.Post, "foo");
+
             using (MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes("this is not JSON")))
             {
-                ResolvedService service = new ServiceResolver(services).Find(MethodType.Post, "foo");
-                ReadRequestResult result = service.ReadRequest((int)stream.Length, null, "application/json", stream);
-                Assert.IsNotNull(result);
-                Assert.IsFalse(result.Success);
-                Assert.IsNotNull(result.Exception);
-                Assert.AreEqual(StatusCode.BadRequest, result.StatusCode);
-                Assert.IsNull(result.RequestObject);
+                using (RequestMessage request = new RequestMessage<Payload>(service.Name, service.RouteValues, new Uri("http://example.com/foo")))
+                {
+                    ReadRequestResult result = service.ReadRequest(request, (int)stream.Length, null, "application/json", stream);
+                    Assert.IsNotNull(result);
+                    Assert.IsFalse(result.Success);
+                    Assert.IsNotNull(result.Exception);
+                    Assert.AreEqual(StatusCode.BadRequest, result.StatusCode);
+                    Assert.IsNull(result.RequestObject);
+                }
             }
         }
 
@@ -644,20 +660,24 @@
                     .WithEndpoint("{action}")
                         .Post<Payload>((Payload p) => { });
 
+            ResolvedService service = new ServiceResolver(services).Find(MethodType.Post, "foo");
+
             using (MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes("{\"date\":\"2012-09-22T18:46:00Z\",\"number\":42,\"text\":\"Hello, world!\"}")))
             {
                 using (MemoryStream compressedStream = new MemoryStream())
                 {
-                    new GzipDeflateEncoding().Encode(EncodingType.Parse("gzip"), stream, compressedStream);
-                    compressedStream.Position = 0;
+                    using (RequestMessage request = new RequestMessage<Payload>(service.Name, service.RouteValues, new Uri("http://example.com/foo")))
+                    {
+                        new GzipDeflateEncoding().Encode(EncodingType.Parse("gzip"), stream, compressedStream);
+                        compressedStream.Position = 0;
 
-                    ResolvedService service = new ServiceResolver(services).Find(MethodType.Post, "foo");
-                    ReadRequestResult result = service.ReadRequest((int)stream.Length, "gzip", "application/json", compressedStream);
-                    Assert.IsNotNull(result);
-                    Assert.IsFalse(result.Success);
-                    Assert.IsNull(result.Exception);
-                    Assert.AreEqual(StatusCode.UnsupportedMediaType, result.StatusCode);
-                    Assert.IsNull(result.RequestObject);
+                        ReadRequestResult result = service.ReadRequest(request, (int)stream.Length, "gzip", "application/json", compressedStream);
+                        Assert.IsNotNull(result);
+                        Assert.IsFalse(result.Success);
+                        Assert.IsNull(result.Exception);
+                        Assert.AreEqual(StatusCode.UnsupportedMediaType, result.StatusCode);
+                        Assert.IsNull(result.RequestObject);
+                    }
                 }
             }
         }
@@ -671,15 +691,19 @@
                     .WithEndpoint("{action}")
                         .Post<Payload>((Payload p) => { });
 
+            ResolvedService service = new ServiceResolver(services).Find(MethodType.Post, "foo");
+
             using (MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes("{\"date\":\"2012-09-22T18:46:00Z\",\"number\":42,\"text\":\"Hello, world!\"}")))
             {
-                ResolvedService service = new ServiceResolver(services).Find(MethodType.Post, "foo");
-                ReadRequestResult result = service.ReadRequest((int)stream.Length, null, "application/json", stream);
-                Assert.IsNotNull(result);
-                Assert.IsFalse(result.Success);
-                Assert.IsNull(result.Exception);
-                Assert.AreEqual(StatusCode.UnsupportedMediaType, result.StatusCode);
-                Assert.IsNull(result.RequestObject);
+                using (RequestMessage request = new RequestMessage<Payload>(service.Name, service.RouteValues, new Uri("http://example.com/foo")))
+                {
+                    ReadRequestResult result = service.ReadRequest(request, (int)stream.Length, null, "application/json", stream);
+                    Assert.IsNotNull(result);
+                    Assert.IsFalse(result.Success);
+                    Assert.IsNull(result.Exception);
+                    Assert.AreEqual(StatusCode.UnsupportedMediaType, result.StatusCode);
+                    Assert.IsNull(result.RequestObject);
+                }
             }
         }
 

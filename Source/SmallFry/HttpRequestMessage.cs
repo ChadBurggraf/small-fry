@@ -9,6 +9,7 @@ namespace SmallFry
     using System;
     using System.Collections.Generic;
     using System.Collections.Specialized;
+    using System.IO;
     using System.Web;
 
     internal class HttpRequestMessage : IRequestMessage
@@ -59,7 +60,7 @@ namespace SmallFry
 
         public string ServiceName { get; private set; }
 
-        public static HttpRequestMessage Create(string serviceName, IDictionary<string, object> routeValues, HttpRequestBase httpRequest, Type requestType, object requestObject)
+        public static HttpRequestMessage Create(string serviceName, IDictionary<string, object> routeValues, HttpRequestBase httpRequest, Type requestType)
         {
             if (requestType != null)
             {
@@ -67,13 +68,18 @@ namespace SmallFry
                     typeof(HttpRequestMessage<>).MakeGenericType(requestType), 
                     serviceName, 
                     routeValues,
-                    httpRequest, 
-                    requestObject);
+                    httpRequest);
             }
             else
             {
                 return new HttpRequestMessage(serviceName, routeValues, httpRequest);
             }
+        }
+
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         public T HeaderValue<T>(string name)
@@ -96,10 +102,13 @@ namespace SmallFry
             return (T)this.routeValues[name];
         }
 
-        public void Dispose()
+        public void SetEncodingFilter(Stream encodingFilter)
         {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
+            this.httpRequest.Filter = encodingFilter;
+        }
+
+        internal virtual void SetRequestObject(object requestObject)
+        {
         }
 
         protected virtual void Dispose(bool disposing)

@@ -70,6 +70,12 @@ namespace SmallFry
             }
         }
 
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
         public T HeaderValue<T>(string name)
         {
             return this.Headers.Get<T>(name);
@@ -112,10 +118,12 @@ namespace SmallFry
             return (T)this.routeValues[name];
         }
 
-        public void Dispose()
+        public void SetEncodingFilter(Stream encodingFilter)
         {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
+        }
+
+        internal virtual void SetRequestObject(object requestObject)
+        {
         }
 
         protected virtual void Dispose(bool disposing)
