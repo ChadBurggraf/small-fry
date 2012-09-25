@@ -4,6 +4,7 @@
 *.VisualState.xml
 StyleCop.Cache
 TestResult.xml
+App_Data/
 [Bb]in/
 [Bb]uild/
 [Oo]bj/
