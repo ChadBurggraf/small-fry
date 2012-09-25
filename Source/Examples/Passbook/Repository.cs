@@ -48,13 +48,27 @@
             GC.SuppressFinalize(this);
         }
 
-        public bool CreateRegistration(Pass pass, Registration registration, IDbTransaction transaction = null)
+        public bool CreateRegistration(Registration registration, IDbTransaction transaction = null)
         {
             const string ExistingSql =
-@"SELECT [Id]
+@"SELECT COUNT([Id])
 FROM [Registration]
 WHERE
     [PassId] = @PassId
+    AND [DeviceLibraryIdentifier] = @DeviceLibraryIdentifier;";
+
+            const string InsertSql =
+@"INSERT INTO [Registration]([Created],[DeviceLibraryIdentifier],[LastUpdated],[PassId],[PushToken])
+VALUES(@Created,@DeviceLibraryIdentifier,@LastUpdated,@PassId,@PushToken);
+SELECT last_insert_rowid();";
+
+            if (0 < this.connection.Query<long>(ExistingSql, registration, transaction).First())
+            {
+                registration.Id = this.connection.Query<long>(InsertSql, registration, transaction).First();
+                return true;
+            }
+
+            return false;
         }
 
         public Pass GetPass(string passTypeIdentifier, string serialNumber, IDbTransaction transaction = null)
@@ -113,7 +127,24 @@ WHERE
 
         public bool DeleteRegistration(string deviceLibraryidentifier, string passTypeIdentifier, string serialNumber, IDbTransaction transaction = null)
         {
-            throw new NotImplementedException();
+            const string Sql =
+@"DELETE FROM [Registration]
+WHERE
+    [Id] IN
+    (
+        SELECT r.[Id]
+        FROM [Pass] p
+            INNER JOIN [Registration] r ON p.[Id] = r.[PassId]
+        WHERE
+            p.[PassTypeIdentifier] = @PassTypeIdentifier
+            AND p.[SerialNumber] = @SerialNumber
+            AND r.[DeviceLibraryIdentifier] = @DeviceLibraryIdentifier
+    );";
+
+            return 0 < this.connection.Execute(
+                Sql,
+                new { DeviceLibraryIdentifier = deviceLibraryidentifier, PassTypeIdentifier = passTypeIdentifier, SerialNumber = serialNumber },
+                transaction);
         }
 
         private static void EnsureDatabase(string path)

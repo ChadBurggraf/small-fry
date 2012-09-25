@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------------
-// <copyright file="InternalExtensions.cs" company="Tasty Codes">
+// <copyright file="Extensions.cs" company="Tasty Codes">
 //     Copyright (c) 2012 Chad Burggraf.
 // </copyright>
 //-----------------------------------------------------------------------------
@@ -175,7 +175,7 @@ namespace SmallFry
         /// <param name="collection">The collection to get the value from.</param>
         /// <param name="name">The name of the value to get.</param>
         /// <param name="throwOnError">A value indicating whether to re-throw an exception encountered
-        /// durint parsing. If false, the default value for the specified type will be returned
+        /// during parsing. If false, the default value for the specified type will be returned
         /// in case of an error.</param>
         /// <returns>A typed value.</returns>
         public static T Get<T>(this NameValueCollection collection, string name, bool throwOnError = false)
@@ -247,11 +247,11 @@ namespace SmallFry
         /// <summary>
         /// Gets the typed value of the query string parameter with the given key.
         /// </summary>
-        /// <typeparam name="T">The type to conver the value into.</typeparam>
+        /// <typeparam name="T">The type to convert the value into.</typeparam>
         /// <param name="uri">The <see cref="Uri"/> to get the query string value from.</param>
         /// <param name="key">The key to get the value of.</param>
         /// <param name="throwOnError">A value indicating whether to re-throw an exception encountered
-        /// durint parsing. If false, the default value for the specified type will be returned
+        /// during parsing. If false, the default value for the specified type will be returned
         /// in case of an error.</param>
         /// <returns>The query string value for the given key.</returns>
         public static T GetQueryValue<T>(this Uri uri, string key, bool throwOnError = false)
@@ -392,7 +392,7 @@ namespace SmallFry
         /// <summary>
         /// Tries to get the typed query string value with the given key.
         /// </summary>
-        /// <typeparam name="T">The type to conver the value into.</typeparam>
+        /// <typeparam name="T">The type to convert the value into.</typeparam>
         /// <param name="uri">The <see cref="Uri"/> to get the query string value from.</param>
         /// <param name="key">The key to get the value of.</param>
         /// <param name="result">The typed query string value for the given key.</param>

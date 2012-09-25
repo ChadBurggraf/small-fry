@@ -85,7 +85,7 @@
                                     PushToken = request.RequestObject.PushToken
                                 };
 
-                                if (repository.CreateRegistration(pass, registration, transaction))
+                                if (repository.CreateRegistration(registration, transaction))
                                 {
                                     response.SetStatus(StatusCode.Created);
                                 }

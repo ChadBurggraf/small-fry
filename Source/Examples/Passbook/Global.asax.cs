@@ -17,7 +17,7 @@
             serviceCollection
                 .WithHostEncoding(new GzipDeflateEncoding())
                 .WithHostFormat(new JsonFormat())
-                .WithService("Passbook v1", "api/v1")
+                .WithService("Passbook v1", "passbook/v1")
                     .WithEndpoint("passes/{passTypeIdentifier}/{serialNumber}")
                         .Get(PassbookV1.GetLatestVersionOfPass)
                     .WithEndpoint("devices/{deviceLibraryIdentifier}/registrations/{passTypeIdentifier}")
