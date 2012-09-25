@@ -73,33 +73,25 @@ namespace SmallFry
         }
 
         /// <summary>
-        /// Encodes an input stream and writes the encoded content to the
-        /// given output stream.
+        /// Creates an encoding stream around the given stream and returns
+        /// the wrapped stream to use for encoding.
         /// </summary>
-        /// <param name="encodingType">The <see cref="EncodingType"/> to encode</param>
-        /// <param name="inputStream">The input stream to read content from.</param>
-        /// <param name="outputStream">The output stream to write encoded content to.</param>
-        public void Encode(EncodingType encodingType, Stream inputStream, Stream outputStream)
+        /// <param name="encodingType">The <see cref="EncodingType"/> to encode.</param>
+        /// <param name="stream">The stream to apply the encoding to.</param>
+        /// <returns>A stream providing encoding services to the original stream.</returns>
+        public Stream Encode(EncodingType encodingType, Stream stream)
         {
             if (encodingType == null)
             {
                 throw new ArgumentNullException("encodingType", "encodingType cannot be null.");
             }
 
-            if (inputStream == null)
+            if (stream == null)
             {
-                throw new ArgumentNullException("inputStream", "inputStream cannot be null.");
+                throw new ArgumentNullException("stream", "stream cannot be null.");
             }
 
-            if (outputStream == null)
-            {
-                throw new ArgumentNullException("outputStream", "outputStream cannot be null.");
-            }
-
-            using (Stream compressionStream = this.GetCompressionStream(encodingType, outputStream, CompressionMode.Compress))
-            {
-                inputStream.CopyTo(compressionStream);
-            }
+            return this.GetCompressionStream(encodingType, stream, CompressionMode.Compress);
         }
 
         /// <summary>

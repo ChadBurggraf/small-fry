@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.IO.Compression;
     using System.Linq;
     using System.Text;
     using NUnit.Framework;
@@ -596,30 +597,43 @@
                     .WithEndpoint("{action}")
                         .Post<Payload>((Payload p) => { });
 
-            ResolvedService service = new ServiceResolver(services).Find(MethodType.Post, "foo");
+            byte[] encodedPayload;
 
             using (MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes("{\"date\":\"2012-09-22T18:46:00Z\",\"number\":42,\"text\":\"Hello, world!\"}")))
             {
-                using (MemoryStream compressedStream = new MemoryStream())
+                using (MemoryStream outputStream = new MemoryStream())
                 {
-                    using (RequestMessage request = new RequestMessage<Payload>(service.Name, service.RouteValues, new Uri("http://example.com/foo")))
+                    using (GZipStream compressionStream = new GZipStream(outputStream, CompressionMode.Compress))
                     {
-                        new GzipDeflateEncoding().Encode(EncodingType.Parse("gzip"), stream, compressedStream);
-                        compressedStream.Position = 0;
-
-                        ReadRequestResult result = service.ReadRequest(request, (int)stream.Length, "gzip", "application/json", compressedStream);
-                        Assert.IsNotNull(result);
-                        Assert.IsTrue(result.Success);
-                        Assert.IsNull(result.Exception);
-                        Assert.AreEqual(StatusCode.None, result.StatusCode);
-                        Assert.IsNotNull(result.RequestObject);
-
-                        Payload payload = result.RequestObject as Payload;
-                        Assert.IsNotNull(payload);
-                        Assert.AreEqual(new DateTime(2012, 9, 22, 18, 46, 0, DateTimeKind.Utc), payload.Date);
-                        Assert.AreEqual(42L, payload.Number);
-                        Assert.AreEqual("Hello, world!", payload.Text);
+                        stream.CopyTo(compressionStream);
                     }
+
+                    encodedPayload = outputStream.ToArray();
+                }
+            }
+
+            ResolvedService service = new ServiceResolver(services).Find(MethodType.Post, "foo");
+
+            using (RequestMessage request = new RequestMessage<Payload>(service.Name, service.RouteValues, new Uri("http://example.com/foo")))
+            {
+                request.InputStream.Write(encodedPayload, 0, encodedPayload.Length);
+                request.InputStream.Position = 0;
+                request.SetEncodingFilter(new GzipDeflateEncoding().Decode(EncodingType.Parse("gzip"), request.InputStream));
+
+                using (ResponseMessage response = new ResponseMessage())
+                {
+                    ReadRequestResult result = service.ReadRequest(request, encodedPayload.Length, "gzip", "application/json", request.InputStream);
+                    Assert.IsNotNull(result);
+                    Assert.IsTrue(result.Success);
+                    Assert.IsNull(result.Exception);
+                    Assert.AreEqual(StatusCode.None, result.StatusCode);
+                    Assert.IsNotNull(result.RequestObject);
+
+                    Payload payload = result.RequestObject as Payload;
+                    Assert.IsNotNull(payload);
+                    Assert.AreEqual(new DateTime(2012, 9, 22, 18, 46, 0, DateTimeKind.Utc), payload.Date);
+                    Assert.AreEqual(42L, payload.Number);
+                    Assert.AreEqual("Hello, world!", payload.Text);
                 }
             }
         }
@@ -660,25 +674,35 @@
                     .WithEndpoint("{action}")
                         .Post<Payload>((Payload p) => { });
 
-            ResolvedService service = new ServiceResolver(services).Find(MethodType.Post, "foo");
+            byte[] encodedPayload;
 
             using (MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes("{\"date\":\"2012-09-22T18:46:00Z\",\"number\":42,\"text\":\"Hello, world!\"}")))
             {
-                using (MemoryStream compressedStream = new MemoryStream())
+                using (MemoryStream outputStream = new MemoryStream())
                 {
-                    using (RequestMessage request = new RequestMessage<Payload>(service.Name, service.RouteValues, new Uri("http://example.com/foo")))
+                    using (GZipStream compressionStream = new GZipStream(outputStream, CompressionMode.Compress))
                     {
-                        new GzipDeflateEncoding().Encode(EncodingType.Parse("gzip"), stream, compressedStream);
-                        compressedStream.Position = 0;
-
-                        ReadRequestResult result = service.ReadRequest(request, (int)stream.Length, "gzip", "application/json", compressedStream);
-                        Assert.IsNotNull(result);
-                        Assert.IsFalse(result.Success);
-                        Assert.IsNull(result.Exception);
-                        Assert.AreEqual(StatusCode.UnsupportedMediaType, result.StatusCode);
-                        Assert.IsNull(result.RequestObject);
+                        stream.CopyTo(compressionStream);
                     }
+
+                    encodedPayload = outputStream.ToArray();
                 }
+            }
+
+            ResolvedService service = new ServiceResolver(services).Find(MethodType.Post, "foo");
+
+            using (RequestMessage request = new RequestMessage<Payload>(service.Name, service.RouteValues, new Uri("http://example.com/foo")))
+            {
+                request.InputStream.Write(encodedPayload, 0, encodedPayload.Length);
+                request.InputStream.Position = 0;
+                request.SetEncodingFilter(new GzipDeflateEncoding().Decode(EncodingType.Parse("gzip"), request.InputStream));
+
+                ReadRequestResult result = service.ReadRequest(request, encodedPayload.Length, "gzip", "application/json", request.InputStream);
+                Assert.IsNotNull(result);
+                Assert.IsFalse(result.Success);
+                Assert.IsNull(result.Exception);
+                Assert.AreEqual(StatusCode.UnsupportedMediaType, result.StatusCode);
+                Assert.IsNull(result.RequestObject);
             }
         }
 
@@ -724,18 +748,18 @@
                     .WithEndpoint("{action}")
                         .Post<Payload>((Payload p) => { });
 
-            using (MemoryStream stream = new MemoryStream())
+            using (ResponseMessage response = new ResponseMessage())
             {
                 ResolvedService service = new ServiceResolver(services).Find(MethodType.Post, "foo");
-                WriteResponseResult result = service.WriteResponse("gzip, *", "application/json, */*", payload, stream);
+                WriteResponseResult result = service.WriteResponse(response, "gzip, *", "application/json, */*", payload, response.OutputStream);
                 Assert.IsNotNull(result);
                 Assert.IsNull(result.Exception);
                 Assert.AreEqual(StatusCode.None, result.StatusCode);
                 Assert.IsTrue(result.Success);
 
-                stream.Position = 0;
+                response.OutputStream.Position = 0;
 
-                using (StreamReader reader = new StreamReader(stream))
+                using (StreamReader reader = new StreamReader(response.OutputStream))
                 {
                     Assert.AreEqual("{\"date\":\"2012-09-22T18:46:00.0000000Z\",\"number\":42,\"text\":\"Hello, world!\"}", reader.ReadToEnd());
                 }

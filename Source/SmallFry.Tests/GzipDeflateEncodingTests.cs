@@ -2,6 +2,7 @@
 {
     using System;
     using System.IO;
+    using System.IO.Compression;
     using System.Linq;
     using System.Text;
     using NUnit.Framework;
@@ -38,93 +39,125 @@ Aliquam erat volutpat. Cras magna est, aliquet sit amet vestibulum facilisis, ac
         [Test]
         public void GzipDeflateEncodingDecodeDeflate()
         {
-            GzipDeflateEncodingTests.Decode("deflate", "SmallFry.Tests.Content.deflate");
+            byte[] encoded;
+
+            using (MemoryStream stream = new MemoryStream(Encoding.Unicode.GetBytes(GzipDeflateEncodingTests.Content)))
+            {
+                using (MemoryStream outputStream = new MemoryStream())
+                {
+                    using (DeflateStream compressionStream = new DeflateStream(outputStream, CompressionMode.Compress))
+                    {
+                        stream.CopyTo(compressionStream);
+                    }
+
+                    encoded = outputStream.ToArray();
+                }
+            }
+
+            using (Stream stream = new MemoryStream(encoded))
+            {
+                using (Stream decodeStream = new GzipDeflateEncoding().Decode(EncodingType.Parse("deflate"), stream))
+                {
+                    using (StreamReader reader = new StreamReader(decodeStream, Encoding.Unicode))
+                    {
+                        Assert.AreEqual(GzipDeflateEncodingTests.Content, reader.ReadToEnd());
+                    }
+                }
+            }
         }
 
         [Test]
         public void GzipDeflateEncodingDecodeGzip()
         {
-            GzipDeflateEncodingTests.Decode("gzip", "SmallFry.Tests.Content.gzip");
+            byte[] encoded;
+
+            using (MemoryStream stream = new MemoryStream(Encoding.Unicode.GetBytes(GzipDeflateEncodingTests.Content)))
+            {
+                using (MemoryStream outputStream = new MemoryStream())
+                {
+                    using (GZipStream compressionStream = new GZipStream(outputStream, CompressionMode.Compress))
+                    {
+                        stream.CopyTo(compressionStream);
+                    }
+
+                    encoded = outputStream.ToArray();
+                }
+            }
+
+            using (Stream stream = new MemoryStream(encoded))
+            {
+                using (Stream decodeStream = new GzipDeflateEncoding().Decode(EncodingType.Parse("gzip"), stream))
+                {
+                    using (StreamReader reader = new StreamReader(decodeStream, Encoding.Unicode))
+                    {
+                        Assert.AreEqual(GzipDeflateEncodingTests.Content, reader.ReadToEnd());
+                    }
+                }
+            }
         }
 
         [Test]
         public void GzipDeflateEncodingEncodeDeflate()
         {
-            GzipDeflateEncodingTests.Encode("deflate", "SmallFry.Tests.Content.deflate");
+            byte[] encoded, comparison;
+
+            using (MemoryStream stream = new MemoryStream(Encoding.Unicode.GetBytes(GzipDeflateEncodingTests.Content)))
+            {
+                using (MemoryStream outputStream = new MemoryStream())
+                {
+                    using (Stream encodeStream = new GzipDeflateEncoding().Encode(EncodingType.Parse("deflate"), outputStream))
+                    {
+                        stream.CopyTo(encodeStream);
+                    }
+
+                    encoded = outputStream.ToArray();
+                }
+            }
+
+            using (MemoryStream stream = new MemoryStream(Encoding.Unicode.GetBytes(GzipDeflateEncodingTests.Content)))
+            {
+                using (MemoryStream outputStream = new MemoryStream())
+                {
+                    using (DeflateStream compressionStream = new DeflateStream(outputStream, CompressionMode.Compress))
+                    {
+                        stream.CopyTo(compressionStream);
+                    }
+
+                    comparison = outputStream.ToArray();
+                }
+            }
+
+            Assert.IsTrue(encoded.SequenceEqual(comparison));
         }
 
         [Test]
         public void GzipDeflateEncodingEncodeGzip()
         {
-            GzipDeflateEncodingTests.Encode("gzip", "SmallFry.Tests.Content.gzip");
-        }
-
-        /*[Test]
-        public void GzipDeflateGenerateTestFiles()
-        {
-            using (MemoryStream m = new MemoryStream(Encoding.Unicode.GetBytes(GzipDeflateEncodingTests.Content)))
-            {
-                m.Position = 0;
-
-                using (FileStream f = File.Create(Path.Combine(Environment.CurrentDirectory, "..", "..", "Content.deflate")))
-                {
-                    using (System.IO.Compression.DeflateStream c = new System.IO.Compression.DeflateStream(f, System.IO.Compression.CompressionMode.Compress))
-                    {
-                        m.CopyTo(c);
-                    }
-                }
-
-                m.Position = 0;
-
-                using (FileStream f = File.Create(Path.Combine(Environment.CurrentDirectory, "..", "..", "Content.gzip")))
-                {
-                    using (System.IO.Compression.GZipStream c = new System.IO.Compression.GZipStream(f, System.IO.Compression.CompressionMode.Compress))
-                    {
-                        m.CopyTo(c);
-                    }
-                }
-            }
-        }*/
-
-        private static void Decode(string encoding, string comparisonResourceName)
-        {
-            string decoded;
-
-            using (Stream stream = typeof(GzipDeflateEncodingTests).Assembly.GetManifestResourceStream(comparisonResourceName))
-            {
-                using (Stream decodeStream = new GzipDeflateEncoding().Decode(EncodingType.Parse(encoding), stream))
-                {
-                    using (StreamReader reader = new StreamReader(decodeStream, Encoding.Unicode))
-                    {
-                        decoded = reader.ReadToEnd();
-                    }
-                }
-            }
-
-            Assert.AreEqual(GzipDeflateEncodingTests.Content, decoded);
-        }
-
-        private static void Encode(string encoding, string comparisonResourceName)
-        {
             byte[] encoded, comparison;
 
-            using (MemoryStream inputStream = new MemoryStream(Encoding.Unicode.GetBytes(GzipDeflateEncodingTests.Content)))
+            using (MemoryStream stream = new MemoryStream(Encoding.Unicode.GetBytes(GzipDeflateEncodingTests.Content)))
             {
-                inputStream.Position = 0;
-
                 using (MemoryStream outputStream = new MemoryStream())
                 {
-                    new GzipDeflateEncoding().Encode(EncodingType.Parse(encoding), inputStream, outputStream);
+                    using (Stream encodeStream = new GzipDeflateEncoding().Encode(EncodingType.Parse("gzip"), outputStream))
+                    {
+                        stream.CopyTo(encodeStream);
+                    }
+
                     encoded = outputStream.ToArray();
                 }
             }
 
-            using (Stream stream = typeof(GzipDeflateEncodingTests).Assembly.GetManifestResourceStream(comparisonResourceName))
+            using (MemoryStream stream = new MemoryStream(Encoding.Unicode.GetBytes(GzipDeflateEncodingTests.Content)))
             {
-                using (MemoryStream m = new MemoryStream())
+                using (MemoryStream outputStream = new MemoryStream())
                 {
-                    stream.CopyTo(m);
-                    comparison = m.ToArray();
+                    using (GZipStream compressionStream = new GZipStream(outputStream, CompressionMode.Compress))
+                    {
+                        stream.CopyTo(compressionStream);
+                    }
+
+                    comparison = outputStream.ToArray();
                 }
             }
 

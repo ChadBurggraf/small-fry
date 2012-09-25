@@ -40,12 +40,12 @@ namespace SmallFry
         Stream Decode(EncodingType encodingType, Stream stream);
 
         /// <summary>
-        /// Encodes an input stream and writes the encoded content to the
-        /// given output stream.
+        /// Creates an encoding stream around the given stream and returns
+        /// the wrapped stream to use for encoding.
         /// </summary>
-        /// <param name="encodingType">The <see cref="EncodingType"/> to encode</param>
-        /// <param name="inputStream">The input stream to read content from.</param>
-        /// <param name="outputStream">The output stream to write encoded content to.</param>
-        void Encode(EncodingType encodingType, Stream inputStream, Stream outputStream);
+        /// <param name="encodingType">The <see cref="EncodingType"/> to encode.</param>
+        /// <param name="stream">The stream to apply the encoding to.</param>
+        /// <returns>A stream providing encoding services to the original stream.</returns>
+        Stream Encode(EncodingType encodingType, Stream stream);
     }
 }

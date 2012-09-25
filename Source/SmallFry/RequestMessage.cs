@@ -36,6 +36,7 @@ namespace SmallFry
             this.Cookies = new HttpCookieCollection();
             this.Headers = new NameValueCollection();
             this.Properties = new Dictionary<string, object>();
+            this.InputStream = new MemoryStream();
         }
 
         ~RequestMessage()
@@ -52,6 +53,8 @@ namespace SmallFry
         public Uri RequestUri { get; private set; }
 
         public string ServiceName { get; private set; }
+
+        internal Stream InputStream { get; private set; }
 
         public static RequestMessage Create(string serviceName, IDictionary<string, object> routeValues, Uri requestUri, Type requestType, object requestObject)
         {
@@ -120,6 +123,10 @@ namespace SmallFry
 
         public void SetEncodingFilter(Stream encodingFilter)
         {
+            if (encodingFilter != null)
+            {
+                this.InputStream = encodingFilter;
+            }
         }
 
         internal virtual void SetRequestObject(object requestObject)
@@ -132,6 +139,12 @@ namespace SmallFry
             {
                 if (disposing)
                 {
+                    if (this.InputStream != null)
+                    {
+                        this.InputStream.Dispose();
+                        this.InputStream = null;
+                    }
+
                     foreach (object value in this.Properties.Values)
                     {
                         value.DisposeIfPossible();

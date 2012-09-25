@@ -19,6 +19,7 @@ namespace SmallFry
         {
             this.Cookies = new HttpCookieCollection();
             this.Headers = new NameValueCollection();
+            this.OutputStream = new MemoryStream();
             this.SetStatus(SmallFry.StatusCode.OK);
         }
 
@@ -37,6 +38,8 @@ namespace SmallFry
 
         public string StatusDescription { get; set; }
 
+        internal Stream OutputStream { get; private set; }
+
         public void Dispose()
         {
             this.Dispose(true);
@@ -45,6 +48,10 @@ namespace SmallFry
 
         public void SetEncodingFilter(Stream encodingFilter)
         {
+            if (encodingFilter != null)
+            {
+                this.OutputStream = encodingFilter;
+            }
         }
 
         public void SetStatus(StatusCode statusCode)
@@ -59,6 +66,12 @@ namespace SmallFry
             {
                 if (disposing)
                 {
+                    if (this.OutputStream != null)
+                    {
+                        this.OutputStream.Dispose();
+                        this.OutputStream = null;
+                    }
+
                     this.ResponseObject.DisposeIfPossible();
                     this.ResponseObject = null;
                 }

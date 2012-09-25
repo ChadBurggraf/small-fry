@@ -141,6 +141,7 @@ namespace SmallFry
                             if (cont)
                             {
                                 WriteResponseResult writeResult = service.WriteResponse(
+                                    response,
                                     httpContext.Request.Headers["Accept-Encoding"],
                                     string.Join(",", httpContext.Request.AcceptTypes),
                                     response.ResponseObject,

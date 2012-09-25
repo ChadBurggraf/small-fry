@@ -353,8 +353,13 @@ namespace SmallFry
             return result;
         }
 
-        public WriteResponseResult WriteResponse(string acceptEncoding, string accept, object responseObject, Stream outputStream)
+        public WriteResponseResult WriteResponse(IResponseMessage response, string acceptEncoding, string accept, object responseObject, Stream outputStream)
         {
+            if (response == null)
+            {
+                throw new ArgumentNullException("response", "response cannot be null.");
+            }
+
             WriteResponseResult result = new WriteResponseResult() { Success = true };
 
             if (responseObject != null)
@@ -369,12 +374,8 @@ namespace SmallFry
                     {
                         try
                         {
-                            using (MemoryStream stream = new MemoryStream())
-                            {
-                                formatResult.Format.Serialize(formatResult.MediaType, responseObject, stream);
-                                stream.Position = 0;
-                                encodingResult.Encoding.Encode(encodingResult.EncodingType, stream, outputStream);
-                            }
+                            response.SetEncodingFilter(encodingResult.Encoding.Encode(encodingResult.EncodingType, outputStream));
+                            formatResult.Format.Serialize(formatResult.MediaType, responseObject, outputStream);
                         }
                         catch (Exception ex)
                         {
