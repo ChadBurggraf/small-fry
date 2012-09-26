@@ -69,7 +69,6 @@
     <Compile Include="RouteValueBinderTests.cs" />
     <Compile Include="ServiceCollectionTests.cs" />
     <Compile Include="ServiceResolverTests.cs" />
-    <Compile Include="VirtualKeychainServices.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SmallFry\SmallFry.Net35.csproj">

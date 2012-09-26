@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{963035EC-276C-4140-9B99-8B32A6CF013D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>SmallFry</RootNamespace>
+    <AssemblyName>SmallFry</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>False</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>False</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>True</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>False</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="ServiceStack.Text">
+      <HintPath>..\..\Lib\ServiceStack.Text.3.9.9\lib\net35\ServiceStack.Text.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\SolutionInfo.cs">
+      <Link>Properties\SolutionInfo.cs</Link>
+    </Compile>
+    <Compile Include="ActionApply.cs" />
+    <Compile Include="EncodingLookupResult.cs" />
+    <Compile Include="EncodingType.cs" />
+    <Compile Include="Endpoint.cs" />
+    <Compile Include="EndpointCollection.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="FilterAction.cs" />
+    <Compile Include="FilterAction{T}.cs" />
+    <Compile Include="FilterActionResult.cs" />
+    <Compile Include="FormatLookupResult.cs" />
+    <Compile Include="FuncApply.cs" />
+    <Compile Include="GzipDeflateEncoding.cs" />
+    <Compile Include="HttpRequestMessage.cs" />
+    <Compile Include="HttpRequestMessage{T}.cs" />
+    <Compile Include="HttpResponseMessage.cs" />
+    <Compile Include="HttpServiceHandler.cs" />
+    <Compile Include="IdentityEncoding.cs" />
+    <Compile Include="IEncoding.cs" />
+    <Compile Include="IEndpointCollection.cs" />
+    <Compile Include="IFormat.cs" />
+    <Compile Include="IMethodCollection.cs" />
+    <Compile Include="InternalExtensions.cs" />
+    <Compile Include="InvokeActionsResult.cs" />
+    <Compile Include="IRequestMessage.cs" />
+    <Compile Include="IRequestMessage{T}.cs" />
+    <Compile Include="IResponseMessage.cs" />
+    <Compile Include="IRouteParameterParser.cs" />
+    <Compile Include="IServiceCollection.cs" />
+    <Compile Include="IServiceHost.cs" />
+    <Compile Include="JsonFormat.cs" />
+    <Compile Include="MediaType.cs" />
+    <Compile Include="Method.cs" />
+    <Compile Include="Method{T}.cs" />
+    <Compile Include="MethodCollection.cs" />
+    <Compile Include="MethodResult.cs" />
+    <Compile Include="MethodType.cs" />
+    <Compile Include="ParameterType.cs" />
+    <Compile Include="Pipeline.cs" />
+    <Compile Include="PipelineErrorType.cs" />
+    <Compile Include="PipelineException.cs" />
+    <Compile Include="PlainTextFormat.cs" />
+    <Compile Include="PrimitiveRouteParameterParser.cs" />
+    <Compile Include="ReadRequestResult.cs" />
+    <Compile Include="RequestMessage.cs" />
+    <Compile Include="RequestMessage{T}.cs" />
+    <Compile Include="ResolvedService.cs" />
+    <Compile Include="ResponseMessage.cs" />
+    <Compile Include="RoutePattern.cs" />
+    <Compile Include="RouteSegment.cs" />
+    <Compile Include="RouteToken.cs" />
+    <Compile Include="RouteTokenType.cs" />
+    <Compile Include="RouteValueBinder.cs" />
+    <Compile Include="Service.cs" />
+    <Compile Include="ServiceCollection.cs" />
+    <Compile Include="ServiceHost.cs" />
+    <Compile Include="ServiceResolver.cs" />
+    <Compile Include="StatusCode.cs" />
+    <Compile Include="WriteResponseResult.cs" />
+  </ItemGroup>
+</Project>
