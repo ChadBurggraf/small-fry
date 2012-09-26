@@ -74,7 +74,9 @@
 
             ResolvedService service = new ServiceResolver(services).Find(MethodType.Post, "foo");
             EncodingLookupResult result = service.GetResponseEncoder("gzip");
-            Assert.IsNull(result);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(EncodingType.Empty, result.EncodingType);
+            Assert.AreEqual(new IdentityEncoding(), result.Encoding);
 
             result = service.GetResponseEncoder("gzip, *");
             Assert.IsNotNull(result);
@@ -750,8 +752,10 @@
 
             using (ResponseMessage response = new ResponseMessage())
             {
+                response.ResponseObject = payload;
+
                 ResolvedService service = new ServiceResolver(services).Find(MethodType.Post, "foo");
-                WriteResponseResult result = service.WriteResponse(response, "gzip, *", "application/json, */*", payload, response.OutputStream);
+                WriteResponseResult result = service.WriteResponse(response, "gzip, *", "application/json, */*");
                 Assert.IsNotNull(result);
                 Assert.IsNull(result.Exception);
                 Assert.AreEqual(StatusCode.None, result.StatusCode);

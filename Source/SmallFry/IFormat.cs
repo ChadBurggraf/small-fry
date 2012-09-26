@@ -31,6 +31,14 @@ namespace SmallFry
         bool CanSerialize(MediaType mediaType);
 
         /// <summary>
+        /// Gets a Content-Type value to send in responses when the given <see cref="MediaType"/>
+        /// was used to shoose this format.
+        /// </summary>
+        /// <param name="mediaType">The <see cref="MediaType"/> used to choose this format.</param>
+        /// <returns>A Content-Type value to send.</returns>
+        string ContentType(MediaType mediaType);
+
+        /// <summary>
         /// Deserializes an object of the given type from the given input stream.
         /// </summary>
         /// <param name="mediaType">The <see cref="MediaType"/> to deserialize.</param>

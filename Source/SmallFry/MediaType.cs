@@ -340,6 +340,23 @@ namespace SmallFry
         }
 
         /// <summary>
+        /// Returns a string that represents the current object
+        /// as a Content-Type value (i.e., without any <see cref="AcceptParams"/>).
+        /// </summary>
+        /// <returns>A string that represents this object as a Content-Type.</returns>
+        public string ToContentTypeString()
+        {
+            string result = this.RootType + "/" + this.SubType;
+
+            if (this.RangeParams.Any())
+            {
+                result += ";" + string.Join(";", this.RangeParams);
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// Returns a string that represents the current object.
         /// </summary>
         /// <returns>A string that represents the current object.</returns>

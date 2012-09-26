@@ -31,6 +31,14 @@ namespace SmallFry
         bool CanEncode(EncodingType encodingType);
 
         /// <summary>
+        /// Gets a Content-Encoding value to send in responses when the given <see cref="EncodingType"/>
+        /// was used to choose this encoding.
+        /// </summary>
+        /// <param name="encodingType">The <see cref="EncodingType"/> used to choose this encoding.</param>
+        /// <returns>A Content-Encoding value to send.</returns>
+        string ContentEncoding(EncodingType encodingType);
+
+        /// <summary>
         /// Creates a decoding stream around the given stream and returns
         /// the wrapped stream to use for decoding.
         /// </summary>

@@ -55,5 +55,15 @@ namespace SmallFry
         /// </summary>
         /// <param name="statusCode">The <see cref="SmallFry.StatusCode"/> to set.</param>
         void SetStatus(StatusCode statusCode);
+
+        /// <summary>
+        /// Writes this instance's <see cref="ResponseObject"/> to the
+        /// response output, using the given <see cref="MediaType"/>
+        /// and <see cref="IFormat"/>.
+        /// </summary>
+        /// <param name="mediaType">The <see cref="MediaType"/> identifying the Content-Type of the
+        /// response.</param>
+        /// <param name="format">The <see cref="IFormat"/> to use when serializing the response object.</param>
+        void WriteOutputContent(MediaType mediaType, IFormat format);
     }
 }

@@ -52,12 +52,26 @@ namespace SmallFry
         {
             this.ParameterPatterns.Clear();
 
-            IDictionary<string, string> dict = new Dictionary<string, string>();
+            IDictionary<string, object> dict = new Dictionary<string, object>();
             dict.AddDynamic(patternConstraints);
 
-            foreach (KeyValuePair<string, string> pair in dict) 
+            foreach (KeyValuePair<string, object> pair in dict) 
             {
-                this.ParameterPatterns[pair.Key] = new Regex(pair.Value, RegexOptions.Compiled);
+                Regex regex = pair.Value as Regex;
+
+                if (regex != null)
+                {
+                    this.ParameterPatterns[pair.Key] = regex;
+                }
+                else
+                {
+                    string value = pair.Value as string;
+
+                    if (!string.IsNullOrEmpty(value))
+                    {
+                        this.ParameterPatterns[pair.Key] = new Regex(value, RegexOptions.Compiled);
+                    }
+                }
             }
         }
 

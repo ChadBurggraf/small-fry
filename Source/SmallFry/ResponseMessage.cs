@@ -48,9 +48,10 @@ namespace SmallFry
 
         public void SetEncodingFilter(EncodingType encodingType, IEncoding encoding)
         {
-            if (encodingType != null && encoding != null)
+            if (encodingType != null && encoding != null && !"*".Equals(encodingType.Name, StringComparison.Ordinal))
             {
-                this.OutputStream = encoding.Encode(encodingType, this.OutputStream);
+                this.OutputStream = encoding.Encode(encodingType, this.OutputStream); 
+                this.Headers["Content-Encoding"] = encodingType.Name;
             }
         }
 
@@ -58,6 +59,27 @@ namespace SmallFry
         {
             this.StatusCode = (int)statusCode;
             this.StatusDescription = statusCode.Description();
+        }
+
+        public void WriteOutputContent(MediaType mediaType, IFormat format)
+        {
+            if (mediaType == null)
+            {
+                throw new ArgumentNullException("mediaType", "mediaType cannot be null.");
+            }
+
+            if (format == null)
+            {
+                throw new ArgumentNullException("format", "format cannot be null.");
+            }
+
+            object resp = this.ResponseObject;
+            this.Headers["Content-Type"] = format.ContentType(mediaType);
+
+            if (resp != null)
+            {
+                format.Serialize(mediaType, resp, this.OutputStream);
+            }
         }
 
         private void Dispose(bool disposing)

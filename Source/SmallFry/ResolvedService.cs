@@ -191,7 +191,8 @@ namespace SmallFry
                 }
             }
 
-            if (result == null && encodingTypes.Any(e => e == EncodingType.Empty))
+            // The spec says that the identity encoding can always be used.
+            if (result == null)
             {
                 result = ResolvedService.DefaultEncodingLookupResult;
             }
@@ -353,7 +354,7 @@ namespace SmallFry
             return result;
         }
 
-        public WriteResponseResult WriteResponse(IResponseMessage response, string acceptEncoding, string accept, object responseObject, Stream outputStream)
+        public WriteResponseResult WriteResponse(IResponseMessage response, string acceptEncoding, string accept)
         {
             if (response == null)
             {
@@ -362,10 +363,10 @@ namespace SmallFry
 
             WriteResponseResult result = new WriteResponseResult() { Success = true };
 
-            if (responseObject != null)
+            if (response.ResponseObject != null)
             {
                 EncodingLookupResult encodingResult = this.GetResponseEncoder(acceptEncoding);
-                
+
                 if (encodingResult != null)
                 {
                     FormatLookupResult formatResult = this.GetResponseSerializer(accept);
@@ -374,8 +375,17 @@ namespace SmallFry
                     {
                         try
                         {
-                            response.SetEncodingFilter(encodingResult.EncodingType, encodingResult.Encoding);
-                            formatResult.Format.Serialize(formatResult.MediaType, responseObject, outputStream);
+                            try
+                            {
+                                response.SetEncodingFilter(encodingResult.EncodingType, encodingResult.Encoding);
+                            }
+                            catch (PlatformNotSupportedException)
+                            {
+                                // Custom Content-Encoding values are only supported in
+                                // Integrated Pipeline Mode.
+                            }
+
+                            response.WriteOutputContent(formatResult.MediaType, formatResult.Format);
                         }
                         catch (Exception ex)
                         {
@@ -395,6 +405,10 @@ namespace SmallFry
                     result.StatusCode = StatusCode.NotAcceptable;
                     result.Success = false;
                 }
+            }
+            else
+            {
+                response.WriteOutputContent(ResolvedService.DefaultFormatLookupResult.MediaType, ResolvedService.DefaultFormatLookupResult.Format);
             }
 
             return result;

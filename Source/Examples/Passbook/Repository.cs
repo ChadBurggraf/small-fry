@@ -5,6 +5,7 @@
     using System.Configuration;
     using System.Data;
     using System.Data.SQLite;
+    using System.Globalization;
     using System.IO;
     using System.Linq;
     using System.Text;
@@ -206,7 +207,18 @@ CREATE TABLE IF NOT EXISTS [Registration]
     [PassId] INTEGER NOT NULL,
     [PushToken] VARCHAR(64) NOT NULL,
     CONSTRAINT [UC_PassId_DeviceLibraryIdentifier] UNIQUE([PassId], [DeviceLibraryIdentifier])
-);";
+);
+
+INSERT INTO [Pass]([Created],[Data],[LastUpdated],[PassTypeIdentifier],[SerialNumber])
+VALUES(@Now,@Data,@Now,'com.company.pass.example','ABC123');
+
+INSERT INTO [Registration]([Created],[DeviceLibraryIdentifier],[LastUpdated],[PassId],[PushToken])
+SELECT
+    @Now,
+    '123456789',
+    @Now,
+    last_insert_rowid(),
+    '00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000';";
 
             SQLiteConnectionStringBuilder builder = new SQLiteConnectionStringBuilder(connectionString);
 
@@ -215,7 +227,7 @@ CREATE TABLE IF NOT EXISTS [Registration]
                 using (SQLiteConnection connection = new SQLiteConnection(connectionString))
                 {
                     connection.Open();
-                    connection.Execute(Sql);
+                    connection.Execute(Sql, new { Now = DateTime.UtcNow, Data = string.Format(CultureInfo.InvariantCulture, @"{{""foo"":42,""bar"":""{0:yyyy-MM-ddTHH:mm:ssZ}"",""baz"":""Lorem ipsum dolar sit amet""}}", DateTime.UtcNow) });
                 }
             }
         }

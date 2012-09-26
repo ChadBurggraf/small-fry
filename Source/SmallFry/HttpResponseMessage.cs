@@ -8,6 +8,7 @@ namespace SmallFry
 {
     using System;
     using System.Collections.Specialized;
+    using System.Globalization;
     using System.IO;
     using System.Web;
 
@@ -65,7 +66,13 @@ namespace SmallFry
         {
             if (encodingType != null && encoding != null)
             {
-                this.httpResponse.Filter = encoding.Encode(encodingType, this.httpResponse.Filter);
+                string contentEncoding = encoding.ContentEncoding(encodingType);
+
+                if (!"*".Equals(contentEncoding, StringComparison.Ordinal))
+                {
+                    this.Headers["Content-Encoding"] = contentEncoding;
+                    this.httpResponse.Filter = encoding.Encode(encodingType, this.httpResponse.Filter);
+                }
             }
         }
 
@@ -73,6 +80,40 @@ namespace SmallFry
         {
             this.StatusCode = (int)statusCode;
             this.StatusDescription = statusCode.Description();
+        }
+
+        public void WriteOutputContent(MediaType mediaType, IFormat format)
+        {
+            if (mediaType == null)
+            {
+                throw new ArgumentNullException("mediaType", "mediaType cannot be null.");
+            }
+
+            if (format == null)
+            {
+                throw new ArgumentNullException("format", "format cannot be null.");
+            }
+
+            string contentType = format.ContentType(mediaType);
+
+            if (contentType.Contains("*"))
+            {
+                throw new InvalidOperationException(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        "Format {0} returned a Content-Type of {1} for the chosen media type of {2}. Writing a wildcard Content-Type to the response is not supported.",
+                        format.GetType(),
+                        contentType,
+                        mediaType));
+            }
+
+            object resp = this.ResponseObject;
+            this.httpResponse.ContentType = contentType;
+
+            if (resp != null)
+            {
+                format.Serialize(mediaType, resp, this.httpResponse.OutputStream);
+            }
         }
 
         private void Dispose(bool disposing)
