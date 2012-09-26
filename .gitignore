@@ -1,6 +1,7 @@
 *.csproj.user
 *.snk
 *.suo
+*.userprefs
 *.VisualState.xml
 StyleCop.Cache
 TestResult.xml
