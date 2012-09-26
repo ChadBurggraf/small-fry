@@ -208,11 +208,11 @@ namespace SmallFry
         {
             FormatLookupResult result = null;
             IEnumerable<MediaType> mediaTypes = accept.AsMediaTypes();
-            MediaType[] excludeTypes = mediaTypes.Where(m => m.AcceptParams.Value <= 0).ToArray();
+            MediaType[] excludeTypes = mediaTypes.Where(m => m.AcceptParams.QValue <= 0).ToArray();
 
             foreach (MediaType mediaType in mediaTypes)
             {
-                if (mediaType.AcceptParams.Value > 0)
+                if (mediaType.AcceptParams.QValue > 0)
                 {
                     bool found = false;
 

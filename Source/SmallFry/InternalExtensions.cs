@@ -9,6 +9,7 @@ namespace SmallFry
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
+    using System.IO;
     using System.Linq;
     using System.Reflection;
     using System.Web;
@@ -99,7 +100,7 @@ namespace SmallFry
 
         public static IEnumerable<EncodingType> AsEncodingTypes(this string value)
         {
-            if (string.IsNullOrWhiteSpace(value))
+            if (value.IsNullOrWhiteSpace())
             {
                 value = "*";
             }
@@ -115,7 +116,7 @@ namespace SmallFry
 
         public static IEnumerable<MediaType> AsMediaTypes(this string value)
         {
-            if (string.IsNullOrWhiteSpace(value))
+            if (value.IsNullOrWhiteSpace())
             {
                 value = "*/*";
             }
@@ -144,13 +145,22 @@ namespace SmallFry
             }
         }
 
+#if NET35
+        public static string Coalesce(this string value, string fallback)
+        {
+            return value.Coalesce(fallback, true);
+        }
+
+        public static string Coalesce(this string value, string fallback, bool includeWhitespace)
+#else
         public static string Coalesce(this string value, string fallback, bool includeWhitespace = true)
+#endif
         {
             string result;
 
             if (includeWhitespace)
             {
-                result = string.IsNullOrWhiteSpace(value) ? fallback : value;
+                result = value.IsNullOrWhiteSpace() ? fallback : value;
             }
             else
             {
@@ -192,6 +202,29 @@ namespace SmallFry
 
             return result;
         }
+
+#if NET35
+        public static void CopyTo(this Stream source, Stream destination)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException("source", "source cannot be null.");
+            }
+
+            if (destination == null)
+            {
+                throw new ArgumentNullException("destination", "destination cannot be null.");
+            }
+
+            byte[] buffer = new byte[4096];
+            int length = buffer.Length, count;
+
+            while (0 < (count = source.Read(buffer, 0, length)))
+            {
+                destination.Write(buffer, 0, count);
+            }
+        }
+#endif
 
         public static object Default(this Type type)
         {
@@ -276,6 +309,15 @@ namespace SmallFry
             {
                 return left.Equals(right);
             }
+        }
+
+        public static bool IsNullOrWhiteSpace(this string value)
+        {
+#if NET35
+            return string.IsNullOrEmpty((value ?? string.Empty).Trim());
+#else
+            return string.IsNullOrWhiteSpace(value);
+#endif
         }
 
         public static void SetStatus(this HttpResponseBase httpResponse, StatusCode statusCode)

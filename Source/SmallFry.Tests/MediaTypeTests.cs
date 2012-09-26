@@ -32,25 +32,25 @@
             MediaType.AcceptParameters p;
 
             Assert.IsTrue(MediaType.AcceptParameters.TryParse("q=0.5", out p));
-            Assert.AreEqual(.5f, p.Value);
+            Assert.AreEqual(.5f, p.QValue);
             Assert.IsNotNull(p.Extensions);
             Assert.IsFalse(p.Extensions.Any());
 
             Assert.IsTrue(MediaType.AcceptParameters.TryParse("q=0.5;token", out p));
-            Assert.AreEqual(.5f, p.Value);
+            Assert.AreEqual(.5f, p.QValue);
             Assert.IsNotNull(p.Extensions);
             Assert.AreEqual(1, p.Extensions.Count());
             Assert.AreEqual(MediaType.Extension.Parse("token"), p.Extensions.First());
 
             Assert.IsTrue(MediaType.AcceptParameters.TryParse("q=0.5;token;token=value", out p));
-            Assert.AreEqual(.5f, p.Value);
+            Assert.AreEqual(.5f, p.QValue);
             Assert.IsNotNull(p.Extensions);
             Assert.AreEqual(2, p.Extensions.Count());
             Assert.AreEqual(MediaType.Extension.Parse("token"), p.Extensions.First());
             Assert.AreEqual(MediaType.Extension.Parse("token=value"), p.Extensions.Last());
 
             Assert.IsTrue(MediaType.AcceptParameters.TryParse("q=0.5;token;token=value;token=\"quoted value\"", out p));
-            Assert.AreEqual(.5f, p.Value);
+            Assert.AreEqual(.5f, p.QValue);
             Assert.IsNotNull(p.Extensions);
             Assert.AreEqual(3, p.Extensions.Count());
             Assert.AreEqual(MediaType.Extension.Parse("token"), p.Extensions.First());

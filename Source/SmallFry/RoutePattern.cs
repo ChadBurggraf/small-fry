@@ -123,7 +123,7 @@ namespace SmallFry
                                             value += "/";
                                         }
 
-                                        value += string.Join("/", urlSegments.Skip(i + 1));
+                                        value += string.Join("/", urlSegments.Skip(i + 1).ToArray());
                                         routeValues[wildcardToken.Value] = value;
                                     }
 

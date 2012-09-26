@@ -84,7 +84,7 @@ namespace SmallFry
         /// <returns>The parsed <see cref="MediaType"/>.</returns>
         public static MediaType Parse(string value)
         {
-            if (string.IsNullOrWhiteSpace(value))
+            if (value.IsNullOrWhiteSpace())
             {
                 value = "*/*";
             }
@@ -104,7 +104,7 @@ namespace SmallFry
                 List<string> parameters = new List<string>();
                 AcceptParameters acceptParams = null;
 
-                if (match.Groups[2].Success && !string.IsNullOrWhiteSpace(match.Groups[2].Value))
+                if (match.Groups[2].Success && !match.Groups[2].Value.IsNullOrWhiteSpace())
                 {
                     string[] paramParts = match.Groups[2].Value.Split(new char[] { ';' });
                     int acceptIndex = -1;
@@ -113,7 +113,7 @@ namespace SmallFry
                     {
                         string part = paramParts[i];
 
-                        if (!string.IsNullOrWhiteSpace(part))
+                        if (!part.IsNullOrWhiteSpace())
                         {
                             if (!MediaType.AcceptParamsStartExpression.IsMatch(part))
                             {
@@ -129,7 +129,7 @@ namespace SmallFry
 
                     if (acceptIndex > -1)
                     {
-                        acceptParams = AcceptParameters.Parse(string.Join(";", paramParts.Skip(acceptIndex)));
+                        acceptParams = AcceptParameters.Parse(string.Join(";", paramParts.Skip(acceptIndex).ToArray()));
                     }
                 }
 
@@ -252,7 +252,7 @@ namespace SmallFry
 
             if (other != null)
             {
-                result = this.AcceptParams.Value.CompareTo(other.AcceptParams.Value);
+                result = this.AcceptParams.QValue.CompareTo(other.AcceptParams.QValue);
 
                 if (result == 0)
                 {
@@ -350,7 +350,7 @@ namespace SmallFry
 
             if (this.RangeParams.Any())
             {
-                result += ";" + string.Join(";", this.RangeParams);
+                result += ";" + string.Join(";", this.RangeParams.ToArray());
             }
 
             return result;
@@ -366,7 +366,7 @@ namespace SmallFry
 
             if (this.RangeParams.Any())
             {
-                result += ";" + string.Join(";", this.RangeParams);
+                result += ";" + string.Join(";", this.RangeParams.ToArray());
             }
 
             if (this.AcceptParams != AcceptParameters.Empty)
@@ -439,7 +439,7 @@ namespace SmallFry
             /// <returns>The parsed <see cref="Extension"/>.</returns>
             public static Extension Parse(string value)
             {
-                if (!string.IsNullOrWhiteSpace(value))
+                if (!value.IsNullOrWhiteSpace())
                 {
                     Match match = Extension.ParseExpression.Match(value.Trim());
 
@@ -575,7 +575,7 @@ namespace SmallFry
             /// <summary>
             /// Gets the parameters' q-value.
             /// </summary>
-            public float Value { get; private set; }
+            public float QValue { get; private set; }
 
             /// <summary>
             /// Gets a value indicating whether two <see cref="AcceptParameters"/>s are equal.
@@ -610,7 +610,7 @@ namespace SmallFry
             {
                 const string FormatExceptionMessage = "Invalid params format. Format must be: \"q\" \"=\" qvalue *( accept-extension ). See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html";
 
-                if (!string.IsNullOrWhiteSpace(value))
+                if (!value.IsNullOrWhiteSpace())
                 {
                     Match match = AcceptParameters.ParseExpression.Match(value.Trim());
 
@@ -622,7 +622,7 @@ namespace SmallFry
                         {
                             AcceptParameters result = new AcceptParameters()
                             {
-                                Value = floatValue > 1 ? 1 : (floatValue < 0 ? 0 : floatValue)
+                                QValue = floatValue > 1 ? 1 : (floatValue < 0 ? 0 : floatValue)
                             };
 
                             if (match.Groups[3].Success && !string.IsNullOrEmpty(match.Groups[3].Value))
@@ -650,7 +650,7 @@ namespace SmallFry
                 }
                 else
                 {
-                    return new AcceptParameters() { Extensions = new Extension[0], Value = 1 };
+                    return new AcceptParameters() { Extensions = new Extension[0], QValue = 1 };
                 }
             }
 
@@ -687,7 +687,7 @@ namespace SmallFry
                 if ((object)other != null)
                 {
                     return this.Extensions.SequenceEqual(other.Extensions)
-                        && this.Value.EqualsFloat(other.Value, .001f);
+                        && this.QValue.EqualsFloat(other.QValue, .001f);
                 }
 
                 return false;
@@ -710,7 +710,7 @@ namespace SmallFry
             public override int GetHashCode()
             {
                 return this.Extensions.GetHashCode()
-                    ^ this.Value.GetHashCode();
+                    ^ this.QValue.GetHashCode();
             }
 
             /// <summary>
@@ -723,11 +723,11 @@ namespace SmallFry
 
                 if (this != AcceptParameters.Empty)
                 {
-                    result = "q=" + this.Value.ToString("0.###", CultureInfo.InvariantCulture);
+                    result = "q=" + this.QValue.ToString("0.###", CultureInfo.InvariantCulture);
 
                     if (this.Extensions.Any())
                     {
-                        result += ";" + string.Join(";", this.Extensions);
+                        result += ";" + string.Join(";", this.Extensions.Select(s => s.ToString()).ToArray());
                     }
                 }
 

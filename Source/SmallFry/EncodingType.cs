@@ -73,7 +73,7 @@ namespace SmallFry
         {
             const string FormatExceptionMessage = "Invalid encoding format. Format must be: ( ( content-coding | \"*\" ) [ \";\" \"q\" \"=\" qvalue ] ). See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html";
 
-            if (string.IsNullOrWhiteSpace(value))
+            if (value.IsNullOrWhiteSpace())
             {
                 value = "*";
             }

@@ -123,7 +123,21 @@ namespace SmallFry
             return removed;
         }
 
+#if NET35
+        public IMethodCollection WithEndpoint(string route)
+        {
+            return this.WithEndpoint(route, null);
+        }
+
+        public IMethodCollection WithEndpoint(string route, object typeConstraints)
+        {
+            return this.WithEndpoint(route, typeConstraints, null);
+        }
+
+        public IMethodCollection WithEndpoint(string route, object typeConstraints, object patternConstraints)
+#else
         public IMethodCollection WithEndpoint(string route, object typeConstraints = null, object patternConstraints = null)
+#endif
         {
             Endpoint endpoint = new Endpoint(route, this.Service, this);
             endpoint.SetParameterTypes(typeConstraints);

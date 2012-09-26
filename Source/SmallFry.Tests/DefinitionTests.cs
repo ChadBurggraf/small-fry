@@ -5,7 +5,7 @@
     using System.Linq;
     using Moq;
     using NUnit.Framework;
-
+    
     [TestFixture]
     public sealed class DefinitionTests
     {

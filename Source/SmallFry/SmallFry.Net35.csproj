@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{F4B849FE-6092-46AB-9705-0EFE368D32F3}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SmallFry</RootNamespace>
+    <AssemblyName>SmallFry</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;NET35;CODE_ANALYSIS</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;NET35</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="ServiceStack.Text, Version=3.9.9.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Lib\ServiceStack.Text.3.9.9\lib\net35\ServiceStack.Text.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Abstractions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\SolutionInfo.cs">
+      <Link>Properties\SolutionInfo.cs</Link>
+    </Compile>
+    <Compile Include="ActionApply.cs" />
+    <Compile Include="EncodingLookupResult.cs" />
+    <Compile Include="EncodingType.cs" />
+    <Compile Include="Endpoint.cs" />
+    <Compile Include="EndpointCollection.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="FilterAction.cs" />
+    <Compile Include="FilterActionResult.cs" />
+    <Compile Include="FilterAction{T}.cs" />
+    <Compile Include="FormatLookupResult.cs" />
+    <Compile Include="FuncApply.cs" />
+    <Compile Include="GzipDeflateEncoding.cs" />
+    <Compile Include="HttpRequestMessage.cs" />
+    <Compile Include="HttpRequestMessage{T}.cs" />
+    <Compile Include="HttpResponseMessage.cs" />
+    <Compile Include="HttpServiceHandler.cs" />
+    <Compile Include="IdentityEncoding.cs" />
+    <Compile Include="IEncoding.cs" />
+    <Compile Include="IEndpointCollection.cs" />
+    <Compile Include="IFormat.cs" />
+    <Compile Include="IMethodCollection.cs" />
+    <Compile Include="InternalExtensions.cs" />
+    <Compile Include="InvokeActionsResult.cs" />
+    <Compile Include="IRequestMessage.cs" />
+    <Compile Include="IRequestMessage{T}.cs" />
+    <Compile Include="IResponseMessage.cs" />
+    <Compile Include="IRouteParameterParser.cs" />
+    <Compile Include="IServiceCollection.cs" />
+    <Compile Include="IServiceHost.cs" />
+    <Compile Include="JsonFormat.cs" />
+    <Compile Include="MediaType.cs" />
+    <Compile Include="Method.cs" />
+    <Compile Include="MethodCollection.cs" />
+    <Compile Include="MethodResult.cs" />
+    <Compile Include="MethodType.cs" />
+    <Compile Include="Method{T}.cs" />
+    <Compile Include="ParameterType.cs" />
+    <Compile Include="Pipeline.cs" />
+    <Compile Include="PipelineErrorType.cs" />
+    <Compile Include="PipelineException.cs" />
+    <Compile Include="PlainTextFormat.cs" />
+    <Compile Include="PrimitiveRouteParameterParser.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReadRequestResult.cs" />
+    <Compile Include="RequestMessage.cs" />
+    <Compile Include="RequestMessage{T}.cs" />
+    <Compile Include="ResolvedService.cs" />
+    <Compile Include="ResponseMessage.cs" />
+    <Compile Include="RoutePattern.cs" />
+    <Compile Include="RouteSegment.cs" />
+    <Compile Include="RouteToken.cs" />
+    <Compile Include="RouteTokenType.cs" />
+    <Compile Include="RouteValueBinder.cs" />
+    <Compile Include="Service.cs" />
+    <Compile Include="ServiceCollection.cs" />
+    <Compile Include="ServiceHost.cs" />
+    <Compile Include="ServiceResolver.cs" />
+    <Compile Include="StatusCode.cs" />
+    <Compile Include="WriteResponseResult.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

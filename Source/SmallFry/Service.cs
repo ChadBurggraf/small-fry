@@ -13,7 +13,7 @@ namespace SmallFry
     {
         public Service(string name, string baseUrl, IServiceCollection serviceCollection)
         {
-            if (string.IsNullOrWhiteSpace(name))
+            if (name.IsNullOrWhiteSpace())
             {
                 throw new ArgumentNullException("name", "name must contain a value.");
             }

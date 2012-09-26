@@ -173,6 +173,7 @@ namespace SmallFry
             return action.Apply(arg1).Apply(arg2).Apply(arg3).Apply(arg4);
         }
 
+#if !NET35
         /// <summary>
         /// Partially applies arguments to an <see cref="Function{TResult}"/> delegate.
         /// </summary>
@@ -732,5 +733,6 @@ namespace SmallFry
         {
             return action.Apply(arg1).Apply(arg2).Apply(arg3).Apply(arg4).Apply(arg5).Apply(arg6).Apply(arg7).Apply(arg8);
         }
+#endif
     }
 }

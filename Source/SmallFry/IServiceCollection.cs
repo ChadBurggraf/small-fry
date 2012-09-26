@@ -90,6 +90,51 @@ namespace SmallFry
         /// <returns>The current service's <see cref="IEndpointCollection"/>.</returns>
         IEndpointCollection ErrorService<T>(Func<IEnumerable<Exception>, IRequestMessage<T>, IResponseMessage, bool> action);
 
+#if NET35
+        /// <summary>
+        /// Adds an endpoint to the current service and returns the new endpoint's
+        /// <see cref="IMethodCollection"/>.
+        /// </summary>
+        /// <param name="route">The route defining the endpoint's URL format, relative to the service's
+        /// base URL. Route parameters should be enclosed in curly brackets, with optional parameters
+        /// identified by a quest mark (e.g., "accounts/{id}/{?emailAddress}"). You may add a wildcard
+        /// parameter to the end of the route to capture arbitrary paths 
+        /// (e.g., "accounts/{id}/{?emailAddress}/{*pathInfo}").</param>
+        /// <returns>The new endpoint's <see cref="IMethodCollection"/>.</returns>
+        IMethodCollection WithEndpoint(string route);
+
+        /// <summary>
+        /// Adds an endpoint to the current service and returns the new endpoint's
+        /// <see cref="IMethodCollection"/>.
+        /// </summary>
+        /// <param name="route">The route defining the endpoint's URL format, relative to the service's
+        /// base URL. Route parameters should be enclosed in curly brackets, with optional parameters
+        /// identified by a quest mark (e.g., "accounts/{id}/{?emailAddress}"). You may add a wildcard
+        /// parameter to the end of the route to capture arbitrary paths 
+        /// (e.g., "accounts/{id}/{?emailAddress}/{*pathInfo}").</param>
+        /// <param name="typeConstraints">An object describing the type constraints of the route
+        /// (e.g., new { id = typeof(int) }). Each type must be represented in the current host's
+        /// <see cref="IRouteParameterParser"/> collection. All primitive .NET types are supported by default.</param>
+        /// <returns>The new endpoint's <see cref="IMethodCollection"/>.</returns>
+        IMethodCollection WithEndpoint(string route, object typeConstraints);
+
+        /// <summary>
+        /// Adds an endpoint to the current service and returns the new endpoint's
+        /// <see cref="IMethodCollection"/>.
+        /// </summary>
+        /// <param name="route">The route defining the endpoint's URL format, relative to the service's
+        /// base URL. Route parameters should be enclosed in curly brackets, with optional parameters
+        /// identified by a quest mark (e.g., "accounts/{id}/{?emailAddress}"). You may add a wildcard
+        /// parameter to the end of the route to capture arbitrary paths 
+        /// (e.g., "accounts/{id}/{?emailAddress}/{*pathInfo}").</param>
+        /// <param name="typeConstraints">An object describing the type constraints of the route
+        /// (e.g., new { id = typeof(int) }). Each type must be represented in the current host's
+        /// <see cref="IRouteParameterParser"/> collection. All primitive .NET types are supported by default.</param>
+        /// <param name="patternConstraints">An object describing the pattern constraints of the route
+        /// (e.g., new { id = "^\d+$" }). Each value should be a valid, parse-able regular expression.</param>
+        /// <returns>The new endpoint's <see cref="IMethodCollection"/>.</returns>
+        IMethodCollection WithEndpoint(string route, object typeConstraints, object patternConstraints);
+#else
         /// <summary>
         /// Adds an endpoint to the current service and returns the new endpoint's
         /// <see cref="IMethodCollection"/>.
@@ -107,6 +152,7 @@ namespace SmallFry
         /// <returns>The new endpoint's <see cref="IMethodCollection"/>.</returns>
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed.")]
         IMethodCollection WithEndpoint(string route, object typeConstraints = null, object patternConstraints = null);
+#endif
 
         /// <summary>
         /// Adds an encoding to the current <see cref="IServiceHost"/> and returns the
