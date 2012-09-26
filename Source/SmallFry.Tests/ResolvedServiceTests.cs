@@ -89,6 +89,11 @@
             Assert.IsNotNull(result);
             Assert.AreEqual(EncodingType.Parse("gzip"), result.EncodingType);
             Assert.AreEqual(new GzipDeflateEncoding(), result.Encoding);
+
+            result = service.GetResponseEncoder("gzip;q=0");
+            Assert.IsNotNull(result);
+            Assert.AreEqual(EncodingType.Empty, result.EncodingType);
+            Assert.AreEqual(new IdentityEncoding(), result.Encoding);
         }
 
         [Test]
@@ -115,6 +120,11 @@
             Assert.IsNotNull(result);
             Assert.AreEqual(MediaType.Parse("application/json"), result.MediaType);
             Assert.AreEqual(new JsonFormat(), result.Format);
+
+            result = service.GetResponseSerializer("application/json;q=0, */*");
+            Assert.IsNotNull(result);
+            Assert.AreEqual(MediaType.Empty, result.MediaType);
+            Assert.AreEqual(new PlainTextFormat(), result.Format);
         }
 
         [Test]

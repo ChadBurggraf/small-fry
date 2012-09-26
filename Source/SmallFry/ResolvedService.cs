@@ -165,29 +165,33 @@ namespace SmallFry
         {
             EncodingLookupResult result = null;
             IEnumerable<EncodingType> encodingTypes = acceptEncoding.AsEncodingTypes();
+            EncodingType[] excludeTypes = encodingTypes.Where(e => e.QValue <= 0).ToArray();
 
             foreach (EncodingType encodingType in encodingTypes)
             {
-                bool found = false;
-
-                foreach (IEncoding encoding in this.Encodings)
+                if (encodingType.QValue > 0)
                 {
-                    if (encoding.CanEncode(encodingType))
-                    {
-                        result = new EncodingLookupResult()
-                        {
-                            Encoding = encoding,
-                            EncodingType = encodingType
-                        };
+                    bool found = false;
 
-                        found = true;
+                    foreach (IEncoding encoding in this.Encodings)
+                    {
+                        if (encoding.CanEncode(encodingType) && !excludeTypes.Any(x => encoding.CanEncode(x)))
+                        {
+                            result = new EncodingLookupResult()
+                            {
+                                Encoding = encoding,
+                                EncodingType = encodingType
+                            };
+
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (found)
+                    {
                         break;
                     }
-                }
-
-                if (found)
-                {
-                    break;
                 }
             }
 
@@ -204,29 +208,33 @@ namespace SmallFry
         {
             FormatLookupResult result = null;
             IEnumerable<MediaType> mediaTypes = accept.AsMediaTypes();
+            MediaType[] excludeTypes = mediaTypes.Where(m => m.AcceptParams.Value <= 0).ToArray();
 
             foreach (MediaType mediaType in mediaTypes)
             {
-                bool found = false;
-
-                foreach (IFormat format in this.Formats)
+                if (mediaType.AcceptParams.Value > 0)
                 {
-                    if (format.CanSerialize(mediaType))
-                    {
-                        result = new FormatLookupResult()
-                        {
-                            Format = format,
-                            MediaType = mediaType
-                        };
+                    bool found = false;
 
-                        found = true;
+                    foreach (IFormat format in this.Formats)
+                    {
+                        if (format.CanSerialize(mediaType) && !excludeTypes.Any(x => format.CanSerialize(x)))
+                        {
+                            result = new FormatLookupResult()
+                            {
+                                Format = format,
+                                MediaType = mediaType
+                            };
+
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (found)
+                    {
                         break;
                     }
-                }
-
-                if (found)
-                {
-                    break;
                 }
             }
 
