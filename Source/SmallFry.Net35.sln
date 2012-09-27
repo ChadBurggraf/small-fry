@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DFC669FB-D012-4026-8B78-7C1FC6E26CB2}"
 	ProjectSection(SolutionItems) = preProject
+		..\Build.proj = ..\Build.proj
 		..\README = ..\README
+		SmallFry.targets = SmallFry.targets
 		SolutionInfo.cs = SolutionInfo.cs
 	EndProjectSection
 EndProject

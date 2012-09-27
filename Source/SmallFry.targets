@@ -1,0 +1,24 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <RootDir Condition="'$(RootDir)' == ''">$(MSBuildThisFileDirectory)\..</RootDir>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <KeyFileArgs Condition="'$(SignAssembly)' == 'true' And Exists('$(AssemblyOriginatorKeyFile)')">/keyfile:"$(AssemblyOriginatorKeyFile)"</KeyFileArgs>
+  </PropertyGroup>
+
+  <UsingTask TaskName="GetVersion" AssemblyFile="$(RootDir)\Lib\Tasty.0.14.4\Tasty.dll" />
+
+  <Target Name="GetVersion">
+    <GetVersion AssemblyInfoFile="$(RootDir)\Source\SolutionInfo.cs">
+      <Output TaskParameter="Major" PropertyName="Major"/>
+      <Output TaskParameter="Minor" PropertyName="Minor"/>
+      <Output TaskParameter="Build" PropertyName="Build"/>
+      <Output TaskParameter="Revision" PropertyName="Revision"/>
+    </GetVersion>
+  </Target>
+
+  <Target Name="MergeLibrary" Condition="'$(MergedLibraryOutputPath)' != ''">
+    <Exec Command='"$(RootDir)\Lib\ILRepack.1.16.0\ILRepack.exe" /log /internalize /xmldocs $(KeyFileArgs) /lib:$(OutputPath) /out:"$(MergedLibraryOutputPath)\SmallFry.dll" $(OutputPath)SmallFry.dll $(OutputPath)ServiceStack.Text.dll' />
+  </Target>
+</Project>
