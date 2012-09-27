@@ -33,7 +33,6 @@
     <!-- .NET 3.5 -->
     <MakeDir Directories="$(BuildDir)\Net35" />
     <MSBuild Projects="$(SourceDir)\SmallFry\SmallFry.Net35.csproj" Targets="Clean;Build" Properties="Configuration=$(Configuration);SignAssembly=$(SignAssembly);AssemblyOriginatorKeyFile=$(AssemblyOriginatorKeyFile);MergedLibraryOutputPath=$(BuildDir)\Net35" />
-  
   </Target>
 
   <Target Name="Clean">

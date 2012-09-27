@@ -1,0 +1,3 @@
+[submodule "Lib/ServiceStack.Text"]
+	path = Lib/ServiceStack.Text
+	url = git://github.com/ChadBurggraf/ServiceStack.Text.git

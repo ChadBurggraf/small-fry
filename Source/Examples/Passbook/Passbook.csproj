@@ -37,10 +37,6 @@
       <HintPath>..\..\..\Lib\Dapper.1.12.1\lib\net40\Dapper.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="ServiceStack.Text, Version=3.9.9.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Lib\ServiceStack.Text.3.9.9\lib\net35\ServiceStack.Text.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Core" />
@@ -73,6 +69,10 @@
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Lib\ServiceStack.Text\src\ServiceStack.Text.Net40\ServiceStack.Text.Net40.csproj">
+      <Project>{15BF26C8-92F8-445D-8FFC-7882A519B67D}</Project>
+      <Name>ServiceStack.Text.Net40</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\SmallFry\SmallFry.csproj">
       <Project>{9E0DA447-DF8B-496D-AB50-2424710FF374}</Project>
       <Name>SmallFry</Name>
