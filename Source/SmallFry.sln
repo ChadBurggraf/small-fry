@@ -8,7 +8,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A61C24AB-96EF-4F02-B9F3-2B531D99468A}"
 	ProjectSection(SolutionItems) = preProject
 		..\Build.proj = ..\Build.proj
-		..\README = ..\README
+		..\LICENSE.txt = ..\LICENSE.txt
+		..\README.md = ..\README.md
 		SmallFry.targets = SmallFry.targets
 		SolutionInfo.cs = SolutionInfo.cs
 	EndProjectSection
