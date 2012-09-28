@@ -32,7 +32,7 @@ namespace SmallFry
 
         /// <summary>
         /// Gets a Content-Type value to send in responses when the given <see cref="MediaType"/>
-        /// was used to shoose this format.
+        /// was used to choose this format.
         /// </summary>
         /// <param name="mediaType">The <see cref="MediaType"/> used to choose this format.</param>
         /// <returns>A Content-Type value to send.</returns>

@@ -4,9 +4,13 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DFC669FB-D012-4026-8B78-7C1FC6E26CB2}"
 	ProjectSection(SolutionItems) = preProject
 		..\Build.proj = ..\Build.proj
+		..\LICENSE.txt = ..\LICENSE.txt
 		..\README.md = ..\README.md
+		..\SmallFry.nuspec = ..\SmallFry.nuspec
 		SmallFry.targets = SmallFry.targets
+		SmallFryConfig.cs.pp = SmallFryConfig.cs.pp
 		SolutionInfo.cs = SolutionInfo.cs
+		Web.config.transform = Web.config.transform
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmallFry.Net35", "SmallFry\SmallFry.Net35.csproj", "{F4B849FE-6092-46AB-9705-0EFE368D32F3}"

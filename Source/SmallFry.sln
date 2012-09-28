@@ -10,8 +10,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\Build.proj = ..\Build.proj
 		..\LICENSE.txt = ..\LICENSE.txt
 		..\README.md = ..\README.md
+		..\SmallFry.nuspec = ..\SmallFry.nuspec
 		SmallFry.targets = SmallFry.targets
+		SmallFryConfig.cs.pp = SmallFryConfig.cs.pp
 		SolutionInfo.cs = SolutionInfo.cs
+		Web.config.transform = Web.config.transform
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Passbook", "Examples\Passbook\Passbook.csproj", "{99C046D4-5D11-4E67-947C-1C62EE72EAC6}"
@@ -21,6 +24,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Lib", "Lib", "{40FC6502-93DF-40D9-98F1-522F94E3DE6B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceStack.Text.Net40", "..\Lib\ServiceStack.Text\src\ServiceStack.Text.Net40\ServiceStack.Text.Net40.csproj", "{15BF26C8-92F8-445D-8FFC-7882A519B67D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuGet", "Examples\NuGet\NuGet.csproj", "{BB2E6698-7E1F-4724-92A3-B52830C18B68}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,12 +49,17 @@ Global
 		{15BF26C8-92F8-445D-8FFC-7882A519B67D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{15BF26C8-92F8-445D-8FFC-7882A519B67D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{15BF26C8-92F8-445D-8FFC-7882A519B67D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB2E6698-7E1F-4724-92A3-B52830C18B68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB2E6698-7E1F-4724-92A3-B52830C18B68}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB2E6698-7E1F-4724-92A3-B52830C18B68}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB2E6698-7E1F-4724-92A3-B52830C18B68}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{99C046D4-5D11-4E67-947C-1C62EE72EAC6} = {A1837D35-249C-480D-9254-53808A2CEDD8}
+		{BB2E6698-7E1F-4724-92A3-B52830C18B68} = {A1837D35-249C-480D-9254-53808A2CEDD8}
 		{15BF26C8-92F8-445D-8FFC-7882A519B67D} = {40FC6502-93DF-40D9-98F1-522F94E3DE6B}
 	EndGlobalSection
 EndGlobal

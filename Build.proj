@@ -17,6 +17,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageFiles Include="$(RootDir)\LICENSE.txt" />
+    <PackageFiles Include="$(RootDir)\README.md" />
+  </ItemGroup>
+
+  <ItemGroup>
     <SolutionProjects Include="$(SourceDir)\SmallFry\SmallFry.csproj" />
     <SolutionProjects Include="$(SourceDir)\SmallFry\SmallFry.Net35.csproj" />
     <SolutionProjects Include="$(SourceDir)\SmallFry.Tests\SmallFry.Tests.csproj" />
@@ -25,14 +30,29 @@
 
   <Target Name="Build">
     <MakeDir Directories="$(BuildDir)" />
+    <MakeDir Directories="$(BuildDir)\Lib" />
     
     <!-- .NET 4.0 -->
-    <MakeDir Directories="$(BuildDir)\Net40" />
-    <MSBuild Projects="$(SourceDir)\SmallFry\SmallFry.csproj" Targets="Clean;Build" Properties="Configuration=$(Configuration);SignAssembly=$(SignAssembly);AssemblyOriginatorKeyFile=$(AssemblyOriginatorKeyFile);MergedLibraryOutputPath=$(BuildDir)\Net40" />
+    <MakeDir Directories="$(BuildDir)\Lib\Net40-Full" />
+    <MSBuild Projects="$(SourceDir)\SmallFry\SmallFry.csproj" Targets="Clean;Build" Properties="Configuration=$(Configuration);SignAssembly=$(SignAssembly);AssemblyOriginatorKeyFile=$(AssemblyOriginatorKeyFile);MergedLibraryOutputPath=$(BuildDir)\Lib\Net40-Full" />
 
     <!-- .NET 3.5 -->
-    <MakeDir Directories="$(BuildDir)\Net35" />
-    <MSBuild Projects="$(SourceDir)\SmallFry\SmallFry.Net35.csproj" Targets="Clean;Build" Properties="Configuration=$(Configuration);SignAssembly=$(SignAssembly);AssemblyOriginatorKeyFile=$(AssemblyOriginatorKeyFile);MergedLibraryOutputPath=$(BuildDir)\Net35" />
+    <MakeDir Directories="$(BuildDir)\Lib\Net35" />
+    <MSBuild Projects="$(SourceDir)\SmallFry\SmallFry.Net35.csproj" Targets="Clean;Build" Properties="Configuration=$(Configuration);SignAssembly=$(SignAssembly);AssemblyOriginatorKeyFile=$(AssemblyOriginatorKeyFile);MergedLibraryOutputPath=$(BuildDir)\Lib\Net35" />
+
+    <!-- Package files -->
+    <Copy SourceFiles="@(PackageFiles)" DestinationFolder="$(BuildDir)" />
+    
+    <!-- Content files -->
+    <MakeDir Directories="$(BuildDir)\Content" />
+    <Copy SourceFiles="$(SourceDir)\Web.config.transform" DestinationFolder="$(BuildDir)\Content" />
+    <MakeDir Directories="$(BuildDir)\Content\App_Start" />
+    <Copy SourceFiles="$(SourceDir)\SmallFryConfig.cs.pp" DestinationFolder="$(BuildDir)\Content\App_Start" />
+    
+    <!-- NuGet package -->
+    <Copy SourceFiles="$(RootDir)\SmallFry.nuspec" DestinationFolder="$(BuildDir)" />
+    <Exec Command='NuGet.exe Pack SmallFry.nuspec' WorkingDirectory="$(BuildDir)" />
+    <Delete Files="$(BuildDir)\SmallFry.nuspec" />
   </Target>
 
   <Target Name="Clean">

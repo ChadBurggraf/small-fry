@@ -8,6 +8,7 @@ namespace SmallFry
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
 
     internal sealed class ServiceResolver
@@ -70,6 +71,8 @@ namespace SmallFry
 
         private static IDictionary<MethodType, IEnumerable<ResolvedService>> ResolveAllServices(ServiceCollection serviceCollection)
         {
+            const string MultipleMethodsMessage = "There are multiple {0} methods registered for endpoint {1}. You may only register one method type per endpoint.";
+
             List<ResolvedService> deleteServices = new List<ResolvedService>();
             List<ResolvedService> getServices = new List<ResolvedService>();
             List<ResolvedService> postServices = new List<ResolvedService>();
@@ -81,6 +84,8 @@ namespace SmallFry
                 {
                     foreach (Endpoint endpoint in service.Endpoints as EndpointCollection)
                     {
+                        bool hasDelete = false, hasGet = false, hasPost = false, hasPut = false;
+
                         foreach (Method method in endpoint.Methods as MethodCollection)
                         {
                             IEnumerable<FilterAction> beforeActions = ServiceResolver.ResolveBeforeActions(serviceCollection.Pipeline, service.Pipeline, endpoint.Pipeline, method.Pipeline);
@@ -97,22 +102,37 @@ namespace SmallFry
                                 ServiceResolver.ResolveFormats(serviceCollection.Pipeline, service.Pipeline, endpoint.Pipeline, method.Pipeline),
                                 ServiceResolver.ResolveRequestType(method, beforeActions, afterActions, errorActions));
 
+                            bool throwMultipleMethods = false;
+
                             switch (method.MethodType)
                             {
                                 case MethodType.Delete:
                                     deleteServices.Add(resolvedService);
+                                    throwMultipleMethods = hasDelete;
+                                    hasDelete = true;
                                     break;
                                 case MethodType.Get:
                                     getServices.Add(resolvedService);
+                                    throwMultipleMethods = hasGet;
+                                    hasGet = true;
                                     break;
                                 case MethodType.Post:
                                     postServices.Add(resolvedService);
+                                    throwMultipleMethods = hasPost;
+                                    hasPost = true;
                                     break;
                                 case MethodType.Put:
                                     putServices.Add(resolvedService);
+                                    throwMultipleMethods = hasPut;
+                                    hasPut = true;
                                     break;
                                 default:
                                     throw new NotImplementedException();
+                            }
+
+                            if (throwMultipleMethods)
+                            {
+                                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, MultipleMethodsMessage, method.MethodType, endpoint.Route));
                             }
                         }
                     }

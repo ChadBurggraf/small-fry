@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <location path="api">
+    <!-- Small Fry services are now scoped to the above path (~/api). Therefore,
+         any request to ~/api/* will be handled by the service handler.
+         Make sure to use the correct base URL of /api when registering
+         services in Global.asax. -->
+    <system.web>
+      <httpHandlers>
+        <add path="*" type="SmallFry.HttpServiceHandler, SmallFry" verb="*" />
+      </httpHandlers>
+      <httpRuntime enableVersionHeader="false" />
+    </system.web>
+
+    <system.webServer>
+      <handlers>
+        <add name="HttpServiceHandler" path="*" type="SmallFry.HttpServiceHandler, SmallFry" verb="*" allowPathInfo="true" preCondition="integratedMode" />
+      </handlers>
+      <httpProtocol>
+        <customHeaders>
+          <remove name="X-Powered-By" />
+        </customHeaders>
+      </httpProtocol>
+      <validation validateIntegratedModeConfiguration="false" />
+    </system.webServer>
+  </location>
+</configuration>

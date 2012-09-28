@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>SmallFry</id>
+    <version>0.5.0</version>
+    <title>Small Fry</title>
+    <authors>Chad Burggraf</authors>
+    <owners>Chad Burggraf</owners>
+    <licenseUrl>http://opensource.org/licenses/mit-license.php/</licenseUrl>
+    <projectUrl>https://github.com/ChadBurggraf/small-fry</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Fluent API design for C# and .NET.</description>
+    <releaseNotes>
+      * 0.5.0 - First beta release. Comments welcome.
+    </releaseNotes>
+    <copyright>Copyright 2012 Chad Burggraf</copyright>
+    <tags>api service rest fluent</tags>
+  </metadata>
+</package>
