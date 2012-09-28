@@ -11,7 +11,11 @@ namespace SmallFry
     using System.Collections.Generic;
     using System.Linq;
 
-    internal sealed class EndpointCollection : ICollection<Endpoint>, IEnumerable<Endpoint>, IEnumerable, IEndpointCollection
+    internal sealed class EndpointCollection : 
+        ICollection<Endpoint>, 
+        IEnumerable<Endpoint>, 
+        IEnumerable, 
+        IEndpointCollection
     {
         private const string CurrentEndpointNotSetMessage = "Please add an endpoint by calling WithEndpoint() before attempting to call this method.";
         private List<Endpoint> list = new List<Endpoint>();
@@ -123,7 +127,6 @@ namespace SmallFry
             return removed;
         }
 
-#if NET35
         public IMethodCollection WithEndpoint(string route)
         {
             return this.WithEndpoint(route, null);
@@ -135,9 +138,6 @@ namespace SmallFry
         }
 
         public IMethodCollection WithEndpoint(string route, object typeConstraints, object patternConstraints)
-#else
-        public IMethodCollection WithEndpoint(string route, object typeConstraints = null, object patternConstraints = null)
-#endif
         {
             Endpoint endpoint = new Endpoint(route, this.Service, this);
             endpoint.SetParameterTypes(typeConstraints);

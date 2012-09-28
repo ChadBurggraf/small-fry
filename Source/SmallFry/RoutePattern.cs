@@ -96,15 +96,13 @@ namespace SmallFry
                 if (urlSegmentCount <= segmentCount || (segmentCount > 0 && segments[segmentCount - 1].HasWildcard))
                 {
                     RouteSegment segment;
-                    string urlSegment;
-
+                    
                     for (int i = 0; i < segmentCount; i++)
                     {
                         segment = segments[i];
 
                         if (urlSegmentCount > i)
                         {
-                            urlSegment = urlSegments[i];
                             match = RoutePattern.MatchSegment(urlSegments[i], segment, routeValues);
 
                             if (match)

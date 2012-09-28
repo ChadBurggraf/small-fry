@@ -8,6 +8,7 @@ namespace SmallFry
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
     /// Defines the interface for a collection of endpoints belonging to a service.
@@ -37,6 +38,7 @@ namespace SmallFry
         /// <typeparam name="T">The expected type of the incoming request content.</typeparam>
         /// <param name="action">The action to perform.</param>
         /// <returns>The current endpoint's <see cref="IMethodCollection"/>.</returns>
+        [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Reviewed.")]
         IMethodCollection AfterEndpoint<T>(Func<IRequestMessage<T>, IResponseMessage, bool> action);
 
         /// <summary>
@@ -62,6 +64,7 @@ namespace SmallFry
         /// <typeparam name="T">The expected type of the incoming request content.</typeparam>
         /// <param name="action">The action to perform.</param>
         /// <returns>The current endpoint's <see cref="IMethodCollection"/>.</returns>
+        [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Reviewed.")]
         IMethodCollection BeforeEndpoint<T>(Func<IRequestMessage<T>, IResponseMessage, bool> action);
 
         /// <summary>
@@ -70,6 +73,7 @@ namespace SmallFry
         /// </summary>
         /// <param name="action">The action to perform.</param>
         /// <returns>The current endpoint's <see cref="IMethodCollection"/>.</returns>
+        [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Reviewed.")]
         IMethodCollection ErrorEndpoint(Func<IEnumerable<Exception>, bool> action);
 
         /// <summary>
@@ -78,6 +82,7 @@ namespace SmallFry
         /// </summary>
         /// <param name="action">The action to perform.</param>
         /// <returns>The current endpoint's <see cref="IMethodCollection"/>.</returns>
+        [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Reviewed.")]
         IMethodCollection ErrorEndpoint(Func<IEnumerable<Exception>, IRequestMessage, IResponseMessage, bool> action);
 
         /// <summary>
@@ -87,6 +92,7 @@ namespace SmallFry
         /// <typeparam name="T">The expected type of the incoming request content.</typeparam>
         /// <param name="action">The action to perform.</param>
         /// <returns>The current endpoint's <see cref="IMethodCollection"/>.</returns>
+        [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Reviewed.")]
         IMethodCollection ErrorEndpoint<T>(Func<IEnumerable<Exception>, IRequestMessage<T>, IResponseMessage, bool> action);
 
         /// <summary>
@@ -115,6 +121,7 @@ namespace SmallFry
         /// <typeparam name="T">The expected type of the incoming request content.</typeparam>
         /// <param name="action">The action to perform.</param>
         /// <returns>The current endpoint's <see cref="IMethodCollection"/>.</returns>
+        [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Reviewed.")]
         IMethodCollection WithoutAfterEndpoint<T>(Func<IRequestMessage<T>, IResponseMessage, bool> action);
 
         /// <summary>
@@ -143,6 +150,7 @@ namespace SmallFry
         /// <typeparam name="T">The expected type of the incoming request content.</typeparam>
         /// <param name="action">The action to perform.</param>
         /// <returns>The current endpoint's <see cref="IMethodCollection"/>.</returns>
+        [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Reviewed.")]
         IMethodCollection WithoutBeforeEndpoint<T>(Func<IRequestMessage<T>, IResponseMessage, bool> action);
 
         /// <summary>
@@ -151,6 +159,7 @@ namespace SmallFry
         /// </summary>
         /// <param name="action">The action to perform.</param>
         /// <returns>The current endpoint's <see cref="IMethodCollection"/>.</returns>
+        [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Reviewed.")]
         IMethodCollection WithoutErrorEndpoint(Func<IEnumerable<Exception>, bool> action);
 
         /// <summary>
@@ -160,6 +169,7 @@ namespace SmallFry
         /// </summary>
         /// <param name="action">The action to perform.</param>
         /// <returns>The current endpoint's <see cref="IMethodCollection"/>.</returns>
+        [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Reviewed.")]
         IMethodCollection WithoutErrorEndpoint(Func<IEnumerable<Exception>, IRequestMessage, IResponseMessage, bool> action);
 
         /// <summary>
@@ -170,6 +180,7 @@ namespace SmallFry
         /// <typeparam name="T">The expected type of the incoming request content.</typeparam>
         /// <param name="action">The action to perform.</param>
         /// <returns>The current endpoint's <see cref="IMethodCollection"/>.</returns>
+        [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Reviewed.")]
         IMethodCollection WithoutErrorEndpoint<T>(Func<IEnumerable<Exception>, IRequestMessage<T>, IResponseMessage, bool> action);
     }
 }

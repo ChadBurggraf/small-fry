@@ -184,9 +184,9 @@ Or, just register JSON for a specific service:
 
 Formats implement `IFormat`. The `Content-Type` header is used to choose a 
 format when de-serializing a request, and the `Accept` header is used to choose
-a format when serializng the response.
+a format when serializing the response.
 
-Encodings work almostly exactly the same, except they implement `IEncoding`.
+Encodings work almost exactly the same, except they implement `IEncoding`.
 To send and/or receive GZip and Deflate compression, for example, register
 the appropriate encoding:
 
@@ -205,7 +205,7 @@ are fired either before or after the actual method invocation.
 You can register filters for the entire host, or for individual services, 
 endpoints, or methods. Similarly, you can exclude filters for specific
 parts of your service, provided you're passing delegates that have reference
-equality (see the examle in **Overview** where `Authorize` is excluded).
+equality (see the example in **Overview** where `Authorize` is excluded).
 
 Finally, filters require a `bool` return value. This value indicates whether
 the system should continue processing the current request. You can use this 

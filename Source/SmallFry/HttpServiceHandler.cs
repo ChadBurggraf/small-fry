@@ -8,6 +8,7 @@ namespace SmallFry
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Linq;
     using System.Web;
@@ -29,43 +30,44 @@ namespace SmallFry
         /// <summary>
         /// Enables processing of HTTP Web requests by a custom HttpHandler that implements the <see cref="IHttpHandler"/> interface.
         /// </summary>
-        /// <param name="httpContext">An <see cref="HttpContext"/> object that provides references to the intrinsic server objects 
+        /// <param name="context">An <see cref="HttpContext"/> object that provides references to the intrinsic server objects 
         /// (for example, Request, Response, Session, and Server) used to service HTTP requests.</param>
-        public void ProcessRequest(HttpContext httpContext)
+        public void ProcessRequest(HttpContext context)
         {
-            this.ProcessRequest(new HttpContextWrapper(httpContext));
+            this.ProcessRequest(new HttpContextWrapper(context));
         }
 
         /// <summary>
         /// Enables processing of HTTP Web requests by a custom HttpHandler that implements the <see cref="IHttpHandler"/> interface.
         /// </summary>
-        /// <param name="httpContext">An <see cref="HttpContextBase"/> object that provides references to the intrinsic server objects 
+        /// <param name="context">An <see cref="HttpContextBase"/> object that provides references to the intrinsic server objects 
         /// (for example, Request, Response, Session, and Server) used to service HTTP requests.</param>
-        public void ProcessRequest(HttpContextBase httpContext)
+        [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Overload of an interface method.")]
+        public void ProcessRequest(HttpContextBase context)
         {
-            if (httpContext == null)
+            if (context == null)
             {
-                throw new ArgumentNullException("httpContext", "httpContext cannot be null.");
+                throw new ArgumentNullException("context", "context cannot be null.");
             }
 
             try
             {
-                string url = httpContext.Request.AppRelativeCurrentExecutionFilePath.Substring(1) + httpContext.Request.PathInfo;
-                MethodType methodType = httpContext.Request.HttpMethod.AsMethodType();
+                string url = context.Request.AppRelativeCurrentExecutionFilePath.Substring(1) + context.Request.PathInfo;
+                MethodType methodType = context.Request.HttpMethod.AsMethodType();
                 ResolvedService service = ServiceHost.Instance.ServiceResolver.Find(methodType, url);
 
                 if (service != null)
                 {
-                    using (HttpRequestMessage request = HttpRequestMessage.Create(service.Name, service.RouteValues, httpContext.Request, service.RequestType))
+                    using (HttpRequestMessage request = HttpRequestMessage.Create(service.Name, service.RouteValues, context.Request, service.RequestType))
                     {
-                        using (HttpResponseMessage response = new HttpResponseMessage(httpContext.Response))
+                        using (HttpResponseMessage response = new HttpResponseMessage(context.Response))
                         {
                             ReadRequestResult readResult = service.ReadRequest(
                                 request,
-                                httpContext.Request.ContentLength,
-                                httpContext.Request.Headers["Content-Encoding"],
-                                httpContext.Request.ContentType,
-                                httpContext.Request.InputStream);
+                                context.Request.ContentLength,
+                                context.Request.Headers["Content-Encoding"],
+                                context.Request.ContentType,
+                                context.Request.InputStream);
 
                             request.SetRequestObject(readResult.RequestObject);
 
@@ -143,8 +145,8 @@ namespace SmallFry
 
                             WriteResponseResult writeResult = service.WriteResponse(
                                 response,
-                                httpContext.Request.Headers["Accept-Encoding"],
-                                httpContext.Request.Headers["Accept"]);
+                                context.Request.Headers["Accept-Encoding"],
+                                context.Request.Headers["Accept"]);
 
                             if (!writeResult.Success)
                             {
@@ -171,17 +173,17 @@ namespace SmallFry
                 {
                     if (ServiceHost.Instance.ServiceResolver.ExistsForAnyMethodType(url))
                     {
-                        httpContext.Response.SetStatus(StatusCode.MethodNotAllowed);
+                        context.Response.SetStatus(StatusCode.MethodNotAllowed);
                     }
                     else
                     {
-                        httpContext.Response.SetStatus(StatusCode.NotFound);
+                        context.Response.SetStatus(StatusCode.NotFound);
                     }
                 }
             }
             finally
             {
-                httpContext.Response.End();
+                context.Response.End();
             }
         }
     }

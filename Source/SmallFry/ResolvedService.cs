@@ -8,6 +8,7 @@ namespace SmallFry
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Linq;
 
@@ -261,6 +262,7 @@ namespace SmallFry
             return ResolvedService.InvokeActions(this.ErrorActions, request, response, exceptions);
         }
 
+        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Pipeline execution.")]
         public ReadRequestResult ReadRequest(IRequestMessage request, int contentLength, string contentEncoding, string contentType, Stream inputStream)
         {
             if (request == null)
@@ -362,6 +364,7 @@ namespace SmallFry
             return result;
         }
 
+        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Pipeline execution.")]
         public WriteResponseResult WriteResponse(IResponseMessage response, string acceptEncoding, string accept)
         {
             if (response == null)

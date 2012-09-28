@@ -7,13 +7,14 @@
 namespace SmallFry
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
     /// Defines the interface for a collection of services.
     /// </summary>
-    public interface IServiceCollection
+    public interface IServiceCollection : IEnumerable
     {
         /// <summary>
         /// Adds an action to perform after an endpoint's method to the current service and
@@ -38,6 +39,7 @@ namespace SmallFry
         /// <typeparam name="T">The expected type of the incoming request content.</typeparam>
         /// <param name="action">The action to perform.</param>
         /// <returns>The current service's <see cref="IEndpointCollection"/>.</returns>
+        [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Reviewed.")]
         IEndpointCollection AfterService<T>(Func<IRequestMessage<T>, IResponseMessage, bool> action);
 
         /// <summary>
@@ -63,6 +65,7 @@ namespace SmallFry
         /// <typeparam name="T">The expected type of the incoming request content.</typeparam>
         /// <param name="action">The action to perform.</param>
         /// <returns>The current service's <see cref="IEndpointCollection"/>.</returns>
+        [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Reviewed.")]
         IEndpointCollection BeforeService<T>(Func<IRequestMessage<T>, IResponseMessage, bool> action);
 
         /// <summary>
@@ -71,6 +74,7 @@ namespace SmallFry
         /// </summary>
         /// <param name="action">The action to perform.</param>
         /// <returns>The current service's <see cref="IEndpointCollection"/>.</returns>
+        [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Reviewed.")]
         IEndpointCollection ErrorService(Func<IEnumerable<Exception>, bool> action);
 
         /// <summary>
@@ -79,6 +83,7 @@ namespace SmallFry
         /// </summary>
         /// <param name="action">The action to perform.</param>
         /// <returns>The current service's <see cref="IEndpointCollection"/>.</returns>
+        [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Reviewed.")]
         IEndpointCollection ErrorService(Func<IEnumerable<Exception>, IRequestMessage, IResponseMessage, bool> action);
 
         /// <summary>
@@ -88,9 +93,9 @@ namespace SmallFry
         /// <typeparam name="T">The expected type of the incoming request content.</typeparam>
         /// <param name="action">The action to perform.</param>
         /// <returns>The current service's <see cref="IEndpointCollection"/>.</returns>
+        [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Reviewed.")]
         IEndpointCollection ErrorService<T>(Func<IEnumerable<Exception>, IRequestMessage<T>, IResponseMessage, bool> action);
 
-#if NET35
         /// <summary>
         /// Adds an endpoint to the current service and returns the new endpoint's
         /// <see cref="IMethodCollection"/>.
@@ -116,6 +121,7 @@ namespace SmallFry
         /// (e.g., new { id = typeof(int) }). Each type must be represented in the current host's
         /// <see cref="IRouteParameterParser"/> collection. All primitive .NET types are supported by default.</param>
         /// <returns>The new endpoint's <see cref="IMethodCollection"/>.</returns>
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed.")]
         IMethodCollection WithEndpoint(string route, object typeConstraints);
 
         /// <summary>
@@ -133,26 +139,8 @@ namespace SmallFry
         /// <param name="patternConstraints">An object describing the pattern constraints of the route
         /// (e.g., new { id = "^\d+$" }). Each value should be a valid, parse-able regular expression.</param>
         /// <returns>The new endpoint's <see cref="IMethodCollection"/>.</returns>
-        IMethodCollection WithEndpoint(string route, object typeConstraints, object patternConstraints);
-#else
-        /// <summary>
-        /// Adds an endpoint to the current service and returns the new endpoint's
-        /// <see cref="IMethodCollection"/>.
-        /// </summary>
-        /// <param name="route">The route defining the endpoint's URL format, relative to the service's
-        /// base URL. Route parameters should be enclosed in curly brackets, with optional parameters
-        /// identified by a quest mark (e.g., "accounts/{id}/{?emailAddress}"). You may add a wildcard
-        /// parameter to the end of the route to capture arbitrary paths 
-        /// (e.g., "accounts/{id}/{?emailAddress}/{*pathInfo}").</param>
-        /// <param name="typeConstraints">An object describing the type constraints of the route
-        /// (e.g., new { id = typeof(int) }). Each type must be represented in the current host's
-        /// <see cref="IRouteParameterParser"/> collection. All primitive .NET types are supported by default.</param>
-        /// <param name="patternConstraints">An object describing the pattern constraints of the route
-        /// (e.g., new { id = "^\d+$" }). Each value should be a valid, parse-able regular expression.</param>
-        /// <returns>The new endpoint's <see cref="IMethodCollection"/>.</returns>
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed.")]
-        IMethodCollection WithEndpoint(string route, object typeConstraints = null, object patternConstraints = null);
-#endif
+        IMethodCollection WithEndpoint(string route, object typeConstraints, object patternConstraints);
 
         /// <summary>
         /// Adds an encoding to the current <see cref="IServiceHost"/> and returns the
@@ -204,6 +192,8 @@ namespace SmallFry
         /// <param name="baseUrl">The service's base URL, relative to the application root
         /// (e.g., "/api").</param>
         /// <returns>The new service's <see cref="IEndpointCollection"/>.</returns>
+        [SuppressMessage("Microsoft.Design", "CA1054:UriParametersShouldNotBeStrings", MessageId = "1#", Justification = "Simpler API.")]
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed.")]
         IEndpointCollection WithService(string name, string baseUrl);
 
         /// <summary>

@@ -8,6 +8,7 @@ namespace SmallFry
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.IO.Compression;
 
@@ -15,6 +16,7 @@ namespace SmallFry
     /// Implements <see cref="IEncoding"/> to perform GZip and Deflate 
     /// encoding and decoding.
     /// </summary>
+    [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Gzip", Justification = "Reviewed.")]
     public class GzipDeflateEncoding : IEncoding
     {
         private static readonly EncodingType Deflate = EncodingType.Parse("deflate");

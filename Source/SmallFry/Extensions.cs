@@ -168,7 +168,6 @@ namespace SmallFry
             return result;
         }
 
-#if NET35
         /// <summary>
         /// Gets a typed value from a <see cref="NameValueCollection"/>.
         /// </summary>
@@ -192,19 +191,6 @@ namespace SmallFry
         /// in case of an error.</param>
         /// <returns>A typed value.</returns>
         public static T Get<T>(this NameValueCollection collection, string name, bool throwOnError)
-#else
-        /// <summary>
-        /// Gets a typed value from a <see cref="NameValueCollection"/>.
-        /// </summary>
-        /// <typeparam name="T">The type of the value to get.</typeparam>
-        /// <param name="collection">The collection to get the value from.</param>
-        /// <param name="name">The name of the value to get.</param>
-        /// <param name="throwOnError">A value indicating whether to re-throw an exception encountered
-        /// during parsing. If false, the default value for the specified type will be returned
-        /// in case of an error.</param>
-        /// <returns>A typed value.</returns>
-        public static T Get<T>(this NameValueCollection collection, string name, bool throwOnError = false)
-#endif
         {
             if (collection == null)
             {
@@ -270,7 +256,6 @@ namespace SmallFry
             return uri.QueryString()[key];
         }
 
-#if NET35
         /// <summary>
         /// Gets the typed value of the query string parameter with the given key.
         /// </summary>
@@ -294,19 +279,6 @@ namespace SmallFry
         /// in case of an error.</param>
         /// <returns>The query string value for the given key.</returns>
         public static T GetQueryValue<T>(this Uri uri, string key, bool throwOnError)
-#else
-        /// <summary>
-        /// Gets the typed value of the query string parameter with the given key.
-        /// </summary>
-        /// <typeparam name="T">The type to convert the value into.</typeparam>
-        /// <param name="uri">The <see cref="Uri"/> to get the query string value from.</param>
-        /// <param name="key">The key to get the value of.</param>
-        /// <param name="throwOnError">A value indicating whether to re-throw an exception encountered
-        /// during parsing. If false, the default value for the specified type will be returned
-        /// in case of an error.</param>
-        /// <returns>The query string value for the given key.</returns>
-        public static T GetQueryValue<T>(this Uri uri, string key, bool throwOnError = false)
-#endif
         {
             return uri.QueryString().Get<T>(key, throwOnError);
         }

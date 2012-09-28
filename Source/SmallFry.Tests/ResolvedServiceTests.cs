@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.IO.Compression;
     using System.Linq;
@@ -264,7 +265,6 @@
                     Assert.IsFalse(result.Continue);
                     Assert.IsTrue(result.Success);
                     Assert.AreEqual(1, result.Results.Count);
-
                 }
             }
         }
@@ -406,7 +406,6 @@
                     Assert.IsFalse(result.Continue);
                     Assert.IsTrue(result.Success);
                     Assert.AreEqual(1, result.Results.Count);
-
                 }
             }
         }
@@ -548,7 +547,6 @@
                     Assert.IsFalse(result.Continue);
                     Assert.IsTrue(result.Success);
                     Assert.AreEqual(1, result.Results.Count);
-
                 }
             }
         }
@@ -599,6 +597,7 @@
         }
 
         [Test]
+        [SuppressMessage("Microsoft.Usage", "CA2202:DoNotDisposeObjectsMultipleTimess", Target = "outputStream", Justification = "GZipStream does not dispose of its inner stream.")]
         public void ResolvedServiceReadRequestEncoded()
         {
             ServiceCollection services = new ServiceCollection();
@@ -677,6 +676,7 @@
         }
 
         [Test]
+        [SuppressMessage("Microsoft.Usage", "CA2202:DoNotDisposeObjectsMultipleTimess", Target = "outputStream", Justification = "GZipStream does not dispose of its inner stream.")]
         public void ResolvedServiceReadRequestMissingEncoding()
         {
             ServiceCollection services = new ServiceCollection();

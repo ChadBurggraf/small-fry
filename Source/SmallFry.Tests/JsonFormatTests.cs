@@ -69,14 +69,26 @@
 
         private static string Serialize(MediaType mediaType, object value)
         {
-            using (MemoryStream stream = new MemoryStream())
+            Stream stream = null;
+
+            try
             {
+                stream = new MemoryStream();
+
                 new JsonFormat().Serialize(mediaType, value, stream);
                 stream.Position = 0;
 
                 using (StreamReader reader = new StreamReader(stream))
                 {
+                    stream = null;
                     return reader.ReadToEnd();
+                }
+            }
+            finally
+            {
+                if (stream != null)
+                {
+                    stream.Dispose();
                 }
             }
         }

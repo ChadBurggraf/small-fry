@@ -70,6 +70,8 @@
     <Compile Include="IServiceHost.cs" />
     <Compile Include="JsonFormat.cs" />
     <Compile Include="MediaType.cs" />
+    <Compile Include="MediaTypeAcceptParameters.cs" />
+    <Compile Include="MediaTypeExtension.cs" />
     <Compile Include="Method.cs" />
     <Compile Include="MethodCollection.cs" />
     <Compile Include="MethodResult.cs" />
@@ -106,6 +108,7 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\StyleCop\v4.7\StyleCop.Targets" />
   <Import Project="..\SmallFry.targets" />
   <Target Name="BeforeBuild">
   </Target>

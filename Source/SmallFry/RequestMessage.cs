@@ -93,7 +93,7 @@ namespace SmallFry
                 path = path.Substring(1);
             }
 
-            if (path.StartsWith("/"))
+            if (path.StartsWith("/", StringComparison.Ordinal))
             {
                 path = path.Substring(1);
             }

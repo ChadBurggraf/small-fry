@@ -8,6 +8,7 @@ namespace SmallFry
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Text.RegularExpressions;
 
@@ -64,11 +65,38 @@ namespace SmallFry
         }
 
         /// <summary>
+        /// Gets a value indicating whether an <see cref="EncodingType"/> is greater
+        /// than a comparable <see cref="EncodingType"/>.
+        /// </summary>
+        /// <param name="left">The left <see cref="EncodingType"/> to compare.</param>
+        /// <param name="right">The right <see cref="EncodingType"/> to compare.</param>
+        /// <returns>True if the left <see cref="EncodingType"/> is greater than the right
+        /// <see cref="EncodingType"/>, false otherwise.</returns>
+        public static bool operator >(EncodingType left, EncodingType right)
+        {
+            return InternalExtensions.GreaterThanOperator(left, right);
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether an <see cref="EncodingType"/> is less
+        /// than a comparable <see cref="EncodingType"/>.
+        /// </summary>
+        /// <param name="left">The left <see cref="EncodingType"/> to compare.</param>
+        /// <param name="right">The right <see cref="EncodingType"/> to compare.</param>
+        /// <returns>True if the left <see cref="EncodingType"/> is less than the right
+        /// <see cref="EncodingType"/>, false otherwise.</returns>
+        public static bool operator <(EncodingType left, EncodingType right)
+        {
+            return InternalExtensions.LessThanOperator(left, right);
+        }
+
+        /// <summary>
         /// Parses a Content-Encoding value into an <see cref="EncodingType"/> instance.
         /// See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html for formatting information.
         /// </summary>
         /// <param name="value">The Content-Encoding value to parse.</param>
         /// <returns>The parsed <see cref="EncodingType"/>.</returns>
+        [SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase", Justification = "Standard use is lowercase.")]
         public static EncodingType Parse(string value)
         {
             const string FormatExceptionMessage = "Invalid encoding format. Format must be: ( ( content-coding | \"*\" ) [ \";\" \"q\" \"=\" qvalue ] ). See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html";
@@ -175,7 +203,7 @@ namespace SmallFry
                     }
                     else
                     {
-                        result = this.ToString().CompareTo(other.ToString());
+                        result = string.Compare(this.ToString(), other.ToString(), StringComparison.OrdinalIgnoreCase);
                     }
                 }
             }

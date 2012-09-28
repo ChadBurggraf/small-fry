@@ -42,6 +42,7 @@ namespace SmallFry
         /// Standard response for successful HTTP requests.
         /// </summary>
         [Description("OK")]
+        [SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "OK", Justification = "Reviewed.")]
         OK = 200,
 
         /// <summary>
@@ -84,6 +85,7 @@ namespace SmallFry
         /// The message body that follows is an XML message and can contain a number of separate response codes, depending on how many sub-requests were made.
         /// </summary>
         [Description("Multi Status")]
+        [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Multi", Justification = "Reviewed.")]
         MultiStatus = 207,
 
         /// <summary>
@@ -252,6 +254,7 @@ namespace SmallFry
         /// The client has asked for a portion of the file, but the server cannot supply that portion.
         /// </summary>
         [Description("Requested Range Not Satisfiable")]
+        [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Satisfiable", Justification = "Reviewed.")]
         RequestedRangeNotSatisfiable = 416,
 
         /// <summary>
@@ -264,6 +267,7 @@ namespace SmallFry
         /// This code was defined in 1998 as one of the traditional IETF April Fools' jokes, in RFC 2324, Hyper Text Coffee Pot Control Protocol, and is not expected to be implemented by actual HTTP servers.
         /// </summary>
         [Description("I'm A Teapot")]
+        [SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "Im", Justification = "Reviewed.")]
         ImATeapot = 418,
 
         /// <summary>
@@ -276,6 +280,7 @@ namespace SmallFry
         /// The request was well-formed but was unable to be followed due to semantic errors.
         /// </summary>
         [Description("Unprocessable Entity")]
+        [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Unprocessable", Justification = "Reviewed.")]
         UnprocessableEntity = 422,
 
         /// <summary>

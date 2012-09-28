@@ -31,6 +31,11 @@
             Assert.AreEqual("gzip", list[0].ToString());
             Assert.AreEqual("identity;q=0.5", list[1].ToString());
             Assert.AreEqual("*;q=0", list[2].ToString());
+
+            Assert.IsTrue(EncodingType.Empty > (EncodingType)null);
+            Assert.IsTrue(EncodingType.Parse("gzip") > EncodingType.Parse("gzip;q=0.5"));
+            Assert.IsTrue((EncodingType)null < EncodingType.Empty);
+            Assert.IsTrue(EncodingType.Parse("gzip;q=0.5") < EncodingType.Parse("gzip"));
         }
 
         [Test]

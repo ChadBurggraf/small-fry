@@ -1,6 +1,7 @@
 ﻿namespace SmallFry.Tests
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.IO.Compression;
     using System.Linq;
@@ -37,6 +38,7 @@ Aliquam erat volutpat. Cras magna est, aliquet sit amet vestibulum facilisis, ac
         }
 
         [Test]
+        [SuppressMessage("Microsoft.Usage", "CA2202:DoNotDisposeObjectsMultipleTimess", Target = "outputStream", Justification = "DeflateStream does not dispose of its inner stream.")]
         public void GzipDeflateEncodingDecodeDeflate()
         {
             byte[] encoded;
@@ -56,17 +58,30 @@ Aliquam erat volutpat. Cras magna est, aliquet sit amet vestibulum facilisis, ac
 
             using (Stream stream = new MemoryStream(encoded))
             {
-                using (Stream decodeStream = new GzipDeflateEncoding().Decode(EncodingType.Parse("deflate"), stream))
+                Stream decodeStream = null;
+
+                try
                 {
+                    decodeStream = new GzipDeflateEncoding().Decode(EncodingType.Parse("deflate"), stream);
+
                     using (StreamReader reader = new StreamReader(decodeStream, Encoding.Unicode))
                     {
+                        decodeStream = null;
                         Assert.AreEqual(GzipDeflateEncodingTests.Content, reader.ReadToEnd());
+                    }
+                }
+                finally
+                {
+                    if (decodeStream != null)
+                    {
+                        decodeStream.Dispose();
                     }
                 }
             }
         }
 
         [Test]
+        [SuppressMessage("Microsoft.Usage", "CA2202:DoNotDisposeObjectsMultipleTimess", Target = "outputStream", Justification = "GZipStream does not dispose of its inner stream.")]
         public void GzipDeflateEncodingDecodeGzip()
         {
             byte[] encoded;
@@ -86,17 +101,30 @@ Aliquam erat volutpat. Cras magna est, aliquet sit amet vestibulum facilisis, ac
 
             using (Stream stream = new MemoryStream(encoded))
             {
-                using (Stream decodeStream = new GzipDeflateEncoding().Decode(EncodingType.Parse("gzip"), stream))
+                Stream decodeStream = null;
+
+                try
                 {
+                    decodeStream = new GzipDeflateEncoding().Decode(EncodingType.Parse("gzip"), stream);
+
                     using (StreamReader reader = new StreamReader(decodeStream, Encoding.Unicode))
                     {
+                        decodeStream = null;
                         Assert.AreEqual(GzipDeflateEncodingTests.Content, reader.ReadToEnd());
+                    }
+                }
+                finally
+                {
+                    if (decodeStream != null)
+                    {
+                        decodeStream.Dispose();
                     }
                 }
             }
         }
 
         [Test]
+        [SuppressMessage("Microsoft.Usage", "CA2202:DoNotDisposeObjectsMultipleTimess", Target = "outputStream", Justification = "DeflateStream does not dispose of its inner stream.")]
         public void GzipDeflateEncodingEncodeDeflate()
         {
             byte[] encoded, comparison;
@@ -131,6 +159,7 @@ Aliquam erat volutpat. Cras magna est, aliquet sit amet vestibulum facilisis, ac
         }
 
         [Test]
+        [SuppressMessage("Microsoft.Usage", "CA2202:DoNotDisposeObjectsMultipleTimess", Target = "outputStream", Justification = "GZipStream does not dispose of its inner stream.")]
         public void GzipDeflateEncodingEncodeGzip()
         {
             byte[] encoded, comparison;

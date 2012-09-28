@@ -8,6 +8,7 @@ namespace SmallFry
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Linq;
 
@@ -32,7 +33,7 @@ namespace SmallFry
 
             if (types.Length == 0)
             {
-                throw new ArgumentException("parser", "parser does not identify any parse-able types."); 
+                throw new ArgumentException("parser does not identify any parse-able types.", "parser"); 
             }
 
             foreach (Type type in types)
@@ -41,6 +42,7 @@ namespace SmallFry
             }
         }
 
+        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "A binding failure indicates a non-matching route.")]
         public IDictionary<string, object> Bind(IDictionary<string, object> routeValues, IDictionary<string, Type> types)
         {
             if (routeValues == null)

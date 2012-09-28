@@ -8,6 +8,7 @@ namespace SmallFry
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
 
     internal class Method
     {
@@ -66,6 +67,7 @@ namespace SmallFry
             get { return Method.Types; }
         }
 
+        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Pipeline execution.")]
         public virtual MethodResult Invoke(IRequestMessage request, IResponseMessage response)
         {
             if (request == null)

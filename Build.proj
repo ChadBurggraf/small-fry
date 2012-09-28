@@ -16,6 +16,8 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
 
+  <UsingTask TaskName="FxCop" AssemblyFile="$(LibDir)\FxCopTask.1.0.1\FxCopTask.dll"/>
+
   <ItemGroup>
     <PackageFiles Include="$(RootDir)\LICENSE.txt" />
     <PackageFiles Include="$(RootDir)\README.md" />
@@ -27,6 +29,17 @@
     <SolutionProjects Include="$(SourceDir)\SmallFry.Tests\SmallFry.Tests.csproj" />
     <SolutionProjects Include="$(SourceDir)\SmallFry.Tests\SmallFry.Tests.Net35.csproj" />
   </ItemGroup>
+
+  <Target Name="Analyze">
+    <MSBuild Projects="$(SourceDir)\SmallFry\SmallFry.csproj;$(SourceDir)\SmallFry.Tests\SmallFry.Tests.csproj" Targets="Clean;Build" Properties="Configuration=Debug" />
+
+    <ItemGroup>
+      <FxCopAssemblies Include="$(SourceDir)\SmallFry\bin\Debug\SmallFry.dll" />
+      <FxCopAssemblies Include="$(SourceDir)\SmallFry.Tests\bin\Debug\SmallFry.Tests.dll" />
+    </ItemGroup>
+
+    <FxCop Assemblies="@(FxCopAssemblies)" Output="$(RootDir)\FxCopResults.xml"/>
+  </Target>
 
   <Target Name="Build">
     <MakeDir Directories="$(BuildDir)" />
@@ -62,5 +75,14 @@
     <Delete Files="@(CleanFiles)" />
     <RemoveDir Directories="$(BuildDir)" />
     <MSBuild Projects="@(SolutionProjects)" Targets="Clean" Properties="Configuration=$(Configuration)" />
+  </Target>
+
+  <Target Name="Test">
+    <!-- Test .NET 4.0 -->
+    <MSBuild Projects="$(SourceDir)\SmallFry.Tests\SmallFry.Tests.csproj" Targets="Clean;Build" Properties="Configuration=Debug" />
+    <Exec Command='"$(LibDir)\NUnit.Runners.2.6.1\tools\nunit-console.exe" "$(SourceDir)\SmallFry.Tests\bin\Debug\SmallFry.Tests.dll"' />
+    <!-- Test .NET 3.5 -->
+    <MSBuild Projects="$(SourceDir)\SmallFry.Tests\SmallFry.Tests.Net35.csproj" Targets="Clean;Build" Properties="Configuration=Debug" />
+    <Exec Command='"$(LibDir)\NUnit.Runners.2.6.1\tools\nunit-console.exe" "$(SourceDir)\SmallFry.Tests\bin\Debug\SmallFry.Tests.dll"' />
   </Target>
 </Project>

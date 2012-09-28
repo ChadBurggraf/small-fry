@@ -8,6 +8,7 @@ namespace SmallFry
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Text;
     using ServiceStack.Text;
@@ -17,15 +18,10 @@ namespace SmallFry
     /// </summary>
     public class JsonFormat : IFormat
     {
+        [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "Faux field used for static configuration initialization.")]
+        private static readonly bool Configured = JsonFormat.Configure();
         private static readonly MediaType ApplicationJson = MediaType.Parse("application/json");
-
-        static JsonFormat()
-        {
-            JsConfig.DateHandler = JsonDateHandler.ISO8601;
-            JsConfig.EmitCamelCaseNames = true;
-            JsConfig.IncludeNullValues = false;
-        }
-
+        
         /// <summary>
         /// Gets a value indicating whether this instance can deserialize the given <see cref="MediaType"/>.
         /// </summary>
@@ -166,6 +162,14 @@ namespace SmallFry
                 byte[] buffer = Encoding.UTF8.GetBytes((string)value);
                 stream.Write(buffer, 0, buffer.Length);
             }
+        }
+
+        private static bool Configure()
+        {
+            JsConfig.DateHandler = JsonDateHandler.ISO8601;
+            JsConfig.EmitCamelCaseNames = true;
+            JsConfig.IncludeNullValues = false;
+            return true;
         }
     }
 }

@@ -11,7 +11,11 @@ namespace SmallFry
     using System.Collections.Generic;
     using System.Linq;
 
-    internal sealed class MethodCollection : ICollection<Method>, IEnumerable<Method>, IEnumerable, IMethodCollection
+    internal sealed class MethodCollection : 
+        ICollection<Method>, 
+        IEnumerable<Method>, 
+        IEnumerable, 
+        IMethodCollection
     {
         private const string CurrentMethodNotSetMessage = "Please add a method by calling one of Delete(), Get(), Post(), or Put() before attempting to call this method.";
         private List<Method> list = new List<Method>();
@@ -357,7 +361,6 @@ namespace SmallFry
             return removed;
         }
 
-#if NET35
         public IMethodCollection WithEndpoint(string route)
         {
             return this.WithEndpoint(route, null);
@@ -369,9 +372,6 @@ namespace SmallFry
         }
 
         public IMethodCollection WithEndpoint(string route, object typeConstraints, object patternConstraints)
-#else
-        public IMethodCollection WithEndpoint(string route, object typeConstraints = null, object patternConstraints = null)
-#endif
         {
             return this.Endpoint.EndpointCollection.WithEndpoint(route, typeConstraints, patternConstraints);
         }

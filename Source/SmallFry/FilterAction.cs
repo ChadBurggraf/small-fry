@@ -8,6 +8,7 @@ namespace SmallFry
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
 
     internal class FilterAction : IEquatable<FilterAction>
     {
@@ -139,6 +140,7 @@ namespace SmallFry
             }
         }
 
+        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Pipeline execution.")]
         public virtual FilterActionResult Invoke(IRequestMessage request, IResponseMessage response, IEnumerable<Exception> exceptions)
         {
             if (request == null)

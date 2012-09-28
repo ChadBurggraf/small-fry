@@ -8,6 +8,7 @@ namespace SmallFry
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
 
     internal sealed class FilterAction<T> : FilterAction, IEquatable<FilterAction<T>>
     {
@@ -107,6 +108,7 @@ namespace SmallFry
             return this.Invoke(request as IRequestMessage<T>, response, exceptions);
         }
 
+        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Pipeline execution.")]
         public FilterActionResult Invoke(IRequestMessage<T> request, IResponseMessage response, IEnumerable<Exception> exceptions)
         {
             if (request == null)

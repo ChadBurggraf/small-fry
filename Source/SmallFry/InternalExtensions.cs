@@ -9,6 +9,7 @@ namespace SmallFry
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Linq;
     using System.Reflection;
@@ -21,6 +22,7 @@ namespace SmallFry
             dictionary.AddDynamic<object>(values);
         }
 
+        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Mimics behavior of RouteValueDictionary.")]
         public static void AddDynamic<T>(this IDictionary<string, T> dictionary, object values)
         {
             if (dictionary == null)
@@ -311,6 +313,26 @@ namespace SmallFry
             }
         }
 
+        public static bool GreaterThanOperator<T>(T left, T right) where T : IComparable<T>
+        {
+            if (left != null && right == null)
+            {
+                return true;
+            }
+            else if (left == null && right != null)
+            {
+                return false;
+            }
+            else if (left == null && right == null)
+            {
+                return false;
+            }
+            else
+            {
+                return left.CompareTo(right) > 0;
+            }
+        }
+
         public static bool IsNullOrWhiteSpace(this string value)
         {
 #if NET35
@@ -318,6 +340,26 @@ namespace SmallFry
 #else
             return string.IsNullOrWhiteSpace(value);
 #endif
+        }
+
+        public static bool LessThanOperator<T>(T left, T right) where T : IComparable<T>
+        {
+            if (left != null && right == null)
+            {
+                return false;
+            }
+            else if (left == null && right != null)
+            {
+                return true;
+            }
+            else if (left == null && right == null)
+            {
+                return false;
+            }
+            else
+            {
+                return left.CompareTo(right) < 0;
+            }
         }
 
         public static void SetStatus(this HttpResponseBase httpResponse, StatusCode statusCode)

@@ -8,6 +8,7 @@ namespace SmallFry
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
 
     internal sealed class Method<T> : Method
     {
@@ -59,6 +60,7 @@ namespace SmallFry
             return this.Invoke(request as IRequestMessage<T>, response);
         }
 
+        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Pipeline execution.")]
         public MethodResult Invoke(IRequestMessage<T> request, IResponseMessage response)
         {
             if (request == null)

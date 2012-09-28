@@ -8,11 +8,13 @@ namespace SmallFry
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     
     /// <summary>
     /// Implements <see cref="IFormat"/> to read and write plain text content.
     /// </summary>
+    [SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "PlainText", Justification = "Prefer PlainText.")]
     public class PlainTextFormat : IFormat
     {
         private static readonly MediaType TextPlain = MediaType.Parse("text/plain");
