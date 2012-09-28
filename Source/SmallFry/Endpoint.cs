@@ -26,7 +26,6 @@ namespace SmallFry
             }
 
             this.Route = RoutePattern.Parse(service.BaseUrl.AppendUrlPath(route));
-            this.Service = service;
             this.EndpointCollection = endpointCollection;
             this.Methods = new MethodCollection(this);
             this.ParameterPatterns = new Dictionary<string, Regex>();
@@ -45,8 +44,6 @@ namespace SmallFry
         public Pipeline Pipeline { get; private set; }
 
         public RoutePattern Route { get; private set; }
-
-        public Service Service { get; private set; }
 
         public void SetParameterPatterns(object patternConstraints)
         {

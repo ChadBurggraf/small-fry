@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using NUnit.Framework;
 
     [TestFixture]
@@ -104,10 +105,12 @@
             return true;
         }
 
+        [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses", Justification = "False positive.")]
         private sealed class TypedRequest
         {
         }
 
+        [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses", Justification = "False positive.")]
         private sealed class TypedRequest2
         {
         }

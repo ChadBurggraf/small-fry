@@ -98,6 +98,7 @@ namespace SmallFry
             return success ? result : null;
         }
 
+        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Used for testing.")]
         public bool HasParserForType(Type type)
         {
             if (type == null)

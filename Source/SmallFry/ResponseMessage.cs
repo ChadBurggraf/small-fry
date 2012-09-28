@@ -8,9 +8,11 @@ namespace SmallFry
 {
     using System;
     using System.Collections.Specialized;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Web;
 
+    [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses", Justification = "Mirrors simple IRequestMessage implementation.")]
     internal sealed class ResponseMessage : IResponseMessage
     {
         private bool disposed;

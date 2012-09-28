@@ -12,12 +12,7 @@ namespace SmallFry
 
     internal sealed class RouteSegment
     {
-        public RouteSegment(IEnumerable<RouteToken> tokens)
-            : this(tokens, tokens.Any(t => t.TokenType == RouteTokenType.Named), tokens.Any(t => t.TokenType == RouteTokenType.Wildcard))
-        {
-        }
-
-        public RouteSegment(IEnumerable<RouteToken> tokens, bool hasNamed, bool hasWildcard)
+        public RouteSegment(IEnumerable<RouteToken> tokens, bool hasWildcard)
         {
             if (tokens == null)
             {
@@ -30,11 +25,8 @@ namespace SmallFry
             }
 
             this.Tokens = tokens;
-            this.HasNamed = hasNamed;
             this.HasWildcard = hasWildcard;
         }
-
-        public bool HasNamed { get; private set; }
 
         public bool HasWildcard { get; private set; }
 

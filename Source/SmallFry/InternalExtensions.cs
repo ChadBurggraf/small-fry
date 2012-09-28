@@ -172,39 +172,6 @@ namespace SmallFry
             return result;
         }
 
-        public static bool CollectionEquals<T>(this ICollection<T> value, ICollection<T> compareValue, IComparer<T> comparer)
-        {
-            if (comparer == null)
-            {
-                throw new ArgumentNullException("comparer", "comparer cannot be null.");
-            }
-
-            bool result;
-
-            if (value != null && compareValue == null)
-            {
-                result = false;
-            }
-            else if (value == null && compareValue != null)
-            {
-                result = false;
-            }
-            else if (value == null && compareValue == null)
-            {
-                result = true;
-            }
-            else if (value.Count != compareValue.Count)
-            {
-                result = false;
-            }
-            else
-            {
-                result = value.OrderBy(v => v, comparer).SequenceEqual(compareValue.OrderBy(v => v, comparer));
-            }
-
-            return result;
-        }
-
 #if NET35
         public static void CopyTo(this Stream source, Stream destination)
         {
@@ -371,40 +338,6 @@ namespace SmallFry
 
             httpResponse.StatusCode = (int)statusCode;
             httpResponse.StatusDescription = statusCode.Description();
-        }
-
-        public static IEnumerable<string> ToAcceptEncodings(this IEnumerable<EncodingType> encodingTypes)
-        {
-            List<string> result = new List<string>();
-
-            if (encodingTypes != null)
-            {
-                result.AddRange(encodingTypes.Select(e => e.Name));
-            }
-
-            if (result.Count == 0)
-            {
-                result.Add("*");
-            }
-
-            return result;
-        }
-
-        public static IEnumerable<string> ToAcceptFormats(this IEnumerable<MediaType> mediaTypes)
-        {
-            List<string> result = new List<string>();
-
-            if (mediaTypes != null)
-            {
-                result.AddRange(mediaTypes.Select(m => m.RootType + "/" + m.SubType));
-            }
-
-            if (result.Count == 0)
-            {
-                result.Add("*/*");
-            }
-
-            return result;
         }
     }
 }

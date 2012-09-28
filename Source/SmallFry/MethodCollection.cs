@@ -193,17 +193,17 @@ namespace SmallFry
 
         public IMethodCollection Delete(Action action)
         {
-            return this.AddMethod(new Method(MethodType.Delete, this.Endpoint, this, action));
+            return this.AddMethod(new Method(MethodType.Delete, this.Endpoint, action));
         }
 
         public IMethodCollection Delete(Action<IRequestMessage> action)
         {
-            return this.AddMethod(new Method(MethodType.Delete, this.Endpoint, this, action));
+            return this.AddMethod(new Method(MethodType.Delete, this.Endpoint, action));
         }
 
         public IMethodCollection Delete(Action<IRequestMessage, IResponseMessage> action)
         {
-            return this.AddMethod(new Method(MethodType.Delete, this.Endpoint, this, action));
+            return this.AddMethod(new Method(MethodType.Delete, this.Endpoint, action));
         }
 
         public IMethodCollection ErrorEndpoint(Func<IEnumerable<Exception>, bool> action)
@@ -276,77 +276,77 @@ namespace SmallFry
 
         public IMethodCollection Get(Action action)
         {
-            return this.AddMethod(new Method(MethodType.Get, this.Endpoint, this, action));
+            return this.AddMethod(new Method(MethodType.Get, this.Endpoint, action));
         }
 
         public IMethodCollection Get(Action<IRequestMessage> action)
         {
-            return this.AddMethod(new Method(MethodType.Get, this.Endpoint, this, action));
+            return this.AddMethod(new Method(MethodType.Get, this.Endpoint, action));
         }
 
         public IMethodCollection Get(Action<IRequestMessage, IResponseMessage> action)
         {
-            return this.AddMethod(new Method(MethodType.Get, this.Endpoint, this, action));
+            return this.AddMethod(new Method(MethodType.Get, this.Endpoint, action));
         }
 
         public IMethodCollection Post(Action action)
         {
-            return this.AddMethod(new Method(MethodType.Post, this.Endpoint, this, action));
+            return this.AddMethod(new Method(MethodType.Post, this.Endpoint, action));
         }
 
         public IMethodCollection Post<T>(Action<T> action)
         {
-            return this.AddMethod(new Method<T>(MethodType.Post, this.Endpoint, this, action));
+            return this.AddMethod(new Method<T>(MethodType.Post, this.Endpoint, action));
         }
 
         public IMethodCollection Post(Action<IRequestMessage> action)
         {
-            return this.AddMethod(new Method(MethodType.Post, this.Endpoint, this, action));
+            return this.AddMethod(new Method(MethodType.Post, this.Endpoint, action));
         }
 
         public IMethodCollection Post<T>(Action<IRequestMessage<T>> action)
         {
-            return this.AddMethod(new Method<T>(MethodType.Post, this.Endpoint, this, action));
+            return this.AddMethod(new Method<T>(MethodType.Post, this.Endpoint, action));
         }
 
         public IMethodCollection Post(Action<IRequestMessage, IResponseMessage> action)
         {
-            return this.AddMethod(new Method(MethodType.Post, this.Endpoint, this, action));
+            return this.AddMethod(new Method(MethodType.Post, this.Endpoint, action));
         }
 
         public IMethodCollection Post<T>(Action<IRequestMessage<T>, IResponseMessage> action)
         {
-            return this.AddMethod(new Method<T>(MethodType.Post, this.Endpoint, this, action));
+            return this.AddMethod(new Method<T>(MethodType.Post, this.Endpoint, action));
         }
 
         public IMethodCollection Put(Action action)
         {
-            return this.AddMethod(new Method(MethodType.Put, this.Endpoint, this, action));
+            return this.AddMethod(new Method(MethodType.Put, this.Endpoint, action));
         }
 
         public IMethodCollection Put<T>(Action<T> action)
         {
-            return this.AddMethod(new Method<T>(MethodType.Put, this.Endpoint, this, action));
+            return this.AddMethod(new Method<T>(MethodType.Put, this.Endpoint, action));
         }
 
         public IMethodCollection Put(Action<IRequestMessage> action)
         {
-            return this.AddMethod(new Method(MethodType.Put, this.Endpoint, this, action));
+            return this.AddMethod(new Method(MethodType.Put, this.Endpoint, action));
         }
 
         public IMethodCollection Put<T>(Action<IRequestMessage<T>> action)
         {
-            return this.AddMethod(new Method<T>(MethodType.Put, this.Endpoint, this, action));
+            return this.AddMethod(new Method<T>(MethodType.Put, this.Endpoint, action));
         }
 
         public IMethodCollection Put(Action<IRequestMessage, IResponseMessage> action)
         {
-            return this.AddMethod(new Method(MethodType.Put, this.Endpoint, this, action));
+            return this.AddMethod(new Method(MethodType.Put, this.Endpoint, action));
         }
 
         public IMethodCollection Put<T>(Action<IRequestMessage<T>, IResponseMessage> action)
         {
-            return this.AddMethod(new Method<T>(MethodType.Put, this.Endpoint, this, action));
+            return this.AddMethod(new Method<T>(MethodType.Put, this.Endpoint, action));
         }
 
         public bool Remove(Method item)

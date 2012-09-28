@@ -20,10 +20,6 @@ namespace SmallFry
         {
         }
 
-        public bool IsEmpty { get; private set; }
-
-        public bool IsAllLiteral { get; private set; }
-
         public bool IsAllOptional { get; private set; }
 
         public bool IsAllWildcard { get; private set; }
@@ -47,28 +43,9 @@ namespace SmallFry
             {
                 Route = route,
                 Segments = segments,
-                IsEmpty = !segments.Any(),
-                IsAllLiteral = segments.All(s => s.Tokens.All(t => t.TokenType == RouteTokenType.Literal)),
                 IsAllOptional = segments.All(s => s.Tokens.All(t => t.IsOptional)),
                 IsAllWildcard = segments.All(s => s.Tokens.All(t => t.TokenType == RouteTokenType.Wildcard))
             };
-        }
-
-        public static bool TryParse(string route, out RoutePattern result)
-        {
-            bool success = false;
-            result = null;
-
-            try
-            {
-                result = RoutePattern.Parse(route);
-                success = true;
-            }
-            catch (FormatException)
-            {
-            }
-
-            return success;
         }
 
         public IDictionary<string, object> Match(string url)
@@ -294,7 +271,7 @@ namespace SmallFry
         private static RouteSegment ParseSegment(string part, Dictionary<string, bool> lookup)
         {
             List<RouteToken> tokens = new List<RouteToken>();
-            bool hasWildcard = false, hasNamed = false, optional, wildcard;
+            bool hasWildcard = false, optional, wildcard;
             int length = part.Length, start = part.IndexOf('{'), end = part.IndexOf('}'), i = 0, tokenCount = 0;
 
             if (start > -1)
@@ -353,7 +330,6 @@ namespace SmallFry
 
                         tokens.Add(token);
                         lookup[name] = true;
-                        hasNamed = true;
                         tokenCount = tokenCount + 1;
                         i = end + 1;
                     }
@@ -379,7 +355,7 @@ namespace SmallFry
                 }
             }
 
-            return new RouteSegment(tokens, hasNamed, hasWildcard);
+            return new RouteSegment(tokens, hasWildcard);
         }
 
         private static void SeedRouteValues(IEnumerable<RouteSegment> segments, IDictionary<string, object> routeValues)

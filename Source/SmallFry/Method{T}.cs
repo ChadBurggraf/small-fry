@@ -17,36 +17,36 @@ namespace SmallFry
         private Action<IRequestMessage<T>, IResponseMessage> requestResponseAction;
         private IEnumerable<Type> typeArguments = new Type[] { typeof(T) };
 
-        public Method(MethodType methodType, Endpoint endpoint, IMethodCollection methodCollection, Action<T> action)
+        public Method(MethodType methodType, Endpoint endpoint, Action<T> action)
         {
             if (action == null)
             {
                 throw new ArgumentNullException("action", "action cannot be null.");
             }
 
-            this.Initialize(methodType, endpoint, methodCollection);
+            this.Initialize(methodType, endpoint);
             this.action = action;
         }
 
-        public Method(MethodType methodType, Endpoint endpoint, IMethodCollection methodCollection, Action<IRequestMessage<T>> action)
+        public Method(MethodType methodType, Endpoint endpoint, Action<IRequestMessage<T>> action)
         {
             if (action == null)
             {
                 throw new ArgumentNullException("action", "action cannot be null.");
             }
 
-            this.Initialize(methodType, endpoint, methodCollection);
+            this.Initialize(methodType, endpoint);
             this.requestAction = action;
         }
 
-        public Method(MethodType methodType, Endpoint endpoint, IMethodCollection methodCollection, Action<IRequestMessage<T>, IResponseMessage> action)
+        public Method(MethodType methodType, Endpoint endpoint, Action<IRequestMessage<T>, IResponseMessage> action)
         {
             if (action == null)
             {
                 throw new ArgumentNullException("action", "action cannot be null.");
             }
 
-            this.Initialize(methodType, endpoint, methodCollection);
+            this.Initialize(methodType, endpoint);
             this.requestResponseAction = action;
         }
 

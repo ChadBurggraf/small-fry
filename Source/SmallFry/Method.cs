@@ -17,36 +17,36 @@ namespace SmallFry
         private Action<IRequestMessage> requestAction;
         private Action<IRequestMessage, IResponseMessage> requestResponseAction;
 
-        public Method(MethodType methodType, Endpoint endpoint, IMethodCollection methodCollection, Action action)
+        public Method(MethodType methodType, Endpoint endpoint, Action action)
         {
             if (action == null)
             {
                 throw new ArgumentNullException("action", "action cannot be null.");
             }
 
-            this.Initialize(methodType, endpoint, methodCollection);
+            this.Initialize(methodType, endpoint);
             this.action = action;
         }
 
-        public Method(MethodType methodType, Endpoint endpoint, IMethodCollection methodCollection, Action<IRequestMessage> action)
+        public Method(MethodType methodType, Endpoint endpoint, Action<IRequestMessage> action)
         {
             if (action == null)
             {
                 throw new ArgumentNullException("action", "action cannot be null.");
             }
 
-            this.Initialize(methodType, endpoint, methodCollection);
+            this.Initialize(methodType, endpoint);
             this.requestAction = action;
         }
 
-        public Method(MethodType methodType, Endpoint endpoint, IMethodCollection methodCollection, Action<IRequestMessage, IResponseMessage> action)
+        public Method(MethodType methodType, Endpoint endpoint, Action<IRequestMessage, IResponseMessage> action)
         {
             if (action == null)
             {
                 throw new ArgumentNullException("action", "action cannot be null.");
             }
 
-            this.Initialize(methodType, endpoint, methodCollection);
+            this.Initialize(methodType, endpoint);
             this.requestResponseAction = action;
         }
 
@@ -55,8 +55,6 @@ namespace SmallFry
         }
 
         public Endpoint Endpoint { get; protected set; }
-
-        public IMethodCollection MethodCollection { get; protected set; }
 
         public MethodType MethodType { get; protected set; }
 
@@ -126,21 +124,15 @@ namespace SmallFry
             return result;
         }
 
-        protected void Initialize(MethodType methodType, Endpoint endpoint, IMethodCollection methodCollection)
+        protected void Initialize(MethodType methodType, Endpoint endpoint)
         {
             if (endpoint == null)
             {
                 throw new ArgumentNullException("endpoint", "endpoint cannot be null.");
             }
 
-            if (methodCollection == null)
-            {
-                throw new ArgumentNullException("methodCollection", "methodCollection cannot be null.");
-            }
-
             this.MethodType = methodType;
             this.Endpoint = endpoint;
-            this.MethodCollection = methodCollection;
             this.Pipeline = new Pipeline();
         }
     }
