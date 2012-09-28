@@ -111,6 +111,7 @@ namespace SmallFry
         /// <param name="value">The Content-Type value to parse.</param>
         /// <returns>The parsed <see cref="MediaType"/>.</returns>
         [SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase", Justification = "Standard use is lowercase.")]
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "accept-params", Justification = "Reviewed.")]
         public static MediaType Parse(string value)
         {
             if (value.IsNullOrWhiteSpace())

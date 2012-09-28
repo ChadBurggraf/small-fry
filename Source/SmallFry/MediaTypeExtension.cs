@@ -69,6 +69,7 @@ namespace SmallFry
         /// <param name="value">The Accept-Extension value to parse.</param>
         /// <returns>The parsed <see cref="MediaTypeExtension"/>.</returns>
         [SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase", Justification = "Standard use is lowercase.")]
+        [SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Justification = "False positive.")]
         public static MediaTypeExtension Parse(string value)
         {
             if (!value.IsNullOrWhiteSpace())

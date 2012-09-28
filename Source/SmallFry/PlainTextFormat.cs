@@ -57,7 +57,7 @@ namespace SmallFry
         /// <returns>A Content-Type value to send.</returns>
         public virtual string ContentType(MediaType mediaType)
         {
-            string contentType = mediaType.ToContentTypeString();
+            string contentType = mediaType != null ? mediaType.ToContentTypeString() : "*";
 
             if (contentType.Contains("*"))
             {

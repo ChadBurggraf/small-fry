@@ -42,6 +42,7 @@ namespace SmallFry
         /// </summary>
         /// <param name="context">An <see cref="HttpContextBase"/> object that provides references to the intrinsic server objects 
         /// (for example, Request, Response, Session, and Server) used to service HTTP requests.</param>
+        [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity", Justification = "I think breaking up this method would be more confusing.")]
         [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Overload of an interface method.")]
         public void ProcessRequest(HttpContextBase context)
         {

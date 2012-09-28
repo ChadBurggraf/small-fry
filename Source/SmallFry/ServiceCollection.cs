@@ -9,6 +9,7 @@ namespace SmallFry
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
 
     internal sealed class ServiceCollection : 
@@ -48,6 +49,7 @@ namespace SmallFry
             this.list.Add(item);
         }
 
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "WithService", Justification = "Reviewed.")]
         public IEndpointCollection AfterService(Func<bool> action)
         {
             if (this.CurrentService == null)
@@ -59,6 +61,7 @@ namespace SmallFry
             return this.CurrentService.Endpoints;
         }
 
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "WithService", Justification = "Reviewed.")]
         public IEndpointCollection AfterService(Func<IRequestMessage, IResponseMessage, bool> action)
         {
             if (this.CurrentService == null)
@@ -70,6 +73,7 @@ namespace SmallFry
             return this.CurrentService.Endpoints;
         }
 
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "WithService", Justification = "Reviewed.")]
         public IEndpointCollection AfterService<T>(Func<IRequestMessage<T>, IResponseMessage, bool> action)
         {
             if (this.CurrentService == null)
@@ -81,6 +85,7 @@ namespace SmallFry
             return this.CurrentService.Endpoints;
         }
 
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "WithService", Justification = "Reviewed.")]
         public IEndpointCollection BeforeService(Func<bool> action)
         {
             if (this.CurrentService == null)
@@ -92,6 +97,7 @@ namespace SmallFry
             return this.CurrentService.Endpoints;
         }
 
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "WithService", Justification = "Reviewed.")]
         public IEndpointCollection BeforeService(Func<IRequestMessage, IResponseMessage, bool> action)
         {
             if (this.CurrentService == null)
@@ -103,6 +109,7 @@ namespace SmallFry
             return this.CurrentService.Endpoints;
         }
 
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "WithService", Justification = "Reviewed.")]
         public IEndpointCollection BeforeService<T>(Func<IRequestMessage<T>, IResponseMessage, bool> action)
         {
             if (this.CurrentService == null)
@@ -130,6 +137,7 @@ namespace SmallFry
             this.list.CopyTo(array, arrayIndex);
         }
 
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "WithService", Justification = "Reviewed.")]
         public IEndpointCollection ErrorService(Func<IEnumerable<Exception>, bool> action)
         {
             if (this.CurrentService == null)
@@ -141,6 +149,7 @@ namespace SmallFry
             return this.CurrentService.Endpoints;
         }
 
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "WithService", Justification = "Reviewed.")]
         public IEndpointCollection ErrorService(Func<IEnumerable<Exception>, IRequestMessage, IResponseMessage, bool> action)
         {
             if (this.CurrentService == null)
@@ -152,6 +161,7 @@ namespace SmallFry
             return this.CurrentService.Endpoints;
         }
 
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "WithService", Justification = "Reviewed.")]
         public IEndpointCollection ErrorService<T>(Func<IEnumerable<Exception>, IRequestMessage<T>, IResponseMessage, bool> action)
         {
             if (this.CurrentService == null)
@@ -190,6 +200,7 @@ namespace SmallFry
             return this.WithEndpoint(route, typeConstraints, null);
         }
 
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "WithService", Justification = "Reviewed.")]
         public IMethodCollection WithEndpoint(string route, object typeConstraints, object patternConstraints)
         {
             if (this.CurrentService == null)
@@ -218,6 +229,7 @@ namespace SmallFry
             return this;
         }
 
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "WithService", Justification = "Reviewed.")]
         public IEndpointCollection WithoutServiceEncoding(IEncoding encoding)
         {
             if (this.CurrentService == null)
@@ -229,6 +241,7 @@ namespace SmallFry
             return this.CurrentService.Endpoints;
         }
 
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "WithService", Justification = "Reviewed.")]
         public IEndpointCollection WithoutServiceFormat(IFormat format)
         {
             if (this.CurrentService == null)
@@ -248,6 +261,7 @@ namespace SmallFry
             return service.Endpoints;
         }
 
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "WithService", Justification = "Reviewed.")]
         public IEndpointCollection WithServiceEncoding(IEncoding encoding)
         {
             if (this.CurrentService == null)
@@ -259,6 +273,7 @@ namespace SmallFry
             return this.CurrentService.Endpoints;
         }
 
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "WithService", Justification = "Reviewed.")]
         public IEndpointCollection WithServiceFormat(IFormat format)
         {
             if (this.CurrentService == null)

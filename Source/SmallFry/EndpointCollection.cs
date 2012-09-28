@@ -9,6 +9,7 @@ namespace SmallFry
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
 
     internal sealed class EndpointCollection : 
@@ -182,6 +183,7 @@ namespace SmallFry
             return ((IEnumerable)this.list).GetEnumerator();
         }
 
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "WithEndpoint", Justification = "Reviewed.")]
         public IMethodCollection AfterEndpoint(Func<bool> action)
         {
             if (this.CurrentEndpoint == null)
@@ -193,6 +195,7 @@ namespace SmallFry
             return this.CurrentEndpoint.Methods;
         }
 
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "WithEndpoint", Justification = "Reviewed.")]
         public IMethodCollection AfterEndpoint(Func<IRequestMessage, IResponseMessage, bool> action)
         {
             if (this.CurrentEndpoint == null)
@@ -204,6 +207,7 @@ namespace SmallFry
             return this.CurrentEndpoint.Methods;
         }
 
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "WithEndpoint", Justification = "Reviewed.")]
         public IMethodCollection AfterEndpoint<T>(Func<IRequestMessage<T>, IResponseMessage, bool> action)
         {
             if (this.CurrentEndpoint == null)
@@ -215,6 +219,7 @@ namespace SmallFry
             return this.CurrentEndpoint.Methods;
         }
 
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "WithEndpoint", Justification = "Reviewed.")]
         public IMethodCollection BeforeEndpoint(Func<bool> action)
         {
             if (this.CurrentEndpoint == null)
@@ -226,6 +231,7 @@ namespace SmallFry
             return this.CurrentEndpoint.Methods;
         }
 
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "WithEndpoint", Justification = "Reviewed.")]
         public IMethodCollection BeforeEndpoint(Func<IRequestMessage, IResponseMessage, bool> action)
         {
             if (this.CurrentEndpoint == null)
@@ -237,6 +243,7 @@ namespace SmallFry
             return this.CurrentEndpoint.Methods;
         }
 
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "WithEndpoint", Justification = "Reviewed.")]
         public IMethodCollection BeforeEndpoint<T>(Func<IRequestMessage<T>, IResponseMessage, bool> action)
         {
             if (this.CurrentEndpoint == null)
@@ -248,6 +255,7 @@ namespace SmallFry
             return this.CurrentEndpoint.Methods;
         }
 
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "WithEndpoint", Justification = "Reviewed.")]
         public IMethodCollection ErrorEndpoint(Func<IEnumerable<Exception>, bool> action)
         {
             if (this.CurrentEndpoint == null)
@@ -259,6 +267,7 @@ namespace SmallFry
             return this.CurrentEndpoint.Methods;
         }
 
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "WithEndpoint", Justification = "Reviewed.")]
         public IMethodCollection ErrorEndpoint(Func<IEnumerable<Exception>, IRequestMessage, IResponseMessage, bool> action)
         {
             if (this.CurrentEndpoint == null)
@@ -270,6 +279,7 @@ namespace SmallFry
             return this.CurrentEndpoint.Methods;
         }
 
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "WithEndpoint", Justification = "Reviewed.")]
         public IMethodCollection ErrorEndpoint<T>(Func<IEnumerable<Exception>, IRequestMessage<T>, IResponseMessage, bool> action)
         {
             if (this.CurrentEndpoint == null)
@@ -296,6 +306,7 @@ namespace SmallFry
             return this.Service.ServiceCollection.WithHostParameterParser(parser);
         }
 
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "WithEndpoint", Justification = "Reviewed.")]
         public IMethodCollection WithoutAfterEndpoint(Func<bool> action)
         {
             if (this.CurrentEndpoint == null)
@@ -307,6 +318,7 @@ namespace SmallFry
             return this.CurrentEndpoint.Methods;
         }
 
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "WithEndpoint", Justification = "Reviewed.")]
         public IMethodCollection WithoutAfterEndpoint(Func<IRequestMessage, IResponseMessage, bool> action)
         {
             if (this.CurrentEndpoint == null)
@@ -318,6 +330,7 @@ namespace SmallFry
             return this.CurrentEndpoint.Methods;
         }
 
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "WithEndpoint", Justification = "Reviewed.")]
         public IMethodCollection WithoutAfterEndpoint<T>(Func<IRequestMessage<T>, IResponseMessage, bool> action)
         {
             if (this.CurrentEndpoint == null)
@@ -329,6 +342,7 @@ namespace SmallFry
             return this.CurrentEndpoint.Methods;
         }
 
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "WithEndpoint", Justification = "Reviewed.")]
         public IMethodCollection WithoutBeforeEndpoint(Func<bool> action)
         {
             if (this.CurrentEndpoint == null)
@@ -340,6 +354,7 @@ namespace SmallFry
             return this.CurrentEndpoint.Methods;
         }
 
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "WithEndpoint", Justification = "Reviewed.")]
         public IMethodCollection WithoutBeforeEndpoint(Func<IRequestMessage, IResponseMessage, bool> action)
         {
             if (this.CurrentEndpoint == null)
@@ -351,6 +366,7 @@ namespace SmallFry
             return this.CurrentEndpoint.Methods;
         }
 
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "WithEndpoint", Justification = "Reviewed.")]
         public IMethodCollection WithoutBeforeEndpoint<T>(Func<IRequestMessage<T>, IResponseMessage, bool> action)
         {
             if (this.CurrentEndpoint == null)
@@ -362,6 +378,7 @@ namespace SmallFry
             return this.CurrentEndpoint.Methods;
         }
 
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "WithEndpoint", Justification = "Reviewed.")]
         public IMethodCollection WithoutErrorEndpoint(Func<IEnumerable<Exception>, bool> action)
         {
             if (this.CurrentEndpoint == null)
@@ -373,6 +390,7 @@ namespace SmallFry
             return this.CurrentEndpoint.Methods;
         }
 
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "WithEndpoint", Justification = "Reviewed.")]
         public IMethodCollection WithoutErrorEndpoint(Func<IEnumerable<Exception>, IRequestMessage, IResponseMessage, bool> action)
         {
             if (this.CurrentEndpoint == null)
@@ -384,6 +402,7 @@ namespace SmallFry
             return this.CurrentEndpoint.Methods;
         }
 
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "WithEndpoint", Justification = "Reviewed.")]
         public IMethodCollection WithoutErrorEndpoint<T>(Func<IEnumerable<Exception>, IRequestMessage<T>, IResponseMessage, bool> action)
         {
             if (this.CurrentEndpoint == null)

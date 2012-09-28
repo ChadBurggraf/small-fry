@@ -75,12 +75,13 @@
     <Compile Include="IServiceHost.cs" />
     <Compile Include="JsonFormat.cs" />
     <Compile Include="MediaType.cs" />
+    <Compile Include="MediaTypeAcceptParameters.cs" />
+    <Compile Include="MediaTypeExtension.cs" />
     <Compile Include="Method.cs" />
     <Compile Include="MethodCollection.cs" />
     <Compile Include="MethodResult.cs" />
     <Compile Include="MethodType.cs" />
     <Compile Include="Method{T}.cs" />
-    <Compile Include="ParameterType.cs" />
     <Compile Include="Pipeline.cs" />
     <Compile Include="PipelineErrorType.cs" />
     <Compile Include="PipelineException.cs" />

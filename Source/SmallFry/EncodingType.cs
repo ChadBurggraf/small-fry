@@ -97,6 +97,7 @@ namespace SmallFry
         /// <param name="value">The Content-Encoding value to parse.</param>
         /// <returns>The parsed <see cref="EncodingType"/>.</returns>
         [SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase", Justification = "Standard use is lowercase.")]
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "qvalue", Justification = "Reviewed.")]
         public static EncodingType Parse(string value)
         {
             const string FormatExceptionMessage = "Invalid encoding format. Format must be: ( ( content-coding | \"*\" ) [ \";\" \"q\" \"=\" qvalue ] ). See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html";

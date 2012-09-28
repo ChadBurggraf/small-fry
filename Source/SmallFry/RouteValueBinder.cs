@@ -43,6 +43,7 @@ namespace SmallFry
         }
 
         [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "A binding failure indicates a non-matching route.")]
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "IRouteParameterParser", Justification = "Reviewed.")]
         public IDictionary<string, object> Bind(IDictionary<string, object> routeValues, IDictionary<string, Type> types)
         {
             if (routeValues == null)

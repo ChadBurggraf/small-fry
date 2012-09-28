@@ -44,7 +44,7 @@ namespace SmallFry
         /// <returns>A Content-Encoding value to send.</returns>
         public string ContentEncoding(EncodingType encodingType)
         {
-            return encodingType.Name;
+            return encodingType != null ? encodingType.Name : string.Empty;
         }
 
         /// <summary>

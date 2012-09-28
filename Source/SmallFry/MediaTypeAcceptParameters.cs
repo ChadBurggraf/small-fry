@@ -73,6 +73,9 @@ namespace SmallFry
         /// <param name="value">The Accept-Params value to parse.</param>
         /// <returns>The parsed <see cref="MediaTypeAcceptParameters"/>.</returns>
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed.")]
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "params", Justification = "Reviewed.")]
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "qvalue", Justification = "Reviewed.")]
+        [SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Justification = "False positive.")]
         public static MediaTypeAcceptParameters Parse(string value)
         {
             const string FormatExceptionMessage = "Invalid params format. Format must be: \"q\" \"=\" qvalue *( accept-extension ). See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html";

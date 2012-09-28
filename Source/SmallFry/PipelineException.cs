@@ -7,6 +7,7 @@
 namespace SmallFry
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Runtime.Serialization;
     using System.Security.Permissions;
 
@@ -59,6 +60,7 @@ namespace SmallFry
         /// <param name="requestUri">The request URI being handled when the exception was thrown.</param>
         /// <param name="methodType">The method type being handled when the exception was thrown.</param>
         /// <param name="innerException">The exception that is the cause of the current exception, or a null reference (Nothing in Visual Basic) if no inner exception is specified.</param>
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", Justification = "Reviewed.")]
         public PipelineException(PipelineErrorType errorType, string serviceName, string route, Uri requestUri, MethodType methodType, Exception innerException)
             : base(PipelineException.DefaultMessage, innerException)
         {

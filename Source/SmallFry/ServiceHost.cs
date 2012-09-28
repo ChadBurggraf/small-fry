@@ -8,6 +8,7 @@ namespace SmallFry
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Linq;
 
@@ -36,6 +37,8 @@ namespace SmallFry
         /// <summary>
         /// Gets the collection of services hosted by this host.
         /// </summary>
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ApplicationStart", Justification = "Reviewed.")]
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "asax", Justification = "Reviewed.")]
         public IServiceCollection Services
         {
             get 

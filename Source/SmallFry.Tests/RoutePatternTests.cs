@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using NUnit.Framework;
 
@@ -19,6 +20,7 @@
         }
 
         [Test]
+        [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Multi", Justification = "Reviewied.")]
         public void RoutePatternFailMatchMultiTokenSegmentRoute()
         {
             RoutePattern pattern = RoutePattern.Parse("foo{token1}bar{?token2}");
@@ -65,6 +67,7 @@
 
         [Test]
         [ExpectedException(typeof(FormatException))]
+        [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Multi", Justification = "Reviewied.")]
         public void RoutePatternFailParseMultiSegmentWithoutSeparator()
         {
             RoutePattern.Parse("foo/{bar}{baz}/{*pathInfo}");
@@ -97,6 +100,7 @@
         }
 
         [Test]
+        [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Multi", Justification = "Reviewied.")]
         public void RoutePatternMatchMultiTokenSegmentRoute()
         {
             RoutePattern pattern = RoutePattern.Parse("foo{token1}bar{?token2}");
@@ -194,6 +198,7 @@
         }
 
         [Test]
+        [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Multi", Justification = "Reviewied.")]
         public void RoutePatternParseMultiTokenSegmentRoute()
         {
             RoutePattern pattern = RoutePattern.Parse("foo{token1}bar{?token2}");

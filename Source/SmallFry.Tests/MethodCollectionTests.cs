@@ -164,7 +164,7 @@
             EndpointCollection endpoints = services.WithService("Test", "/") as EndpointCollection;
             MethodCollection methods = endpoints.WithEndpoint("endpoint/route") as MethodCollection;
 
-            services
+            methods
                 .ErrorService((ex) => true)
                 .ErrorService((ex, req, res) => true)
                 .ErrorService<string>((ex, req, res) => true);

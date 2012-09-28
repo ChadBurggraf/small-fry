@@ -9,6 +9,7 @@
     using NUnit.Framework;
 
     [TestFixture]
+    [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Gzip", Justification = "Reviewied.")]
     public sealed class GzipDeflateEncodingTests
     {
         private const string Content = @"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse nec quam a lorem molestie eleifend. Pellentesque sit amet eros velit. Vivamus rhoncus, elit eu sollicitudin posuere, dolor ipsum tempus massa, semper faucibus lectus nunc eget ante. Proin dignissim, nisi eget tempor tincidunt, mauris felis adipiscing leo, quis pharetra lectus turpis id metus. Etiam aliquam rhoncus adipiscing. Pellentesque volutpat pellentesque pellentesque. Integer mattis mollis tortor, vel eleifend mi ultrices fringilla. Cras luctus est ut massa faucibus sit amet aliquet augue fermentum. Morbi dictum pulvinar ante nec molestie.
@@ -22,6 +23,7 @@ Mauris libero elit, sodales nec tristique vel, vehicula quis odio. Mauris suscip
 Aliquam erat volutpat. Cras magna est, aliquet sit amet vestibulum facilisis, accumsan at nibh. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Vivamus nec ipsum nulla. Donec euismod sem et dolor auctor eu ultricies risus rutrum. Donec vel elit lorem. Vivamus ac pulvinar sem.";
 
         [Test]
+        [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Gzip", Justification = "Reviewied.")]
         public void GzipDeflateEncodingCanDecode()
         {
             Assert.IsTrue(new GzipDeflateEncoding().CanDecode(EncodingType.Parse("deflate")));
@@ -30,6 +32,7 @@ Aliquam erat volutpat. Cras magna est, aliquet sit amet vestibulum facilisis, ac
         }
 
         [Test]
+        [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Gzip", Justification = "Reviewied.")]
         public void GzipDeflateEncodingCanEncode()
         {
             Assert.IsTrue(new GzipDeflateEncoding().CanEncode(EncodingType.Parse("deflate")));
@@ -38,6 +41,7 @@ Aliquam erat volutpat. Cras magna est, aliquet sit amet vestibulum facilisis, ac
         }
 
         [Test]
+        [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Gzip", Justification = "Reviewied.")]
         [SuppressMessage("Microsoft.Usage", "CA2202:DoNotDisposeObjectsMultipleTimess", Target = "outputStream", Justification = "DeflateStream does not dispose of its inner stream.")]
         public void GzipDeflateEncodingDecodeDeflate()
         {
@@ -81,6 +85,7 @@ Aliquam erat volutpat. Cras magna est, aliquet sit amet vestibulum facilisis, ac
         }
 
         [Test]
+        [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Gzip", Justification = "Reviewied.")]
         [SuppressMessage("Microsoft.Usage", "CA2202:DoNotDisposeObjectsMultipleTimess", Target = "outputStream", Justification = "GZipStream does not dispose of its inner stream.")]
         public void GzipDeflateEncodingDecodeGzip()
         {
@@ -124,6 +129,7 @@ Aliquam erat volutpat. Cras magna est, aliquet sit amet vestibulum facilisis, ac
         }
 
         [Test]
+        [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Gzip", Justification = "Reviewied.")]
         [SuppressMessage("Microsoft.Usage", "CA2202:DoNotDisposeObjectsMultipleTimess", Target = "outputStream", Justification = "DeflateStream does not dispose of its inner stream.")]
         public void GzipDeflateEncodingEncodeDeflate()
         {
@@ -159,6 +165,7 @@ Aliquam erat volutpat. Cras magna est, aliquet sit amet vestibulum facilisis, ac
         }
 
         [Test]
+        [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Gzip", Justification = "Reviewied.")]
         [SuppressMessage("Microsoft.Usage", "CA2202:DoNotDisposeObjectsMultipleTimess", Target = "outputStream", Justification = "GZipStream does not dispose of its inner stream.")]
         public void GzipDeflateEncodingEncodeGzip()
         {

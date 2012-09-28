@@ -39,6 +39,7 @@
         }
 
         [Test]
+        [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Deserializer", Justification = "Reviewied.")]
         public void ResolvedServiceGetRequestDeserializer()
         {
             ServiceCollection services = new ServiceCollection();
@@ -184,6 +185,7 @@
         }
 
         [Test]
+        [SuppressMessage("Microsoft.Usage", "CA2201:DoNotRaiseReservedExceptionTypes", Justification = "Testing.")]
         public void ResolvedServiceInvokeAfterActionsExceptionContinue()
         {
             Payload payload = new Payload()
@@ -325,6 +327,7 @@
         }
 
         [Test]
+        [SuppressMessage("Microsoft.Usage", "CA2201:DoNotRaiseReservedExceptionTypes", Justification = "Testing.")]
         public void ResolvedServiceInvokeBeforeActionsExceptionContinue()
         {
             Payload payload = new Payload()
@@ -466,6 +469,7 @@
         }
 
         [Test]
+        [SuppressMessage("Microsoft.Usage", "CA2201:DoNotRaiseReservedExceptionTypes", Justification = "Testing.")]
         public void ResolvedServiceInvokeErrorActionsExceptionContinue()
         {
             Payload payload = new Payload()

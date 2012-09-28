@@ -60,7 +60,7 @@ namespace SmallFry
         /// <returns>A Content-Encoding value to send.</returns>
         public string ContentEncoding(EncodingType encodingType)
         {
-            return "deflate".Equals(encodingType.Name, StringComparison.OrdinalIgnoreCase)
+            return "deflate".Equals(encodingType != null ? encodingType.Name : string.Empty, StringComparison.OrdinalIgnoreCase)
                 ? "deflate"
                 : "gzip";
         }

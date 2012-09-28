@@ -34,7 +34,7 @@
         }
 
         [Test]
-        public void DefinitionPassbookContainsDeviceUnRegistrationEndpointAndMethods()
+        public void DefinitionPassbookContainsDeviceUnregistrationEndpointAndMethods()
         {
             ServiceCollection services = new ServiceCollection();
             DefinitionTests.DefinePassbook(services);
