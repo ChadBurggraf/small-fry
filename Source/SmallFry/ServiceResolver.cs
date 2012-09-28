@@ -37,7 +37,10 @@ namespace SmallFry
 
                 if (routeValues != null)
                 {
-                    return ServiceResolver.RoutePatternsMatch(service, routeValues);
+                    if (ServiceResolver.RoutePatternsMatch(service, routeValues))
+                    {
+                        return this.serviceCollection.RouteValueBinder.Bind(routeValues, service.Method.Endpoint.ParameterTypes) != null;
+                    }
                 }
             }
 

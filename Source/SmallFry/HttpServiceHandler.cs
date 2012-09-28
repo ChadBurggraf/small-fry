@@ -76,31 +76,34 @@ namespace SmallFry
                             if (success)
                             {
                                 invokeResult = service.InvokeBeforeActions(request, response);
-                                success = success && invokeResult.Success;
-                                cont = cont && invokeResult.Continue;
+                                success = invokeResult.Success;
+                                cont = invokeResult.Continue;
 
-                                if (!invokeResult.Success)
+                                if (!success)
                                 {
                                     exceptions.AddRange(invokeResult.Results.Where(r => !r.Success && r.Exception != null).Select(r => r.Exception));
                                 }
 
-                                if (cont)
+                                if (success && cont)
                                 {
                                     MethodResult methodResult = service.Method.Invoke(request, response);
-                                    success = success && methodResult.Success;
+                                    success = methodResult.Success;
 
-                                    if (!methodResult.Success && methodResult.Exception != null)
+                                    if (!success && methodResult.Exception != null)
                                     {
                                         exceptions.Add(methodResult.Exception);
                                     }
 
-                                    invokeResult = service.InvokeAfterActions(request, response);
-                                    success = success && invokeResult.Success;
-                                    cont = cont && invokeResult.Continue;
-
-                                    if (!invokeResult.Success)
+                                    if (success)
                                     {
-                                        exceptions.AddRange(invokeResult.Results.Where(r => !r.Success && r.Exception != null).Select(r => r.Exception));
+                                        invokeResult = service.InvokeAfterActions(request, response);
+                                        success = invokeResult.Success;
+                                        cont = invokeResult.Continue;
+
+                                        if (!success)
+                                        {
+                                            exceptions.AddRange(invokeResult.Results.Where(r => !r.Success && r.Exception != null).Select(r => r.Exception));
+                                        }
                                     }
                                 }
                             }
@@ -138,30 +141,27 @@ namespace SmallFry
                                 response.SetStatus(StatusCode.InternalServerError);
                             }
 
-                            if (cont)
+                            WriteResponseResult writeResult = service.WriteResponse(
+                                response,
+                                httpContext.Request.Headers["Accept-Encoding"],
+                                httpContext.Request.Headers["Accept"]);
+
+                            if (!writeResult.Success)
                             {
-                                WriteResponseResult writeResult = service.WriteResponse(
-                                    response,
-                                    httpContext.Request.Headers["Accept-Encoding"],
-                                    httpContext.Request.Headers["Accept"]);
-
-                                if (!writeResult.Success)
+                                if (writeResult.StatusCode != StatusCode.None)
                                 {
-                                    if (writeResult.StatusCode != StatusCode.None)
-                                    {
-                                        response.SetStatus(writeResult.StatusCode);
-                                    }
+                                    response.SetStatus(writeResult.StatusCode);
+                                }
 
-                                    if (writeResult.Exception != null)
-                                    {
-                                        throw new PipelineException(
-                                            PipelineErrorType.WriteResponseOutputThrewException,
-                                            service.Name,
-                                            service.Method.Endpoint.Route.ToString(),
-                                            request.RequestUri,
-                                            methodType,
-                                            writeResult.Exception);
-                                    }
+                                if (writeResult.Exception != null)
+                                {
+                                    throw new PipelineException(
+                                        PipelineErrorType.WriteResponseOutputThrewException,
+                                        service.Name,
+                                        service.Method.Endpoint.Route.ToString(),
+                                        request.RequestUri,
+                                        methodType,
+                                        writeResult.Exception);
                                 }
                             }
                         }
